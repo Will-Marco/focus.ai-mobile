@@ -14,4 +14,8 @@ export { Chip } from './Chip';
 export type { ChipProps } from './Chip';
 export { Fab } from './Fab';
 export type { FabProps } from './Fab';
+export { Segmented } from './Segmented';
+export type { SegmentedProps, SegmentedOption } from './Segmented';
+export { ScreenHeader } from './ScreenHeader';
+export type { ScreenHeaderProps } from './ScreenHeader';
 export * from './icons';

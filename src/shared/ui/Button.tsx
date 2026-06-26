@@ -15,6 +15,7 @@ export function Button({
   title,
   variant = 'primary',
   disabled,
+  style,
   ...rest
 }: ButtonProps) {
   const { theme } = useUnistyles();
@@ -42,6 +43,7 @@ export function Button({
         styles.wrap,
         pressed && styles.pressed,
         disabled && styles.disabled,
+        style as object,
       ]}
       {...rest}
     >

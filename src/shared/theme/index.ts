@@ -6,3 +6,9 @@ export {
   getActiveThemeName,
 } from './themeController';
 export type { ThemePref } from './themeController';
+export {
+  HABIT_COLORS,
+  HABIT_COLOR_KEYS,
+  habitColorHex,
+} from './habitColors';
+export type { HabitColorKey } from './habitColors';

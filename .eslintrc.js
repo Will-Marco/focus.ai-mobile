@@ -24,7 +24,7 @@ module.exports = {
         rules: [
           {
             from: ['app'],
-            allow: ['screens', 'widgets', 'features', 'entities', 'shared'],
+            allow: ['app', 'screens', 'widgets', 'features', 'entities', 'shared'],
           },
           {
             from: ['screens'],

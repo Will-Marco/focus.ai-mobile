@@ -8,7 +8,54 @@
   },
   "dashboard": {
     "title": "Bosh sahifa",
-    "empty": "Hali odat yo'q — birinchisini qo'shing"
+    "greeting": "Salom",
+    "streak": "Joriy streak",
+    "todayFocus": "Bugungi fokus",
+    "habits": "ODATLAR",
+    "empty": "Hali odat yo'q",
+    "emptyHint": "Birinchi odatingizni qo'shing — vaqtni o'lchashni boshlang",
+    "activeNow": "Hozir faol",
+    "day": "kun"
+  },
+  "addHabit": {
+    "title": "Yangi odat",
+    "edit": "Odatni tahrirlash",
+    "nameLabel": "Nomi",
+    "namePlaceholder": "Masalan, Mutolaa",
+    "icon": "Ikonka",
+    "color": "Rang",
+    "type": "Tur",
+    "typeCumulative": "Umrlik",
+    "typeRecurring": "Davriy",
+    "period": "Davr",
+    "periodDaily": "Kunlik",
+    "periodWeekly": "Haftalik",
+    "periodMonthly": "Oylik",
+    "target": "Maqsad",
+    "hoursUnit": "soat",
+    "save": "Odatni saqlash",
+    "delete": "Odatni o'chirish",
+    "deleteConfirm": "Bu odat va uning tarixini o'chirishni tasdiqlaysizmi?",
+    "errors": {
+      "name": "Nom 1–50 belgidan iborat bo'lsin",
+      "targetHours": "Maqsad 0.1–1000 soat oralig'ida bo'lsin",
+      "period": "Davrni tanlang"
+    }
+  },
+  "session": {
+    "setupQuestion": "Bu sessiyaga qancha vaqt?",
+    "minutesShort": "daqiqa",
+    "start": "Boshlash",
+    "pause": "Pauza",
+    "resume": "Davom etish",
+    "finish": "Yakunlash",
+    "close": "Yopish",
+    "remaining": "QOLDI",
+    "elapsed": "O'TDI",
+    "overtimeNote": "Ortiqcha vaqt ham odatga qo'shiladi",
+    "completed": "Maqsadga yetdingiz!",
+    "awayHint": "Telefonni teskari qo'ying — Away rejimi",
+    "ofTarget": "{{target}} {{unit}} · {{pct}}%"
   },
   "stats": { "title": "Statistika", "empty": "Ma'lumot hali yo'q" },
   "team": { "title": "Jamoa", "empty": "Hali guruh yo'q" },
@@ -19,5 +66,10 @@
     "themeDark": "Qorong'i",
     "themeSystem": "Tizim"
   },
-  "common": { "loading": "Yuklanmoqda..." }
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "cancel": "Bekor qilish",
+    "delete": "O'chirish",
+    "back": "Orqaga"
+  }
 }

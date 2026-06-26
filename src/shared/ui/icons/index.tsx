@@ -78,3 +78,22 @@ export const PauseIcon = (p: IconProps) => (
     <Path d="M8 5v14M16 5v14" />
   </Stroke>
 );
+
+export const CheckIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <Path d="M5 13l4 4L19 7" />
+  </Stroke>
+);
+
+export const TrashIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <Path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
+  </Stroke>
+);
+
+export {
+  HabitIcon,
+  HABIT_ICONS,
+  HABIT_ICON_KEYS,
+  type HabitIconKey,
+} from './habitIcons';
