@@ -5,6 +5,7 @@ import {
 } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
 import { useUnistyles } from 'react-native-unistyles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DashboardScreen } from '@screens/dashboard';
 import { StatsScreen } from '@screens/stats';
 import { TeamScreen } from '@screens/team';
@@ -26,6 +27,7 @@ const renderProfileIcon = ({ color, size }: TabIconArgs) => (
 export function TabNavigator() {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
+  const insets = useSafeAreaInsets();
 
   const screenOptions: BottomTabNavigationOptions = {
     headerShown: false,
@@ -34,8 +36,10 @@ export function TabNavigator() {
     tabBarStyle: {
       backgroundColor: theme.colors.backgroundElevated,
       borderTopColor: theme.colors.border,
-      height: 64,
+      // tizim pastki paneli (gesture bar / home indicator) uchun joy ajratamiz
+      height: 64 + insets.bottom,
       paddingTop: 6,
+      paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
     },
     tabBarLabelStyle: {
       fontFamily: theme.fontFamily.semibold,
