@@ -1,0 +1,33 @@
+buildscript {
+    ext {
+        buildToolsVersion = "36.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.1.20"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+// Barcha native modullar (op-sqlite, skia, reanimated, ...) bir xil, o'rnatilgan
+// NDK versiyasidan foydalansin. Aks holda ba'zilar AGP default NDK (o'rnatilmagan)
+// ni so'rab build'ni yiqitadi. `plugins.withId` android plagin qo'llanganда ishlaydi.
+subprojects {
+    plugins.withId("com.android.library") {
+        android { ndkVersion rootProject.ext.ndkVersion }
+    }
+    plugins.withId("com.android.application") {
+        android { ndkVersion rootProject.ext.ndkVersion }
+    }
+}

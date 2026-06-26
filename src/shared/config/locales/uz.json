@@ -1,0 +1,23 @@
+{
+  "app": { "name": "Focus AI" },
+  "tabs": {
+    "dashboard": "Bosh",
+    "stats": "Statistika",
+    "team": "Jamoa",
+    "profile": "Profil"
+  },
+  "dashboard": {
+    "title": "Bosh sahifa",
+    "empty": "Hali odat yo'q — birinchisini qo'shing"
+  },
+  "stats": { "title": "Statistika", "empty": "Ma'lumot hali yo'q" },
+  "team": { "title": "Jamoa", "empty": "Hali guruh yo'q" },
+  "profile": {
+    "title": "Profil",
+    "theme": "Mavzu",
+    "themeLight": "Yorug'",
+    "themeDark": "Qorong'i",
+    "themeSystem": "Tizim"
+  },
+  "common": { "loading": "Yuklanmoqda..." }
+}

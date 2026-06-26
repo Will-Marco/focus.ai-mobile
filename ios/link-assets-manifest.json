@@ -1,0 +1,41 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/GeistMono-Medium.ttf",
+      "sha1": "75061785a7815933b832c507e53c7d72bca20c6b"
+    },
+    {
+      "path": "assets/fonts/GeistMono-Regular.ttf",
+      "sha1": "049cca6b7fa50882f3637af80edc610546990915"
+    },
+    {
+      "path": "assets/fonts/GeistMono-SemiBold.ttf",
+      "sha1": "dcbb20db0fc668fa01943f8f502b0f19a301289e"
+    },
+    {
+      "path": "assets/fonts/HankenGrotesk-Bold.ttf",
+      "sha1": "bd809c0038aef41b09f8bf0d36e968c3aa7e6c1c"
+    },
+    {
+      "path": "assets/fonts/HankenGrotesk-ExtraBold.ttf",
+      "sha1": "66886976207e823e34fd71c93f93877712052de6"
+    },
+    {
+      "path": "assets/fonts/HankenGrotesk-Medium.ttf",
+      "sha1": "afdee2e8ff074cb151dbcad8b70eedaf3a40e8a5"
+    },
+    {
+      "path": "assets/fonts/HankenGrotesk-Regular.ttf",
+      "sha1": "fa7bb8001d41f73d12bf2cde7d7c33cc88db0976"
+    },
+    {
+      "path": "assets/fonts/HankenGrotesk-SemiBold.ttf",
+      "sha1": "4ab10b6016d910f7564b2632e471100148873e71"
+    },
+    {
+      "path": "assets/fonts/README.md",
+      "sha1": "bf2fe7d3f287d12fb04d5e5de6ccd4322eb6bd9c"
+    }
+  ]
+}
