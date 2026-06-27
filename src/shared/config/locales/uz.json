@@ -165,6 +165,19 @@
     "preparing": "Sessiya tayyorlanmoqda…",
     "reminderSet": "Eslatma qo'yildi · 2 soatdan keyin"
   },
+  "notif": {
+    "title": "Bildirishnomalar",
+    "settingsTitle": "Bildirishnoma sozlamalari",
+    "empty": "Hozircha bildirishnoma yo'q",
+    "today": "Bugun",
+    "earlier": "Avvalroq",
+    "settings": "SOZLAMALAR",
+    "quietSection": "TINCH SOATLAR",
+    "quietTitle": "Tinch soatlar",
+    "quietSub": "Bu oraliqda bildirishnoma kelmaydi",
+    "start": "Boshlanish",
+    "end": "Tugash"
+  },
   "stats": {
     "title": "Statistika",
     "subtitle": "Sening rivojing",

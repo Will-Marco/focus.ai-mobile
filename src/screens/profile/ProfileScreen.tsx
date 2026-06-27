@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, TextInput, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Avatar, Button, Screen, Segmented, Text } from '@shared/ui';
 import { setThemePref, getStoredThemePref, type ThemePref } from '@shared/theme';
 import { useProfileStore } from '@entities/profile';
+import type { RootStackParamList } from '@shared/config/navigation';
 
 export function ProfileScreen() {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const profile = useProfileStore((s) => s.profile);
   const updateName = useProfileStore((s) => s.updateName);
   const signOut = useProfileStore((s) => s.signOut);
@@ -62,8 +66,17 @@ export function ProfileScreen() {
 
         <View style={styles.card}>
           <Row label={t('profile.language')} value={t('profile.languageValue')} />
-          <Row label={t('profile.notifications')} value={t('profile.notificationsValue')} />
-          <Row label={t('profile.quietHours')} value={t('profile.quietHoursValue')} last />
+          <Row
+            label={t('profile.notifications')}
+            value={t('profile.notificationsValue')}
+            onPress={() => navigation.navigate('NotificationSettings')}
+          />
+          <Row
+            label={t('profile.quietHours')}
+            value={t('profile.quietHoursValue')}
+            onPress={() => navigation.navigate('NotificationSettings')}
+            last
+          />
         </View>
 
         <Button
@@ -76,15 +89,25 @@ export function ProfileScreen() {
   );
 }
 
-function Row({ label, value, last }: { label: string; value: string; last?: boolean }) {
+function Row({
+  label,
+  value,
+  last,
+  onPress,
+}: {
+  label: string;
+  value: string;
+  last?: boolean;
+  onPress?: () => void;
+}) {
   return (
-    <View style={[styles.row, last && styles.rowLast]}>
+    <Pressable accessibilityRole="button" onPress={onPress} style={[styles.row, last && styles.rowLast]}>
       <Text style={styles.rowLabel}>{label}</Text>
       <View style={styles.rowRight}>
         <Text style={styles.rowValue}>{value}</Text>
         <Text style={styles.rowChevron}>›</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

@@ -1,11 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AiOrb, Avatar, Screen, Text, Fab, HabitIcon } from '@shared/ui';
+import { AiOrb, BellIcon, Screen, Text, Fab, HabitIcon } from '@shared/ui';
 import { periodWindow } from '@shared/lib/time/periodWindow';
 import { formatSpent } from '@shared/lib/time/formatSpent';
 import { useHabitStore, type Habit } from '@entities/habit';
@@ -82,7 +83,20 @@ export function DashboardScreen() {
           >
             <AiOrb size={42} />
           </Pressable>
-          <Avatar name={profileName || '?'} size={42} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('notif.title')}
+            onPress={() => navigation.navigate('Notifications')}
+          >
+            <LinearGradient
+              colors={[...theme.colors.gradientBrand]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.bellBtn}
+            >
+              <BellIcon size={22} color={theme.colors.onBrand} />
+            </LinearGradient>
+          </Pressable>
         </View>
       </View>
 
@@ -154,6 +168,18 @@ const styles = StyleSheet.create((theme) => ({
   },
   greetText: { flex: 1 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  bellBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: theme.colors.brandCoral,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
+  },
   greeting: { fontSize: 13, color: theme.colors.textMuted },
   name: { fontFamily: theme.fontFamily.extrabold, fontSize: 27, color: theme.colors.textStrong, lineHeight: 30 },
   stats: { flexDirection: 'row', gap: 10 },

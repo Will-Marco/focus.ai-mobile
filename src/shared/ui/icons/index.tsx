@@ -61,6 +61,13 @@ export const PlusIcon = (p: IconProps) => (
   </Stroke>
 );
 
+export const BellIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <Path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+    <Path d="M13.7 21a2 2 0 01-3.4 0" />
+  </Stroke>
+);
+
 export const ChevronLeftIcon = (p: IconProps) => (
   <Stroke {...p}>
     <Path d="M15 6l-6 6 6 6" />
