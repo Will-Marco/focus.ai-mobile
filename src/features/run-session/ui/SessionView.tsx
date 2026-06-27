@@ -22,6 +22,7 @@ import { remainingMs, useHabitProgress, useSessionStore } from '@entities/sessio
 import { useSessionTimer } from '../model/useSessionTimer';
 import { DURATION_PRESETS, DEFAULT_SESSION_MIN } from '../config/presets';
 import { AwayView, FocusClockView } from './FocusModes';
+import { AudioSheet } from './AudioSheet';
 
 export interface SessionViewProps {
   habitId: string;
@@ -90,6 +91,7 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   const [showRemaining, setShowRemaining] = useState(true);
   const [overtime, setOvertime] = useState(false);
   const [away, setAway] = useState(false);
+  const [audioOpen, setAudioOpen] = useState(false);
 
   // Focus Modes: landscape → Focus Clock (real, dimensions); face-down → Away
   // (hozircha tap-preview; M4'da nitro-sensors accelerometer bilan avtomatik).
@@ -297,10 +299,10 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
 
       <View style={styles.bottom}>
         <View style={styles.audioRow}>
-          <View style={styles.audioChip}>
+          <Pressable accessibilityRole="button" onPress={() => setAudioOpen(true)} style={styles.audioChip}>
             <View style={styles.audioDot} />
             <Text style={styles.audioTxt}>{t('session.audioChip')}</Text>
-          </View>
+          </Pressable>
         </View>
 
         {completed ? (
@@ -343,6 +345,8 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
           </>
         )}
       </View>
+
+      {audioOpen ? <AudioSheet onClose={() => setAudioOpen(false)} /> : null}
     </View>
   );
 }

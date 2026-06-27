@@ -82,6 +82,10 @@
     "awayXp": "2× XP bonus faol",
     "awayFooter": "Telefon yuztuban — sessiya davom etmoqda.\nKo'tarsangiz yengil holat ko'rsatkichi chiqadi.",
     "sessionShort": "sessiya",
+    "audioTitle": "Fon ovozi",
+    "audioTracks": "OVOZLAR",
+    "audioPlaying": "Ijro etilmoqda · halqali",
+    "audioPaused": "To'xtatildi",
     "ofTarget": "{{target}} {{unit}} · {{pct}}%"
   },
   "onboarding": {
