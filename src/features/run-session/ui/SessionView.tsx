@@ -20,6 +20,8 @@ import { usePulse } from '@shared/lib/animation/usePulse';
 import { useHabitStore } from '@entities/habit';
 import { remainingMs, useHabitProgress, useSessionStore } from '@entities/session';
 import { useSessionTimer } from '../model/useSessionTimer';
+import { useFaceDown } from '../lib/useFaceDown';
+import { useFocusDnd } from '../lib/useFocusDnd';
 import { DURATION_PRESETS, DEFAULT_SESSION_MIN } from '../config/presets';
 import { AwayView, FocusClockView } from './FocusModes';
 import { AudioSheet } from './AudioSheet';
@@ -93,12 +95,38 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   const [away, setAway] = useState(false);
   const [audioOpen, setAudioOpen] = useState(false);
 
-  // Focus Modes: landscape → Focus Clock (real, dimensions); face-down → Away
-  // (hozircha tap-preview; M4'da nitro-sensors accelerometer bilan avtomatik).
+  // Focus Modes: landscape → Focus Clock (real, dimensions); face-down → Away.
   const { width, height } = useWindowDimensions();
   const landscape = width > height;
 
   const timer = useSessionTimer(sessionId);
+
+  // Sessiya faol (sozlash tugagan, hali tugamagan) — Focus Modes shu paytда yashaydi.
+  const sessionActive = !!sessionId && !timer.complete;
+
+  // Face-down avtomatik Away (nitro-sensors). Sensor mavjud bo'lsa away'ni boshqaradi;
+  // emulyatorда (sensor yo'q) tap-preview fallback ishlaydi.
+  const { faceDown, isAvailable: faceDownAvailable } = useFaceDown(sessionActive && !landscape);
+  useEffect(() => {
+    if (faceDownAvailable) setAway(faceDown);
+  }, [faceDown, faceDownAvailable]);
+
+  // DND — faol sessiyaда (yoki away/landscape immersiv rejimда) tizim/in-app jim rejimi.
+  useFocusDnd(sessionActive);
+
+  // Away vaqtini yig'ish (2× XP bonus — real ledger M6'да ulanadi).
+  const awayMsRef = React.useRef(0);
+  const awayStartRef = React.useRef<number | null>(null);
+  const [awayMs, setAwayMs] = useState(0);
+  useEffect(() => {
+    if (away) {
+      awayStartRef.current = Date.now();
+    } else if (awayStartRef.current != null) {
+      awayMsRef.current += Date.now() - awayStartRef.current;
+      awayStartRef.current = null;
+      setAwayMs(awayMsRef.current);
+    }
+  }, [away]);
 
   // Odat (umrlik/davriy) umumiy progressi — markazdagi thin bar (jonli sessiya qo'shiladi).
   const habitProg = useHabitProgress(
@@ -318,6 +346,11 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
               </Pressable>
             </View>
             <Text style={styles.hint}>{t('session.overtimeNote')}</Text>
+            {awayMs > 0 ? (
+              <Text style={styles.awayBonusNote}>
+                {t('session.awayBonusNote', { min: Math.max(1, Math.round(awayMs / 60_000)) })}
+              </Text>
+            ) : null}
           </>
         ) : (
           <>
@@ -491,5 +524,6 @@ const styles = StyleSheet.create((theme) => ({
   },
   finishTxt: { fontSize: 15, fontFamily: theme.fontFamily.semibold, color: theme.colors.text },
   hint: { textAlign: 'center', fontSize: 12, color: theme.colors.textDim },
+  awayBonusNote: { textAlign: 'center', fontSize: 12, color: theme.colors.gold, marginTop: 4, fontFamily: theme.fontFamily.semibold },
   awayWord: { color: theme.colors.gold },
 }));

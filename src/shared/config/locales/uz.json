@@ -68,6 +68,7 @@
     "elapsed": "O'TDI",
     "done": "BAJARILDI",
     "overtimeNote": "Qo'shimcha vaqt ham odatingizga hisoblanadi",
+    "awayBonusNote": "Telefonsiz {{min}} daqiqa · 2× XP bonus",
     "completed": "Maqsadingizga yetdingiz!",
     "audioChip": "Lo-fi foni · past",
     "habitLabel": "Odat",
