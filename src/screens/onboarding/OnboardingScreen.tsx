@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { FadeInRight, FadeOutLeft, useAnimatedStyle } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 import { Canvas, Circle, RadialGradient, vec, BlurMask } from '@shopify/react-native-skia';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
@@ -29,6 +29,19 @@ const RING_GLOW = {
   height: 200,
   alignItems: 'center',
   justifyContent: 'center',
+} as const;
+
+// Slayd kontenti uchun animatsion wrapper — content'ni to'liq qoplab markazlaydi
+// (enter/exit absolute cross-slide uchun; plain — Unistyles emas).
+const SLIDE_WRAP = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingHorizontal: 34,
 } as const;
 
 export function OnboardingScreen() {
@@ -64,29 +77,42 @@ export function OnboardingScreen() {
         </View>
 
         <View style={styles.content}>
-          <View style={styles.ringWrap}>
-            <Animated.View style={[RING_GLOW, glowStyle]} pointerEvents="none">
-              <Canvas style={styles.ringGlowCanvas}>
-                <Circle cx={100} cy={100} r={100}>
-                  <RadialGradient c={vec(100, 100)} r={60} colors={['#F2B45A', 'rgba(242,180,90,0)']} />
-                  <BlurMask blur={26} style="normal" />
-                </Circle>
-              </Canvas>
-            </Animated.View>
+          <Animated.View
+            key={slide.key}
+            entering={FadeInRight.duration(420)}
+            exiting={FadeOutLeft.duration(300)}
+            style={SLIDE_WRAP}
+          >
+            <View style={styles.ringWrap}>
+              <Animated.View style={[RING_GLOW, glowStyle]} pointerEvents="none">
+                <Canvas style={styles.ringGlowCanvas}>
+                  <Circle cx={100} cy={100} r={100}>
+                    <RadialGradient c={vec(100, 100)} r={60} colors={['#F2B45A', 'rgba(242,180,90,0)']} />
+                    <BlurMask blur={26} style="normal" />
+                  </Circle>
+                </Canvas>
+              </Animated.View>
 
-            <Animated.View style={breatheStyle}>
-              <ProgressRing size={168} strokeWidth={12} progress={slide.ringProgress} />
-            </Animated.View>
+              <Animated.View style={breatheStyle}>
+                <ProgressRing
+                  size={168}
+                  strokeWidth={12}
+                  progress={slide.ringProgress}
+                  animated
+                  animationDuration={900}
+                />
+              </Animated.View>
 
-            <View style={styles.center} pointerEvents="none">
-              <Text variant="mono" style={styles.centerTxt}>
-                {slide.center}
-              </Text>
+              <View style={styles.center} pointerEvents="none">
+                <Text variant="mono" style={styles.centerTxt}>
+                  {slide.center}
+                </Text>
+              </View>
             </View>
-          </View>
 
-          <Text style={styles.title}>{t(`onboarding.slides.${slide.key}.title`)}</Text>
-          <Text style={styles.body}>{t(`onboarding.slides.${slide.key}.body`)}</Text>
+            <Text style={styles.title}>{t(`onboarding.slides.${slide.key}.title`)}</Text>
+            <Text style={styles.body}>{t(`onboarding.slides.${slide.key}.body`)}</Text>
+          </Animated.View>
         </View>
 
         <View style={styles.footer}>

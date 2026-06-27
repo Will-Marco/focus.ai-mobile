@@ -31,6 +31,10 @@ export function TabNavigator() {
 
   const screenOptions: BottomTabNavigationOptions = {
     headerShown: false,
+    // tab almashinuvi — gorizontal siljish + fade (v7 bottom-tabs)
+    animation: 'shift',
+    // scene konteyner foni — transition paytida ortdan chaqnashning oldini oladi (dark fix)
+    sceneStyle: { backgroundColor: theme.colors.background },
     tabBarActiveTintColor: theme.colors.tabActive,
     tabBarInactiveTintColor: theme.colors.tabInactive,
     tabBarStyle: {

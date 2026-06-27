@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Canvas, Path, Skia, LinearGradient, vec, BlurMask } from '@shopify/react-native-skia';
+import { Easing, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useUnistyles } from 'react-native-unistyles';
 
 export interface ProgressRingProps {
@@ -13,6 +14,10 @@ export interface ProgressRingProps {
   trackOpacity?: number;
   /** gradient ringda drop-shadow glow (katta sessiya ring uchun). */
   glow?: boolean;
+  /** true bo'lsa — fill (end) Reanimated bilan silliq to'ladi (onboarding/intro). */
+  animated?: boolean;
+  /** animated fill davomiyligi (ms). */
+  animationDuration?: number;
 }
 
 /**
@@ -26,6 +31,8 @@ export function ProgressRing({
   color,
   trackOpacity = 0.08,
   glow = false,
+  animated = false,
+  animationDuration = 750,
 }: ProgressRingProps) {
   const { theme } = useUnistyles();
   const r = (size - strokeWidth) / 2;
@@ -33,6 +40,16 @@ export function ProgressRing({
   const cy = size / 2;
   const p = Math.max(0, Math.min(1, progress));
   const gradient = [...theme.colors.gradientRing];
+
+  // animated bo'lsa: end'ni Reanimated shared value bilan silliq haydaymiz (Skia v2 integ.).
+  const sv = useSharedValue(animated ? 0 : p);
+  useEffect(() => {
+    sv.value = animated
+      ? withTiming(p, { duration: animationDuration, easing: Easing.out(Easing.cubic) })
+      : p;
+  }, [p, animated, animationDuration, sv]);
+  const animEnd = useDerivedValue(() => sv.value);
+  const end = animated ? animEnd : p;
 
   // Path AYNAN tepadan (-90°) soat strelkasi yo'nalishida quriladi (addArc).
   // Shunday qilib trim (start/end) ham tepadan boshlanadi — rotate kerak emas.
@@ -58,7 +75,7 @@ export function ProgressRing({
           strokeWidth={strokeWidth}
           strokeCap="round"
           start={0}
-          end={p}
+          end={end}
           opacity={0.6}
         >
           <LinearGradient start={vec(0, 0)} end={vec(size, size)} colors={gradient} />
@@ -71,7 +88,7 @@ export function ProgressRing({
         strokeWidth={strokeWidth}
         strokeCap="round"
         start={0}
-        end={p}
+        end={end}
         color={color}
       >
         {color ? null : <LinearGradient start={vec(0, 0)} end={vec(size, size)} colors={gradient} />}
