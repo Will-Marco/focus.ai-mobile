@@ -202,7 +202,7 @@ const styles = StyleSheet.create((theme) => ({
   fcRemaining: { fontSize: 12, letterSpacing: 4, color: theme.colors.gold, marginBottom: 6 },
   fcClockRow: { flexDirection: 'row', alignItems: 'center' },
   fcClock: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 150, lineHeight: 138, letterSpacing: -3, color: theme.colors.textStrong },
-  fcBarTrack: { marginTop: 18, width: 300, height: 4, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.08)', overflow: 'hidden' },
+  fcBarTrack: { marginTop: 18, width: 300, height: 4, borderRadius: 3, backgroundColor: `rgba(${theme.colors.trackRgb},0.08)`, overflow: 'hidden' },
   fcBarFill: { height: 4, backgroundColor: theme.colors.brand },
   fcSub: { marginTop: 12, fontSize: 13, color: theme.colors.textMuted },
 

@@ -31,7 +31,13 @@ const CHART_SETS: Record<Period, ChartSet> = {
   },
 };
 
-const HEAT_COLORS = ['rgba(255,255,255,0.06)', 'rgba(242,162,76,0.3)', 'rgba(242,162,76,0.55)', 'rgba(242,160,76,0.8)', '#F2603E'];
+const heatColors = (trackRgb: string) => [
+  `rgba(${trackRgb},0.06)`,
+  'rgba(242,162,76,0.3)',
+  'rgba(242,162,76,0.55)',
+  'rgba(242,160,76,0.8)',
+  '#F2603E',
+];
 
 // Deterministik heatmap (53 hafta × 7 kun) — Park-Miller LCG, dekorativ.
 function buildHeatmap(): number[][] {
@@ -86,6 +92,7 @@ export function StatsScreen() {
   const ds = CHART_SETS[period];
   const maxMin = Math.max(...ds.mins);
   const gradient = [...theme.colors.gradientBrand];
+  const HEAT_COLORS = heatColors(theme.colors.trackRgb);
 
   return (
     <Screen>
@@ -313,29 +320,29 @@ const styles = StyleSheet.create((theme) => ({
   streakUnit: { fontSize: 14, color: theme.colors.goldSoft },
   cardSub: { fontSize: 12, color: theme.colors.textDim, marginTop: 4 },
 
-  levelCard: { flex: 1, padding: 16, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)' },
+  levelCard: { flex: 1, padding: 16, borderRadius: 20, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border },
   levelTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   levelBadge: { width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   levelBadgeTxt: { fontFamily: theme.fontFamily.extrabold, fontSize: 14, color: theme.colors.onBrand },
   xpTxt: { fontFamily: theme.fontFamily.mono, fontSize: 15, color: theme.colors.textStrong, marginTop: 8 },
   xpMax: { color: theme.colors.textDim, fontSize: 12 },
-  xpTrack: { marginTop: 8, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.08)', overflow: 'hidden' },
+  xpTrack: { marginTop: 8, height: 6, borderRadius: 3, backgroundColor: `rgba(${theme.colors.trackRgb},0.08)`, overflow: 'hidden' },
   xpFill: { width: '82%', height: 6, borderRadius: 3 },
 
-  panel: { paddingVertical: 14, paddingHorizontal: 16, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
+  panel: { paddingVertical: 14, paddingHorizontal: 16, borderRadius: 18, backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border },
   panelLabel: { fontSize: 12, color: theme.colors.textMuted, fontFamily: theme.fontFamily.bold, letterSpacing: 0.5, marginBottom: 12 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between' },
   dayItem: { alignItems: 'center', gap: 7 },
   dayDot: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-  dayDotEmpty: { backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  dayDotEmpty: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderStrong },
   dayLabel: { fontSize: 11, color: theme.colors.textDim },
 
-  card: { padding: 16, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
+  card: { padding: 16, borderRadius: 20, backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border },
   cardTitle: { fontSize: 15, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
   cardHeadRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
 
   chartHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  toggle: { flexDirection: 'row', gap: 4, padding: 3, borderRadius: theme.radius.pill, backgroundColor: 'rgba(0,0,0,0.25)' },
+  toggle: { flexDirection: 'row', gap: 4, padding: 3, borderRadius: theme.radius.pill, backgroundColor: theme.colors.inset },
   toggleItem: { borderRadius: theme.radius.pill },
   toggleTxt: { paddingVertical: 6, paddingHorizontal: 13, fontSize: 12, fontFamily: theme.fontFamily.bold, color: theme.colors.textMuted },
   toggleTxtActive: { paddingVertical: 6, paddingHorizontal: 13, fontSize: 12, fontFamily: theme.fontFamily.bold, color: theme.colors.onBrand },
@@ -362,10 +369,10 @@ const styles = StyleSheet.create((theme) => ({
   badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   badgeCard: { width: '31%', paddingVertical: 14, paddingHorizontal: 8, borderRadius: 18, alignItems: 'center', gap: 8 },
   badgeCardOn: { backgroundColor: 'rgba(242,162,76,0.10)', borderWidth: 1, borderColor: 'rgba(242,162,76,0.28)' },
-  badgeCardOff: { backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
+  badgeCardOff: { backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border },
   badgeIcon: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
-  badgeIconOff: { backgroundColor: 'rgba(255,255,255,0.05)' },
+  badgeIconOff: { backgroundColor: theme.colors.surfaceStrong },
   badgeName: { fontSize: 11, fontFamily: theme.fontFamily.semibold, textAlign: 'center', lineHeight: 14 },
   badgeNameOn: { color: theme.colors.text },
-  badgeNameOff: { color: '#7a6354' },
+  badgeNameOff: { color: theme.colors.textDim },
 }));

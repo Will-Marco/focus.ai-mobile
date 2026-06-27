@@ -433,7 +433,7 @@ const styles = StyleSheet.create((theme) => ({
   qoldiLabel: { fontSize: 11, letterSpacing: 2.2, color: theme.colors.gold },
   clock: { fontSize: 54, fontFamily: theme.fontFamily.monoSemibold, color: theme.colors.textStrong, marginTop: 2 },
   subInfo: { fontSize: 13, color: theme.colors.textMuted, marginTop: 4 },
-  odatBarTrack: { marginTop: 14, width: 92, height: 3, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.08)', overflow: 'hidden' },
+  odatBarTrack: { marginTop: 14, width: 92, height: 3, borderRadius: 2, backgroundColor: `rgba(${theme.colors.trackRgb},0.08)`, overflow: 'hidden' },
   odatBarFill: { height: 3, backgroundColor: theme.colors.brand },
   odatTxt: { marginTop: 8, fontSize: 12, color: theme.colors.text },
 

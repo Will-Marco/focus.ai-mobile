@@ -140,22 +140,22 @@ const styles = StyleSheet.create((theme) => ({
   content: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 28, gap: 22 },
   section: { fontSize: 12, letterSpacing: 0.7, color: theme.colors.textMuted, fontFamily: theme.fontFamily.bold, marginBottom: 12 },
 
-  card: { borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', overflow: 'hidden' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
+  card: { borderRadius: 18, backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border, overflow: 'hidden' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: theme.colors.border },
   rowLast: { borderBottomWidth: 0 },
   rowIcon: { width: 38, height: 38, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
   rowTitle: { fontSize: 15, fontFamily: theme.fontFamily.semibold, color: theme.colors.textStrong },
   rowSub: { fontSize: 12, color: theme.colors.textDim, marginTop: 1 },
 
-  quietCard: { padding: 16, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
+  quietCard: { padding: 16, borderRadius: 18, backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border },
   quietRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   quietIcon: { backgroundColor: 'rgba(154,140,240,0.16)' },
   timeRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 16 },
-  timeBox: { flex: 1, padding: 14, borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.25)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', alignItems: 'center' },
+  timeBox: { flex: 1, padding: 14, borderRadius: 14, backgroundColor: theme.colors.inset, borderWidth: 1, borderColor: theme.colors.border, alignItems: 'center' },
   timeLabel: { fontSize: 11, color: theme.colors.textDim },
   timeValue: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 20, color: theme.colors.textStrong, marginTop: 3 },
   timeArrow: { color: theme.colors.textMuted, fontSize: 18 },
 
-  track: { width: 48, height: 28, borderRadius: 14, paddingHorizontal: 3, justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.12)' },
+  track: { width: 48, height: 28, borderRadius: 14, paddingHorizontal: 3, justifyContent: 'center', backgroundColor: `rgba(${theme.colors.trackRgb},0.12)` },
   fillInner: { flex: 1, borderRadius: 14 },
 }));

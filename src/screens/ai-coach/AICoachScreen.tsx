@@ -193,7 +193,7 @@ const styles = StyleSheet.create((theme) => ({
   weeklyTitle: { fontSize: 15, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
   weeklyRange: { fontSize: 12, color: theme.colors.textDim },
   cards: { gap: 11 },
-  card: { flexDirection: 'row', gap: 14, padding: 15, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
+  card: { flexDirection: 'row', gap: 14, padding: 15, borderRadius: 20, backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border },
   cardIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
   cardTag: { fontSize: 11, letterSpacing: 0.5, textTransform: 'uppercase', fontFamily: theme.fontFamily.bold },
   cardTitle: { fontSize: 15, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong, marginTop: 3, lineHeight: 19 },

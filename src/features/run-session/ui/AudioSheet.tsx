@@ -94,7 +94,7 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
         <Pressable style={styles.flex1} onPress={close} accessibilityRole="button" accessibilityLabel="close" />
       </Animated.View>
       <Animated.View style={[SHEET_WRAP, sheetStyle]}>
-        <LinearGradient colors={['#211710', '#17100a']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[styles.sheet, { height: sheetHeight }]}>
+        <LinearGradient colors={[...theme.colors.sheetBg]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[styles.sheet, { height: sheetHeight }]}>
           <GestureDetector gesture={sheetPan}>
             <View>
               <View style={styles.handle} />
@@ -213,7 +213,7 @@ const styles = StyleSheet.create((theme) => ({
     paddingTop: 14,
     paddingBottom: 24,
   },
-  handle: { width: 42, height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.18)', alignSelf: 'center', marginBottom: 18 },
+  handle: { width: 42, height: 5, borderRadius: 3, backgroundColor: `rgba(${theme.colors.trackRgb},0.18)`, alignSelf: 'center', marginBottom: 18 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
   title: { fontSize: 19, fontFamily: theme.fontFamily.extrabold, color: theme.colors.textStrong },
   close: { width: 34, height: 34, borderRadius: 17, backgroundColor: theme.colors.surfaceStrong, alignItems: 'center', justifyContent: 'center' },
@@ -234,13 +234,13 @@ const styles = StyleSheet.create((theme) => ({
   npName: { fontSize: 16, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
   npState: { fontSize: 12, color: theme.colors.textMuted, marginTop: 1 },
   wave: { flexDirection: 'row', alignItems: 'flex-end', gap: 3, height: 24, width: 40 },
-  waveStatic: { width: 4, height: 7, borderRadius: 2, backgroundColor: '#5a4a3a' },
+  waveStatic: { width: 4, height: 7, borderRadius: 2, backgroundColor: theme.colors.textDim },
   playWrap: { borderRadius: 22, overflow: 'hidden' },
   playBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 
   volRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4, paddingBottom: 18 },
   slider: { flex: 1, height: 24, justifyContent: 'center' },
-  sliderTrack: { height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.12)' },
+  sliderTrack: { height: 5, borderRadius: 3, backgroundColor: `rgba(${theme.colors.trackRgb},0.12)` },
   sliderFill: { position: 'absolute', height: 5, borderRadius: 3, backgroundColor: theme.colors.brand },
   sliderThumb: { position: 'absolute', width: 16, height: 16, borderRadius: 8, backgroundColor: theme.colors.goldSoft },
   volTxt: { fontFamily: theme.fontFamily.mono, fontSize: 13, color: theme.colors.goldSoft, width: 38, textAlign: 'right' },
@@ -254,12 +254,12 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: 18,
     alignItems: 'center',
     gap: 9,
-    backgroundColor: 'rgba(255,255,255,0.035)',
+    backgroundColor: theme.colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: theme.colors.border,
   },
   trackCardSel: { backgroundColor: 'rgba(242,162,76,0.14)' },
-  trackIcon: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.06)' },
+  trackIcon: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceStrong },
   trackName: { fontSize: 12, fontFamily: theme.fontFamily.semibold, textAlign: 'center' },
   trackNameOn: { color: theme.colors.textStrong },
   trackNameOff: { color: theme.colors.textMuted },

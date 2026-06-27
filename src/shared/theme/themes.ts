@@ -67,6 +67,10 @@ export const darkTheme = {
     bannerBorder: 'rgba(242,162,76,0.32)',
     // ProgressRing track asosiy RGB (opacity per-call beriladi)
     trackRgb: '255,255,255',
+    // Inset (segmented bg, time box) — dark = qora chuqurlik
+    inset: 'rgba(0,0,0,0.25)',
+    // Bottom sheet (Audio Fon) gradient foni
+    sheetBg: ['#211710', '#17100a'],
   },
 } as const;
 
@@ -75,7 +79,7 @@ export const lightTheme = {
   ...shared,
   name: 'light',
   colors: {
-    background: '#FCF6EF',
+    background: 'rgb(252, 246, 239)',
     backgroundElevated: '#F3E7D8',
     surface: '#FFFFFF',
     surfaceAlt: '#FFFFFF',
@@ -101,6 +105,8 @@ export const lightTheme = {
     bannerBg: ['#FFF1E0', '#FFE6D6'],
     bannerBorder: 'rgba(224,138,46,0.28)',
     trackRgb: '42,28,18',
+    inset: 'rgba(42,28,18,0.06)',
+    sheetBg: ['#FFF7EE', '#FBEFE0'],
   },
 } as const;
 

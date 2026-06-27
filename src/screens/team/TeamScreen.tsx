@@ -212,7 +212,7 @@ export function TeamScreen() {
         {banner ? (
           <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.banner}>
             <View style={styles.bannerCheck}>
-              <CheckIcon size={18} color="#fff" strokeWidth={3} />
+              <CheckIcon size={18} color={theme.colors.onBrand} strokeWidth={3} />
             </View>
             <View style={styles.flex1}>
               <Text style={styles.bannerTitle}>{banner.name} {t('team.reachedGoal')}</Text>
@@ -380,11 +380,12 @@ function MemberAvatar({ color, ini, size, mutedText }: { color: string; ini: str
 }
 
 function AvatarStack({ mem }: { mem: Member[] }) {
+  const { theme } = useUnistyles();
   return (
     <View style={styles.row}>
       {mem.slice(0, 4).map((m, i) => (
         // eslint-disable-next-line react-native/no-inline-styles -- rang/overlap dinamik
-        <View key={m.id} style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: m.color, alignItems: 'center', justifyContent: 'center', marginLeft: i ? -8 : 0, borderWidth: 2, borderColor: '#16100a' }}>
+        <View key={m.id} style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: m.color, alignItems: 'center', justifyContent: 'center', marginLeft: i ? -8 : 0, borderWidth: 2, borderColor: theme.colors.background }}>
           <Text style={styles.stackIni}>{m.ini}</Text>
         </View>
       ))}
@@ -447,7 +448,7 @@ function InvitationView({ onAccept, onReject, onBack }: { onAccept: () => void; 
           <View style={styles.invitationAvatars}>
             {['#F2A24C', TEAL, '#EC5C7D', '#9A8CF0', '#F2C879', '#F2603E'].map((c, i) => (
               // eslint-disable-next-line react-native/no-inline-styles -- rang/overlap dinamik
-              <View key={c} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: c, marginLeft: i ? -10 : 0, borderWidth: 2, borderColor: '#160f09' }} />
+              <View key={c} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: c, marginLeft: i ? -10 : 0, borderWidth: 2, borderColor: theme.colors.background }} />
             ))}
           </View>
           <Text style={styles.invitationNames}>Dilnoza, Sardor, Kamola va yana 3 kishi</Text>
@@ -489,7 +490,7 @@ const styles = StyleSheet.create((theme) => ({
   chev: { color: theme.colors.gold, fontSize: 18 },
 
   listBody: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 24, gap: 12 },
-  groupCard: { borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', overflow: 'hidden' },
+  groupCard: { borderRadius: 20, backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border, overflow: 'hidden' },
   groupBar: { height: 4 },
   groupBody: { padding: 16 },
   groupName: { fontSize: 17, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
@@ -520,10 +521,10 @@ const styles = StyleSheet.create((theme) => ({
   sectionGold: { fontSize: 12, letterSpacing: 0.7, color: theme.colors.gold, fontFamily: theme.fontFamily.bold, marginBottom: 10 },
   sectionDim: { fontSize: 12, letterSpacing: 0.7, color: theme.colors.textDim, fontFamily: theme.fontFamily.bold, marginBottom: 10 },
 
-  focusRow: { flexDirection: 'row', alignItems: 'center', gap: 13, padding: 13, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(242,162,76,0.18)' },
+  focusRow: { flexDirection: 'row', alignItems: 'center', gap: 13, padding: 13, borderRadius: 18, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: 'rgba(242,162,76,0.18)' },
   avatarWrap: { position: 'relative' },
-  presenceDot: { position: 'absolute', right: -1, bottom: -1, width: 13, height: 13, borderRadius: 6.5, borderWidth: 2, borderColor: '#1c130c' },
-  presenceDotSm: { position: 'absolute', right: -1, bottom: -1, width: 11, height: 11, borderRadius: 5.5, borderWidth: 2, borderColor: '#16100a' },
+  presenceDot: { position: 'absolute', right: -1, bottom: -1, width: 13, height: 13, borderRadius: 6.5, borderWidth: 2, borderColor: theme.colors.background },
+  presenceDotSm: { position: 'absolute', right: -1, bottom: -1, width: 11, height: 11, borderRadius: 5.5, borderWidth: 2, borderColor: theme.colors.background },
   presenceFocus: { backgroundColor: TEAL },
   presenceOnline: { backgroundColor: GREEN },
   memberName: { fontSize: 15, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
@@ -531,7 +532,7 @@ const styles = StyleSheet.create((theme) => ({
   focusRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   focusTime: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 16, color: theme.colors.goldSoft },
 
-  onlineRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 13, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.025)' },
+  onlineRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 13, borderRadius: 16, backgroundColor: theme.colors.surfaceAlt },
   onlineName: { fontSize: 14, fontFamily: theme.fontFamily.semibold, color: theme.colors.text },
   note: { fontSize: 12, color: theme.colors.textMuted },
   offlineRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 13, borderRadius: 16, opacity: 0.55 },
@@ -552,7 +553,7 @@ const styles = StyleSheet.create((theme) => ({
   invBody: { paddingHorizontal: 20, paddingTop: 8, gap: 18 },
   search: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, borderRadius: 14, backgroundColor: theme.colors.surfaceStrong, borderWidth: 1, borderColor: theme.colors.border, paddingHorizontal: 16 },
   searchInput: { flex: 1, color: theme.colors.textStrong, fontSize: 15, fontFamily: theme.fontFamily.regular, padding: 0 },
-  suggRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.03)' },
+  suggRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 16, backgroundColor: theme.colors.surfaceAlt },
   suggName: { fontSize: 15, fontFamily: theme.fontFamily.semibold, color: theme.colors.textStrong },
   suggHandle: { fontSize: 12, color: theme.colors.textDim },
   inviteBtnOn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: theme.radius.pill },

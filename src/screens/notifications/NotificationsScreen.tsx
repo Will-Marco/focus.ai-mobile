@@ -88,9 +88,9 @@ const styles = StyleSheet.create((theme) => ({
   section: { fontSize: 12, letterSpacing: 0.7, color: theme.colors.textMuted, fontFamily: theme.fontFamily.bold, marginBottom: 12, marginTop: 10 },
   group: { gap: 10 },
 
-  card: { flexDirection: 'row', gap: 12, padding: 14, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.045)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)' },
+  card: { flexDirection: 'row', gap: 12, padding: 14, borderRadius: 18, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border },
   cardUnread: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: theme.colors.surfaceStrong,
     borderColor: 'rgba(242,162,76,0.22)',
     shadowColor: '#000',
     shadowOpacity: 0.3,
