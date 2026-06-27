@@ -16,8 +16,8 @@
     "streak": "Joriy streak",
     "todayFocus": "Bugungi fokus",
     "habits": "ODATLAR",
-    "empty": "Hali odat yo'q",
-    "emptyHint": "Birinchi odatingizni qo'shing — vaqtni o'lchashni boshlang",
+    "empty": "Hali odat qo'shilmagan",
+    "emptyHint": "Birinchi odatingizni qo'shing va sarflagan vaqtingizni o'lchay boshlang",
     "activeNow": "Hozir faol",
     "running": "davom etmoqda",
     "paused": "pauza",
@@ -34,9 +34,9 @@
     "color": "Rang",
     "type": "Tur",
     "typeCumulative": "Umrlik",
-    "typeCumulativeDesc": "Bir martalik katta maqsad",
+    "typeCumulativeDesc": "Bir martalik, katta maqsad",
     "typeRecurring": "Davriy",
-    "typeRecurringDesc": "Takrorlanuvchi maqsad",
+    "typeRecurringDesc": "Muntazam takrorlanadigan maqsad",
     "period": "Davr",
     "periodDaily": "Kunlik",
     "periodWeekly": "Haftalik",
@@ -56,7 +56,7 @@
     "activeLabel": "Faol sessiya",
     "passed": "o'tdi",
     "fromMinutes": "daqiqadan",
-    "setupQuestion": "Bu sessiyaga qancha vaqt?",
+    "setupQuestion": "Bu sessiyaga qancha vaqt ajratasiz?",
     "minutesShort": "daqiqa",
     "minAbbr": "daq",
     "start": "Boshlash",
@@ -67,8 +67,8 @@
     "remaining": "QOLDI",
     "elapsed": "O'TDI",
     "done": "BAJARILDI",
-    "overtimeNote": "Ortiqcha vaqt ham odatga qo'shiladi",
-    "completed": "Maqsadga yetdingiz!",
+    "overtimeNote": "Qo'shimcha vaqt ham odatingizga hisoblanadi",
+    "completed": "Maqsadingizga yetdingiz!",
     "audioChip": "Lo-fi foni · past",
     "habitLabel": "Odat",
     "awayPre": "Telefonni teskari qo'ying — ",
@@ -94,31 +94,31 @@
     "start": "Boshlash",
     "slides": {
       "measure": {
-        "title": "Belgilarni emas, vaqtni o'lchang",
-        "body": "Boshqa ilovalar 'qildim' deydi. Focus AI haqiqiy sarflangan vaqtni o'lchaydi."
+        "title": "Belgini emas — vaqtni o'lchang",
+        "body": "Boshqa ilovalar shunchaki «bajardim» deydi. Focus AI esa haqiqatda sarflagan vaqtingizni sanaydi."
       },
       "fill": {
-        "title": "Ring to'ladi, siz fokuslanasiz",
-        "body": "Taymerni bosing — jarayon paneli to'lib boradi. 100% = yutuq."
+        "title": "Halqa to'ladi, siz fokusdasiz",
+        "body": "Taymerni boshlang — halqa asta to'lib boradi. 100% — bu sizning g'alabangiz."
       },
       "modes": {
-        "title": "Telefon holatiga sezgir rejimlar",
-        "body": "Telefonni teskari qo'ying — 'Away' rejimi. Yon burang — 'Focus Clock'."
+        "title": "Telefon holatini sezadigan rejimlar",
+        "body": "Telefonni teskari qo'ying — Away rejimi yonadi. Yonboshlatib qo'ying — Focus Clock ishga tushadi."
       }
     }
   },
   "auth": {
     "title": "Focus AI'ga xush kelibsiz",
-    "subtitle": "Vaqtga asoslangan odat kuzatuvchi",
-    "signinTitle": "Xush kelibsiz",
+    "subtitle": "Vaqtni o'lchaydigan fokus hamrohingiz",
+    "signinTitle": "Qaytganingizdan xursandmiz",
     "signinSub": "Davom etish uchun hisobingizga kiring",
     "signupTitle": "Hisob yarating",
-    "signupSub": "Fokusni bugun boshlang",
+    "signupSub": "Fokusli yo'lingizni bugun boshlang",
     "switchToSignupText": "Hisobingiz yo'qmi?",
     "switchToSignupCta": "Ro'yxatdan o'ting",
     "switchToSigninText": "Hisobingiz bormi?",
     "switchToSigninCta": "Kiring",
-    "guestFooter": "Hisobsiz ham hamma narsa ishlaydi.\nKeyin sinxronlash uchun kirishingiz mumkin.",
+    "guestFooter": "Hisobsiz ham hammasi to'liq ishlaydi.\nSinxronlash kerak bo'lganda keyin kirasiz.",
     "email": "Email",
     "emailPlaceholder": "siz@example.com",
     "password": "Parol",
@@ -131,7 +131,7 @@
     "or": "yoki",
     "guest": "Mehmon sifatida davom etish",
     "guestHint": "Hisobsiz ham hamma narsa ishlaydi",
-    "soon": "Ro'yxatdan o'tish tez orada — hozircha mehmon rejimida davom eting"
+    "soon": "Ro'yxatdan o'tish tez orada qo'shiladi. Hozircha mehmon rejimida bemalol davom eting."
   },
   "profile": {
     "title": "Profil",
