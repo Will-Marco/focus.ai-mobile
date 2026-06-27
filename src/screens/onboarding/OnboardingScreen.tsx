@@ -8,6 +8,7 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { ProgressRing, RadialBackground, RadialGlow, Text } from '@shared/ui';
 import { usePulse } from '@shared/lib/animation/usePulse';
+import { haptics } from '@shared/lib/haptics';
 import { useProfileStore } from '@entities/profile';
 
 interface Slide {
@@ -52,7 +53,15 @@ export function OnboardingScreen() {
 
   const slide = SLIDES[index];
   const isLast = index === SLIDES.length - 1;
-  const onNext = () => (isLast ? completeOnboarding() : setIndex((i) => i + 1));
+  const onNext = () => {
+    if (isLast) {
+      haptics.success();
+      completeOnboarding();
+    } else {
+      haptics.light();
+      setIndex((i) => i + 1);
+    }
+  };
 
   // breathe (ring 1↔1.02, 6s) + glowPulse (halo opacity .4↔.85, 3s)
   const breathe = usePulse(1, 1.02, 3000);

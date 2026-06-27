@@ -71,6 +71,8 @@
     "awayBonusNote": "Telefonsiz {{min}} daqiqa · 2× XP bonus",
     "completed": "Maqsadingizga yetdingiz!",
     "audioChip": "Lo-fi foni · past",
+    "audioOn": "{{name}} foni · yoqilgan",
+    "audioOff": "Fon ovozi · o'chiq",
     "habitLabel": "Odat",
     "awayPre": "Telefonni teskari qo'ying — ",
     "awayWord": "Away",

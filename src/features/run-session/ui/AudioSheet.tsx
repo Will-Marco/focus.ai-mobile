@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { LayoutChangeEvent, PanResponder, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { LayoutChangeEvent, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
   interpolate,
@@ -16,27 +16,15 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { PauseIcon, PlayIcon, Text } from '@shared/ui';
 import { usePulse } from '@shared/lib/animation/usePulse';
+import { haptics } from '@shared/lib/haptics';
+import { TRACKS } from '../config/tracks';
+import { useAudioStore } from '../model/audioStore';
 
 // Animated wrapper plain style (Unistyles emas — crash).
 const SHEET_WRAP = { position: 'absolute', left: 0, right: 0, bottom: 0 } as const;
 const BACKDROP = { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(10,7,4,0.55)' } as const;
 const BAR_BASE = { width: 4, borderRadius: 2 } as const;
 
-// ⚠️ Mock — audio ijro M5 (track-player)da real ulanadi.
-interface TrackDef {
-  id: string;
-  name: string;
-  color: string;
-  d: string;
-}
-const TRACKS: TrackDef[] = [
-  { id: 'rain', name: "Yomg'ir", color: '#5FD0C5', d: 'M16 13a4 4 0 10-3.7-6 5 5 0 10-3.3 9h7M8 19l-1 2M12 19l-1 2M16 19l-1 2' },
-  { id: 'lofi', name: 'Lo-fi', color: '#9A8CF0', d: 'M9 18V6l10-2v12M9 18a3 3 0 11-6 0 3 3 0 016 0zM19 16a3 3 0 11-6 0 3 3 0 016 0z' },
-  { id: 'ocean', name: 'Okean', color: '#3B9EF2', d: 'M2 7c2 0 2 2 4 2s2-2 4-2 2 2 4 2 2-2 4-2 2 2 4 2M2 13c2 0 2 2 4 2s2-2 4-2 2 2 4 2 2-2 4-2 2 2 4 2' },
-  { id: 'forest', name: "O'rmon", color: '#7FB069', d: 'M12 2L7 11h3l-3 6h10l-3-6h3zM12 17v5' },
-  { id: 'fire', name: "O'choq", color: '#F2603E', d: 'M12 2c1 3-1 4.5-2 6.5s.5 4 2.5 4 3-2.5 1.5-5.5c2.5 1.5 4 4.5 4 7.5a6 6 0 11-12 0c0-3 2-5.5 3-7.5' },
-  { id: 'white', name: 'Oq shovqin', color: '#F2C879', d: 'M4 12h2l2-7 4 18 3-14 2 6 3-3' },
-];
 const WAVE = [
   { color: '#F2C879', dur: 450, max: 10 },
   { color: '#F2A24C', dur: 520, max: 17 },
@@ -53,9 +41,18 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
   const { height } = useWindowDimensions();
-  const [trackId, setTrackId] = useState('lofi');
-  const [vol, setVol] = useState(40);
-  const [playing, setPlaying] = useState(true);
+  const trackId = useAudioStore((s) => s.trackId);
+  const vol = useAudioStore((s) => s.volume);
+  const playing = useAudioStore((s) => s.playing);
+  const selectTrack = useAudioStore((s) => s.selectTrack);
+  const togglePlay = useAudioStore((s) => s.togglePlay);
+  const setVolume = useAudioStore((s) => s.setVolume);
+  const preloadAll = useAudioStore((s) => s.preloadAll);
+
+  // Sheet ochilganда treklarni fonда oldindan decode qilib keshlaymiz.
+  useEffect(() => {
+    preloadAll();
+  }, [preloadAll]);
 
   const cur = TRACKS.find((x) => x.id === trackId) ?? TRACKS[0];
   const sheetHeight = Math.min(600, height * 0.82);
@@ -123,7 +120,14 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
                 ? WAVE.map((w, i) => <WaveBar key={i} color={w.color} dur={w.dur} max={w.max} />)
                 : WAVE.map((_, i) => <View key={i} style={styles.waveStatic} />)}
             </View>
-            <Pressable accessibilityRole="button" onPress={() => setPlaying((p) => !p)} style={styles.playWrap}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                haptics.light();
+                togglePlay();
+              }}
+              style={styles.playWrap}
+            >
               <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.playBtn}>
                 {playing ? <PauseIcon size={18} color={theme.colors.onBrand} /> : <PlayIcon size={18} color={theme.colors.onBrand} />}
               </LinearGradient>
@@ -135,7 +139,7 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
             <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={theme.colors.textMuted} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <Path d="M11 5L6 9H2v6h4l5 4zM16 9a4 4 0 010 6" />
             </Svg>
-            <VolumeSlider value={vol} onChange={setVol} />
+            <VolumeSlider value={vol} onChange={setVolume} />
             <Text variant="mono" style={styles.volTxt}>
               {vol}%
             </Text>
@@ -151,8 +155,8 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
                   accessibilityRole="button"
                   accessibilityState={{ selected: sel }}
                   onPress={() => {
-                    setTrackId(tr.id);
-                    setPlaying(true);
+                    haptics.selection();
+                    selectTrack(tr.id);
                   }}
                   style={[styles.trackCard, sel && styles.trackCardSel, sel && { borderColor: tr.color }]}
                 >
@@ -180,23 +184,34 @@ function WaveBar({ color, dur, max }: { color: string; dur: number; max: number 
 
 function VolumeSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const [w, setW] = useState(1);
-  const set = (x: number) => onChange(Math.max(0, Math.min(100, Math.round((x / w) * 100))));
-  const responder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e) => set(e.nativeEvent.locationX),
-      onPanResponderMove: (e) => set(e.nativeEvent.locationX),
-    }),
-  ).current;
-  const onLayout = (e: LayoutChangeEvent) => setW(e.nativeEvent.layout.width);
+  const wRef = useRef(1);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const apply = useCallback((x: number) => {
+    onChangeRef.current(Math.max(0, Math.min(100, Math.round((x / wRef.current) * 100))));
+  }, []);
+  // RNGH Pan — tap + ushlab-surish ishonchli (e.x slider'ga nisbatan), sheet gesture bilan konfliktsiz
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .minDistance(0)
+        .onBegin((e) => runOnJS(apply)(e.x))
+        .onUpdate((e) => runOnJS(apply)(e.x)),
+    [apply],
+  );
+  const onLayout = (e: LayoutChangeEvent) => {
+    wRef.current = e.nativeEvent.layout.width;
+    setW(e.nativeEvent.layout.width);
+  };
   const fillW = (value / 100) * w;
   return (
-    <View style={styles.slider} onLayout={onLayout} {...responder.panHandlers}>
-      <View style={styles.sliderTrack} />
-      <View style={[styles.sliderFill, { width: fillW }]} />
-      <View style={[styles.sliderThumb, { left: fillW - 8 }]} />
-    </View>
+    <GestureDetector gesture={pan}>
+      <View style={styles.slider} onLayout={onLayout}>
+        <View style={styles.sliderTrack} pointerEvents="none" />
+        <View style={[styles.sliderFill, { width: fillW }]} pointerEvents="none" />
+        <View style={[styles.sliderThumb, { left: fillW - 8 }]} pointerEvents="none" />
+      </View>
+    </GestureDetector>
   );
 }
 

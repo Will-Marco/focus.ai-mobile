@@ -10,6 +10,7 @@ import {
   Text,
 } from '@shared/ui';
 import { HABIT_COLOR_KEYS, habitColorHex } from '@shared/theme';
+import { haptics } from '@shared/lib/haptics';
 import { useHabitStore, type Habit, type HabitPeriod, type HabitType } from '@entities/habit';
 import {
   DEFAULT_TARGET_HOURS,
@@ -51,13 +52,17 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
   const [errors, setErrors] = useState<HabitFormErrors>({});
 
   const onTypeChange = (next: HabitType) => {
+    haptics.selection();
     setType(next);
     // tur o'zgarsa mos default maqsadga o'tamiz (umrlik 100 / davriy 1)
     if (!initial) setTargetHours(DEFAULT_TARGET_HOURS[next]);
   };
 
   const step = TARGET_STEP[type];
-  const bump = (dir: 1 | -1) => setTargetHours((h) => clampHours(h + dir * step));
+  const bump = (dir: 1 | -1) => {
+    haptics.light();
+    setTargetHours((h) => clampHours(h + dir * step));
+  };
 
   const onSubmit = async () => {
     const res = validateHabitDraft({ name, icon, color, type, period, targetHours });
@@ -101,7 +106,10 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
                 key={key}
                 accessibilityRole="button"
                 accessibilityState={{ selected: active }}
-                onPress={() => setIcon(key)}
+                onPress={() => {
+                  haptics.selection();
+                  setIcon(key);
+                }}
                 style={[
                   styles.iconCell,
                   active && { borderColor: habitColorHex(color), backgroundColor: theme.colors.surfaceStrong },
@@ -126,7 +134,10 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
                 key={key}
                 accessibilityRole="button"
                 accessibilityState={{ selected: active }}
-                onPress={() => setColor(key)}
+                onPress={() => {
+                  haptics.selection();
+                  setColor(key);
+                }}
                 style={styles.colorWrap}
               >
                 <View style={[styles.colorDot, { backgroundColor: habitColorHex(key) }]} />
@@ -172,7 +183,10 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
                     key={v}
                     accessibilityRole="button"
                     accessibilityState={{ selected: active }}
-                    onPress={() => setPeriod(v)}
+                    onPress={() => {
+                      haptics.selection();
+                      setPeriod(v);
+                    }}
                     style={[styles.periodChip, active && styles.periodChipActive]}
                   >
                     <Text style={[styles.periodTxt, active && styles.periodTxtActive]}>

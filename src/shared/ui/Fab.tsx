@@ -1,18 +1,24 @@
 import React from 'react';
-import { Pressable, type PressableProps } from 'react-native';
+import { Pressable, type GestureResponderEvent, type PressableProps } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { haptics } from '@shared/lib/haptics';
 import { PlusIcon } from './icons';
 
 export type FabProps = Omit<PressableProps, 'children'>;
 
 /** Floating Action Button — gradient, "+" (yangi odat). */
-export function Fab({ disabled, ...rest }: FabProps) {
+export function Fab({ disabled, onPress, ...rest }: FabProps) {
   const { theme } = useUnistyles();
+  const handlePress = (e: GestureResponderEvent) => {
+    haptics.light();
+    onPress?.(e);
+  };
   return (
     <Pressable
       accessibilityRole="button"
       disabled={disabled}
+      onPress={handlePress}
       style={({ pressed }) => [styles.wrap, pressed && styles.pressed]}
       {...rest}
     >

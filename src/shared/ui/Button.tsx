@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pressable, View, type PressableProps } from 'react-native';
+import { Pressable, View, type GestureResponderEvent, type PressableProps } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { haptics } from '@shared/lib/haptics';
 import { Text } from './Text';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -16,10 +17,18 @@ export function Button({
   variant = 'primary',
   disabled,
   style,
+  onPress,
   ...rest
 }: ButtonProps) {
   const { theme } = useUnistyles();
   const isPrimary = variant === 'primary';
+
+  const handlePress = (e: GestureResponderEvent) => {
+    if (variant === 'danger') haptics.warning();
+    else if (isPrimary) haptics.medium();
+    else haptics.light();
+    onPress?.(e);
+  };
 
   const label = (
     <Text
@@ -39,6 +48,7 @@ export function Button({
     <Pressable
       accessibilityRole="button"
       disabled={disabled}
+      onPress={handlePress}
       style={({ pressed }) => [
         styles.wrap,
         pressed && styles.pressed,

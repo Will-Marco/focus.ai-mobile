@@ -17,11 +17,14 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeftIcon, CheckIcon, PlayIcon, ProgressRing, RadialGlow, Text } from '@shared/ui';
 import { formatClock } from '@shared/lib/time/formatClock';
 import { usePulse } from '@shared/lib/animation/usePulse';
+import { haptics } from '@shared/lib/haptics';
 import { useHabitStore } from '@entities/habit';
 import { remainingMs, useHabitProgress, useSessionStore } from '@entities/session';
 import { useSessionTimer } from '../model/useSessionTimer';
 import { useFaceDown } from '../lib/useFaceDown';
 import { useFocusDnd } from '../lib/useFocusDnd';
+import { useAudioStore } from '../model/audioStore';
+import { TRACKS } from '../config/tracks';
 import { DURATION_PRESETS, DEFAULT_SESSION_MIN } from '../config/presets';
 import { AwayView, FocusClockView } from './FocusModes';
 import { AudioSheet } from './AudioSheet';
@@ -114,6 +117,11 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   // DND — faol sessiyaда (yoki away/landscape immersiv rejimда) tizim/in-app jim rejimi.
   useFocusDnd(sessionActive);
 
+  // Audio Fon holati — chip joriy trek + ijro holatini ko'rsatadi.
+  const audioTrackId = useAudioStore((s) => s.trackId);
+  const audioPlaying = useAudioStore((s) => s.playing);
+  const audioName = TRACKS.find((tr) => tr.id === audioTrackId)?.name ?? '';
+
   // Away vaqtini yig'ish (2× XP bonus — real ledger M6'да ulanadi).
   const awayMsRef = React.useRef(0);
   const awayStartRef = React.useRef<number | null>(null);
@@ -121,12 +129,18 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   useEffect(() => {
     if (away) {
       awayStartRef.current = Date.now();
+      haptics.medium(); // away rejimiga o'tish hissi
     } else if (awayStartRef.current != null) {
       awayMsRef.current += Date.now() - awayStartRef.current;
       awayStartRef.current = null;
       setAwayMs(awayMsRef.current);
     }
   }, [away]);
+
+  // 100% maqsadga yetganда — yutuq haptic (bir marta).
+  useEffect(() => {
+    if (timer.complete) haptics.success();
+  }, [timer.complete]);
 
   // Odat (umrlik/davriy) umumiy progressi — markazdagi thin bar (jonli sessiya qo'shiladi).
   const habitProg = useHabitProgress(
@@ -197,7 +211,10 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
                   key={m}
                   accessibilityRole="button"
                   accessibilityState={{ selected: active }}
-                  onPress={() => setTargetMin(m)}
+                  onPress={() => {
+                    haptics.selection();
+                    setTargetMin(m);
+                  }}
                   style={[styles.chip, active && styles.chipActive]}
                 >
                   <Text style={[styles.chipTxt, active && styles.chipTxtActive]}>
@@ -213,6 +230,7 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
             accessibilityRole="button"
             accessibilityLabel={t('session.start')}
             onPress={() => {
+              haptics.medium();
               const s = start({ habitId, targetMin });
               setSessionId(s.id);
             }}
@@ -234,6 +252,8 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   const centerMs = completed ? timer.elapsed : showRemaining ? remainingMs(timer.elapsed, tMin) : timer.elapsed;
 
   const onFinish = async () => {
+    haptics.medium();
+    useAudioStore.getState().stop();
     await finish(sessionId);
     onClose();
   };
@@ -327,16 +347,32 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
 
       <View style={styles.bottom}>
         <View style={styles.audioRow}>
-          <Pressable accessibilityRole="button" onPress={() => setAudioOpen(true)} style={styles.audioChip}>
-            <View style={styles.audioDot} />
-            <Text style={styles.audioTxt}>{t('session.audioChip')}</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              haptics.light();
+              setAudioOpen(true);
+            }}
+            style={styles.audioChip}
+          >
+            <View style={[styles.audioDot, !audioPlaying && styles.audioDotOff]} />
+            <Text style={styles.audioTxt}>
+              {audioPlaying ? t('session.audioOn', { name: audioName }) : t('session.audioOff')}
+            </Text>
           </Pressable>
         </View>
 
         {completed ? (
           <>
             <View style={styles.actions}>
-              <Pressable accessibilityRole="button" onPress={() => setOvertime(true)} style={styles.secondaryBtn}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  haptics.light();
+                  setOvertime(true);
+                }}
+                style={styles.secondaryBtn}
+              >
                 <Text style={styles.secondaryTxt}>{t('session.resume')}</Text>
               </Pressable>
               <Pressable accessibilityRole="button" onPress={onFinish} style={styles.primaryFlexWrap}>
@@ -357,7 +393,10 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
             <View style={styles.actions}>
               <Pressable
                 accessibilityRole="button"
-                onPress={() => (timer.running ? pause(sessionId) : resume(sessionId))}
+                onPress={() => {
+                  haptics.light();
+                  return timer.running ? pause(sessionId) : resume(sessionId);
+                }}
                 style={styles.primaryFlexWrap}
               >
                 <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.primaryBtn}>
@@ -495,6 +534,7 @@ const styles = StyleSheet.create((theme) => ({
     shadowOffset: { width: 0, height: 0 },
     elevation: 4,
   },
+  audioDotOff: { backgroundColor: theme.colors.textDim, shadowOpacity: 0, elevation: 0 },
   audioTxt: { fontSize: 13, color: theme.colors.text },
 
   actions: { flexDirection: 'row', gap: 12 },

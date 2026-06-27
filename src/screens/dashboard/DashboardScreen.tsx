@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AiOrb, BellIcon, Screen, Text, Fab, HabitIcon } from '@shared/ui';
+import { haptics } from '@shared/lib/haptics';
 import { periodWindow } from '@shared/lib/time/periodWindow';
 import { formatSpent } from '@shared/lib/time/formatSpent';
 import { useHabitStore, type Habit } from '@entities/habit';
@@ -52,6 +53,7 @@ export function DashboardScreen() {
           refreshKey={refreshKey}
           onPress={() => navigation.navigate('AddHabit', { habitId: item.id })}
           onStart={() => {
+            haptics.medium();
             // shu odatning faol sessiyasi bo'lsa — yangi yaratmasdan unga davom
             const existing = active.find((s) => s.habitId === item.id);
             navigation.navigate(

@@ -11,6 +11,7 @@ import { StatsScreen } from '@screens/stats';
 import { TeamScreen } from '@screens/team';
 import { ProfileScreen } from '@screens/profile';
 import { HomeIcon, StatsIcon, TeamIcon, ProfileIcon } from '@shared/ui';
+import { haptics } from '@shared/lib/haptics';
 import type { TabParamList } from '@shared/config/navigation';
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -52,7 +53,10 @@ export function TabNavigator() {
   };
 
   return (
-    <Tab.Navigator screenOptions={screenOptions}>
+    <Tab.Navigator
+      screenOptions={screenOptions}
+      screenListeners={{ tabPress: () => haptics.selection() }}
+    >
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
