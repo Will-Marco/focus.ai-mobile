@@ -8,6 +8,7 @@ export type RootStackParamList = {
   Tabs: undefined;
   AddHabit: { habitId?: string } | undefined;
   ActiveSession: { habitId: string; sessionId?: string };
+  AICoach: undefined;
 };
 
 export type TabParamList = {

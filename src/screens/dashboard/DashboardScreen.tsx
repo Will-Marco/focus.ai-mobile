@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, Pressable, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Avatar, Screen, Text, Fab, HabitIcon } from '@shared/ui';
+import { AiOrb, Avatar, Screen, Text, Fab, HabitIcon } from '@shared/ui';
 import { periodWindow } from '@shared/lib/time/periodWindow';
 import { formatSpent } from '@shared/lib/time/formatSpent';
 import { useHabitStore, type Habit } from '@entities/habit';
@@ -74,7 +74,16 @@ export function DashboardScreen() {
             {profileName}
           </Text>
         </View>
-        <Avatar name={profileName || '?'} size={42} />
+        <View style={styles.headerRight}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('aiCoach.title')}
+            onPress={() => navigation.navigate('AICoach')}
+          >
+            <AiOrb size={42} />
+          </Pressable>
+          <Avatar name={profileName || '?'} size={42} />
+        </View>
       </View>
 
       <View style={styles.stats}>
@@ -144,6 +153,7 @@ const styles = StyleSheet.create((theme) => ({
     paddingTop: 6,
   },
   greetText: { flex: 1 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   greeting: { fontSize: 13, color: theme.colors.textMuted },
   name: { fontFamily: theme.fontFamily.extrabold, fontSize: 27, color: theme.colors.textStrong, lineHeight: 30 },
   stats: { flexDirection: 'row', gap: 10 },

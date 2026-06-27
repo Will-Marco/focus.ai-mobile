@@ -23,6 +23,11 @@ const AWAY_DOT = {
   height: 18,
   borderRadius: 9,
   backgroundColor: '#F2A24C',
+  shadowColor: '#F2A24C',
+  shadowOpacity: 0.5,
+  shadowRadius: 13,
+  shadowOffset: { width: 0, height: 0 },
+  elevation: 8,
 } as const;
 
 export interface FocusClockProps {
@@ -129,7 +134,7 @@ export function AwayView({ elapsedMs, onExit }: AwayProps) {
         <View style={styles.awayRings}>
           <Animated.View style={[AWAY_RING_OUTER, ringStyle]} pointerEvents="none" />
           <View style={styles.awayRingInner} pointerEvents="none" />
-          <Animated.View style={[AWAY_DOT, styles.awayDotShadow, dotStyle]} pointerEvents="none" />
+          <Animated.View style={[AWAY_DOT, dotStyle]} pointerEvents="none" />
         </View>
 
         <View style={styles.awayTextWrap}>
@@ -206,7 +211,6 @@ const styles = StyleSheet.create((theme) => ({
   awayCenter: { alignItems: 'center', justifyContent: 'center', gap: 26 },
   awayRings: { width: 200, height: 200, alignItems: 'center', justifyContent: 'center' },
   awayRingInner: { position: 'absolute', width: 140, height: 140, borderRadius: 70, borderWidth: 1, borderColor: 'rgba(242,162,76,0.14)' },
-  awayDotShadow: { shadowColor: '#F2A24C', shadowOpacity: 0.5, shadowRadius: 13, shadowOffset: { width: 0, height: 0 }, elevation: 8 },
   awayTextWrap: { alignItems: 'center', gap: 6 },
   awayTitle: { fontSize: 12, letterSpacing: 4.8, color: '#8a6f54' },
   awayClock: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 46, color: '#caa472', letterSpacing: -1 },

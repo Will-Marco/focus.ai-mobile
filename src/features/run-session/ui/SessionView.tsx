@@ -32,6 +32,7 @@ export interface SessionViewProps {
 // Animated.View'ga Unistyles style BERMA (crash) — plain const inline.
 const GLOW_HALO = { position: 'absolute', width: 300, height: 300, alignItems: 'center', justifyContent: 'center' } as const;
 const GOLD_HALO = { position: 'absolute', width: 310, height: 310, alignItems: 'center', justifyContent: 'center' } as const;
+const CHECK_WRAP = { marginBottom: 10 } as const;
 
 // Tabriklash zarrachalari (dizayn floatP: 10px↗-90px, scale .5→.25, opacity 0→1→0).
 const PARTICLES = [
@@ -266,7 +267,7 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
           </Animated.View>
           <View style={styles.ringCenter} pointerEvents="none">
             {completed ? (
-              <Animated.View entering={ZoomIn.duration(420)} style={styles.checkWrap}>
+              <Animated.View entering={ZoomIn.duration(420)} style={CHECK_WRAP}>
                 <LinearGradient colors={['#F7D98A', '#F2A24C']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.checkInner}>
                   <CheckIcon size={24} color={theme.colors.onBrand} strokeWidth={3} />
                 </LinearGradient>
@@ -413,7 +414,6 @@ const styles = StyleSheet.create((theme) => ({
   goldCanvas: { width: 310, height: 310 },
   ringWrap: { width: 300, height: 300, alignItems: 'center', justifyContent: 'center' },
   ringCenter: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' },
-  checkWrap: { marginBottom: 10 },
   checkInner: {
     width: 46,
     height: 46,

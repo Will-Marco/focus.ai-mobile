@@ -149,6 +149,18 @@
     "signOut": "Chiqish",
     "signIn": "Hisobga kirish"
   },
+  "aiCoach": {
+    "subtitle": "Shaxsiy murabbiy",
+    "title": "AI Murabbiy",
+    "todayLabel": "Bugungi tavsiya",
+    "today": "Bugun, 15 iyun",
+    "later": "Keyinroq",
+    "weekly": "Haftalik tahlil",
+    "weekRange": "9–15 iyun",
+    "cached": "Offline keshlangan · oxirgi yangilanish 2 soat oldin",
+    "preparing": "Sessiya tayyorlanmoqda…",
+    "reminderSet": "Eslatma qo'yildi · 2 soatdan keyin"
+  },
   "stats": {
     "title": "Statistika",
     "subtitle": "Sening rivojing",

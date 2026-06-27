@@ -88,6 +88,13 @@ export const FlameIcon = ({ size = 16, color = '#F2603E' }: IconProps) => (
   </Svg>
 );
 
+// To'ldirilgan 4-uchli yulduzcha — AI Murabbiy orb belgisi.
+export const SparkleIcon = ({ size = 18, color = '#1f140b' }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+    <Path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z" />
+  </Svg>
+);
+
 export const PauseIcon = (p: IconProps) => (
   <Stroke {...p}>
     <Path d="M8 5v14M16 5v14" />

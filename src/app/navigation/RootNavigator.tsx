@@ -5,6 +5,7 @@ import { OnboardingScreen } from '@screens/onboarding';
 import { AuthScreen } from '@screens/auth';
 import { AddHabitScreen } from '@screens/add-habit';
 import { ActiveSessionScreen } from '@screens/active-session';
+import { AICoachScreen } from '@screens/ai-coach';
 import { useProfileStore } from '@entities/profile';
 import type { RootStackParamList } from '@shared/config/navigation';
 
@@ -36,6 +37,7 @@ export function RootNavigator() {
             component={ActiveSessionScreen}
             options={{ presentation: 'fullScreenModal', animation: 'fade' }}
           />
+          <Stack.Screen name="AICoach" component={AICoachScreen} options={{ presentation: 'modal' }} />
         </Stack.Group>
       )}
     </Stack.Navigator>

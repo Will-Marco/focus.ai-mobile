@@ -24,4 +24,6 @@ export { RadialBackground } from './RadialBackground';
 export type { RadialBackgroundProps } from './RadialBackground';
 export { RadialGlow } from './RadialGlow';
 export type { RadialGlowProps } from './RadialGlow';
+export { AiOrb } from './AiOrb';
+export type { AiOrbProps } from './AiOrb';
 export * from './icons';
