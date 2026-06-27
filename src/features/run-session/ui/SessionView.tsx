@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
   ZoomIn,
@@ -21,6 +21,7 @@ import { useHabitStore } from '@entities/habit';
 import { remainingMs, useHabitProgress, useSessionStore } from '@entities/session';
 import { useSessionTimer } from '../model/useSessionTimer';
 import { DURATION_PRESETS, DEFAULT_SESSION_MIN } from '../config/presets';
+import { AwayView, FocusClockView } from './FocusModes';
 
 export interface SessionViewProps {
   habitId: string;
@@ -87,6 +88,12 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   const [targetMin, setTargetMin] = useState(DEFAULT_SESSION_MIN);
   const [showRemaining, setShowRemaining] = useState(true);
   const [overtime, setOvertime] = useState(false);
+  const [away, setAway] = useState(false);
+
+  // Focus Modes: landscape → Focus Clock (real, dimensions); face-down → Away
+  // (hozircha tap-preview; M4'da nitro-sensors accelerometer bilan avtomatik).
+  const { width, height } = useWindowDimensions();
+  const landscape = width > height;
 
   const timer = useSessionTimer(sessionId);
 
@@ -200,6 +207,22 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
     onClose();
   };
 
+  // Focus Modes — alternativ ko'rinishlar (bir xil faol sessiya).
+  if (away) {
+    return <AwayView elapsedMs={timer.elapsed} onExit={() => setAway(false)} />;
+  }
+  if (landscape) {
+    return (
+      <FocusClockView
+        habitName={habit?.name ?? ''}
+        progress={timer.progress}
+        elapsedMs={timer.elapsed}
+        remainingMs={remainingMs(timer.elapsed, tMin)}
+        targetMin={tMin}
+      />
+    );
+  }
+
   return (
     <View style={styles.root}>
       {cornerGlows}
@@ -309,11 +332,13 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
                 <Text style={styles.finishTxt}>{t('session.finish')}</Text>
               </Pressable>
             </View>
-            <Text style={styles.hint}>
-              {t('session.awayPre')}
-              <Text style={styles.awayWord}>{t('session.awayWord')}</Text>
-              {t('session.awayPost')}
-            </Text>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('session.awayWord')} onPress={() => setAway(true)}>
+              <Text style={styles.hint}>
+                {t('session.awayPre')}
+                <Text style={styles.awayWord}>{t('session.awayWord')}</Text>
+                {t('session.awayPost')}
+              </Text>
+            </Pressable>
           </>
         )}
       </View>

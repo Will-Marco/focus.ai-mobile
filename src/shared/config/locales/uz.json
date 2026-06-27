@@ -75,6 +75,13 @@
     "awayWord": "Away",
     "awayPost": " rejimi",
     "awayHint": "Telefonni teskari qo'ying — Away rejimi",
+    "focusClock": "Focus Clock",
+    "dnd": "Bezovta qilmaslik",
+    "screenOn": "Ekran yoniq turadi",
+    "awayTitle": "AWAY · TELEFONSIZ",
+    "awayXp": "2× XP bonus faol",
+    "awayFooter": "Telefon yuztuban — sessiya davom etmoqda.\nKo'tarsangiz yengil holat ko'rsatkichi chiqadi.",
+    "sessionShort": "sessiya",
     "ofTarget": "{{target}} {{unit}} · {{pct}}%"
   },
   "onboarding": {
