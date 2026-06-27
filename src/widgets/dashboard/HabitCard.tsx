@@ -2,8 +2,9 @@ import React from 'react';
 import { Pressable, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { ProgressRing, Text, HabitIcon, PlayIcon } from '@shared/ui';
+import { ProgressRing, Text, PlayIcon } from '@shared/ui';
 import { habitColorHex } from '@shared/theme';
+import { formatSpent } from '@shared/lib/time/formatSpent';
 import { useHabitProgress } from '@entities/session';
 import type { Habit } from '@entities/habit';
 
@@ -28,7 +29,6 @@ export function HabitCard({ habit, refreshKey, onPress, onStart }: HabitCardProp
   );
   const accent = habitColorHex(habit.color);
   const pct = Math.round(progress * 100);
-  const spentMin = Math.floor(elapsedMs / 60_000);
   const targetH = habit.targetMinutes / 60;
 
   const typeLabel =
@@ -39,19 +39,21 @@ export function HabitCard({ habit, refreshKey, onPress, onStart }: HabitCardProp
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={styles.card}>
       <View style={styles.ringWrap}>
-        <ProgressRing size={52} strokeWidth={5} progress={progress} />
-        <View style={styles.ringCenter}>
-          <HabitIcon name={habit.icon} size={20} color={accent} />
+        <View style={styles.ringFill}>
+          <ProgressRing size={52} strokeWidth={5} progress={progress} color={accent} />
         </View>
+        <Text variant="mono" style={styles.pct}>
+          {pct}%
+        </Text>
       </View>
 
       <View style={styles.info}>
         <Text numberOfLines={1} style={styles.name}>
           {habit.name}
         </Text>
-        <Text variant="caption" numberOfLines={1}>
+        <Text numberOfLines={1} style={styles.sub}>
           {typeLabel} · {targetH % 1 === 0 ? targetH : targetH.toFixed(1)} {t('addHabit.hoursUnit')} ·{' '}
-          {spentMin} daq · {pct}%
+          {formatSpent(elapsedMs)}
         </Text>
       </View>
 
@@ -59,9 +61,9 @@ export function HabitCard({ habit, refreshKey, onPress, onStart }: HabitCardProp
         accessibilityRole="button"
         accessibilityLabel={t('session.start')}
         onPress={onStart}
-        style={[styles.play, { backgroundColor: accent }]}
+        style={styles.play}
       >
-        <PlayIcon size={18} color={theme.colors.onBrand} />
+        <PlayIcon size={13} color={theme.colors.gold} />
       </Pressable>
     </Pressable>
   );
@@ -71,21 +73,24 @@ const styles = StyleSheet.create((theme) => ({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing(3),
-    backgroundColor: theme.colors.surfaceAlt,
+    gap: 14,
+    backgroundColor: 'rgba(255,255,255,0.035)',
     borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.xl,
-    padding: theme.spacing(3),
+    borderColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 20,
+    padding: 14,
   },
   ringWrap: { width: 52, height: 52, alignItems: 'center', justifyContent: 'center' },
-  ringCenter: { position: 'absolute' },
-  info: { flex: 1, gap: 2 },
-  name: { fontFamily: theme.fontFamily.semibold, fontSize: theme.fontSize.md, color: theme.colors.textStrong },
+  ringFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  pct: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 12, color: theme.colors.textStrong },
+  info: { flex: 1, minWidth: 0 },
+  name: { fontFamily: theme.fontFamily.bold, fontSize: 16, color: theme.colors.textStrong },
+  sub: { fontSize: 12, color: theme.colors.textMuted, marginTop: 2 },
   play: {
-    width: 44,
-    height: 44,
-    borderRadius: theme.radius.md,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },

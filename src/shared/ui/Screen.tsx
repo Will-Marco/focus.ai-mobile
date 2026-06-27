@@ -14,6 +14,8 @@ export function Screen({ children, edges = ['top'] }: ScreenProps) {
   return (
     <LinearGradient
       colors={[theme.colors.background, theme.colors.backgroundElevated]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
       style={styles.fill}
     >
       <SafeAreaView style={styles.fill} edges={edges}>

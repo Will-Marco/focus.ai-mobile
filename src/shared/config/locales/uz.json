@@ -9,13 +9,21 @@
   "dashboard": {
     "title": "Bosh sahifa",
     "greeting": "Salom",
+    "greetingMorning": "Xayrli tong",
+    "greetingDay": "Xayrli kun",
+    "greetingEvening": "Xayrli kech",
+    "greetingNight": "Xayrli tun",
     "streak": "Joriy streak",
     "todayFocus": "Bugungi fokus",
     "habits": "ODATLAR",
     "empty": "Hali odat yo'q",
     "emptyHint": "Birinchi odatingizni qo'shing — vaqtni o'lchashni boshlang",
     "activeNow": "Hozir faol",
-    "day": "kun"
+    "running": "davom etmoqda",
+    "paused": "pauza",
+    "left": "qoldi",
+    "day": "kun",
+    "count": "ta"
   },
   "addHabit": {
     "title": "Yangi odat",
@@ -26,7 +34,9 @@
     "color": "Rang",
     "type": "Tur",
     "typeCumulative": "Umrlik",
+    "typeCumulativeDesc": "Bir martalik katta maqsad",
     "typeRecurring": "Davriy",
+    "typeRecurringDesc": "Takrorlanuvchi maqsad",
     "period": "Davr",
     "periodDaily": "Kunlik",
     "periodWeekly": "Haftalik",
@@ -43,8 +53,12 @@
     }
   },
   "session": {
+    "activeLabel": "Faol sessiya",
+    "passed": "o'tdi",
+    "fromMinutes": "daqiqadan",
     "setupQuestion": "Bu sessiyaga qancha vaqt?",
     "minutesShort": "daqiqa",
+    "minAbbr": "daq",
     "start": "Boshlash",
     "pause": "Pauza",
     "resume": "Davom etish",
@@ -52,20 +66,84 @@
     "close": "Yopish",
     "remaining": "QOLDI",
     "elapsed": "O'TDI",
+    "done": "BAJARILDI",
     "overtimeNote": "Ortiqcha vaqt ham odatga qo'shiladi",
     "completed": "Maqsadga yetdingiz!",
+    "audioChip": "Lo-fi foni · past",
+    "habitLabel": "Odat",
+    "awayPre": "Telefonni teskari qo'ying — ",
+    "awayWord": "Away",
+    "awayPost": " rejimi",
     "awayHint": "Telefonni teskari qo'ying — Away rejimi",
     "ofTarget": "{{target}} {{unit}} · {{pct}}%"
   },
-  "stats": { "title": "Statistika", "empty": "Ma'lumot hali yo'q" },
-  "team": { "title": "Jamoa", "empty": "Hali guruh yo'q" },
+  "onboarding": {
+    "skip": "O'tkazib yuborish",
+    "next": "Keyingi",
+    "start": "Boshlash",
+    "slides": {
+      "measure": {
+        "title": "Belgilarni emas, vaqtni o'lchang",
+        "body": "Boshqa ilovalar 'qildim' deydi. Focus AI haqiqiy sarflangan vaqtni o'lchaydi."
+      },
+      "fill": {
+        "title": "Ring to'ladi, siz fokuslanasiz",
+        "body": "Taymerni bosing — jarayon paneli to'lib boradi. 100% = yutuq."
+      },
+      "modes": {
+        "title": "Telefon holatiga sezgir rejimlar",
+        "body": "Telefonni teskari qo'ying — 'Away' rejimi. Yon burang — 'Focus Clock'."
+      }
+    }
+  },
+  "auth": {
+    "title": "Focus AI'ga xush kelibsiz",
+    "subtitle": "Vaqtga asoslangan odat kuzatuvchi",
+    "signinTitle": "Xush kelibsiz",
+    "signinSub": "Davom etish uchun hisobingizga kiring",
+    "signupTitle": "Hisob yarating",
+    "signupSub": "Fokusni bugun boshlang",
+    "switchToSignupText": "Hisobingiz yo'qmi?",
+    "switchToSignupCta": "Ro'yxatdan o'ting",
+    "switchToSigninText": "Hisobingiz bormi?",
+    "switchToSigninCta": "Kiring",
+    "guestFooter": "Hisobsiz ham hamma narsa ishlaydi.\nKeyin sinxronlash uchun kirishingiz mumkin.",
+    "email": "Email",
+    "emailPlaceholder": "siz@example.com",
+    "password": "Parol",
+    "passwordPlaceholder": "••••••••",
+    "forgot": "Parolni unutdingizmi?",
+    "signIn": "Kirish",
+    "signUp": "Ro'yxatdan o'tish",
+    "toggleToSignUp": "Hisobingiz yo'qmi? Ro'yxatdan o'ting",
+    "toggleToSignIn": "Hisobingiz bormi? Kiring",
+    "or": "yoki",
+    "guest": "Mehmon sifatida davom etish",
+    "guestHint": "Hisobsiz ham hamma narsa ishlaydi",
+    "soon": "Ro'yxatdan o'tish tez orada — hozircha mehmon rejimida davom eting"
+  },
   "profile": {
     "title": "Profil",
+    "guestMode": "Mehmon rejimi",
+    "registered": "Ro'yxatdan o'tgan",
+    "nameLabel": "Ism",
+    "namePlaceholder": "Ismingiz",
+    "save": "Saqlash",
     "theme": "Mavzu",
     "themeLight": "Yorug'",
     "themeDark": "Qorong'i",
-    "themeSystem": "Tizim"
+    "themeSystem": "Tizim",
+    "language": "Til",
+    "languageValue": "O'zbek (lotin)",
+    "notifications": "Bildirishnomalar",
+    "notificationsValue": "Yoqilgan",
+    "quietHours": "Tinch soatlar",
+    "quietHoursValue": "22:00 – 07:00",
+    "signOut": "Chiqish",
+    "signIn": "Hisobga kirish"
   },
+  "stats": { "title": "Statistika", "empty": "Ma'lumot hali yo'q" },
+  "team": { "title": "Jamoa", "empty": "Hali guruh yo'q" },
   "common": {
     "loading": "Yuklanmoqda...",
     "cancel": "Bekor qilish",

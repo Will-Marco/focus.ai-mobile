@@ -71,6 +71,8 @@ docs/
 design/
 .claude/
 CLAUDE.md
+# Dizayn standalone HTML eksportlari (root) — design manbasi, push qilinmaydi
+Focus AI*.html
 
 # Yarn
 .yarn/*

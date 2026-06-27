@@ -60,6 +60,8 @@ export const darkTheme = {
     tabInactive: palette.mocha,
     gradientBrand: [palette.amber, palette.coral],
     gradientRing: [palette.goldSoft, palette.amber, palette.coral],
+    // Faol sessiya radial fon (markazdan tashqariga)
+    sessionBg: ['#3a2410', '#1f140b', palette.espresso],
   },
 } as const;
 
@@ -90,6 +92,7 @@ export const lightTheme = {
     tabInactive: '#A08A78',
     gradientBrand: ['#F2A24C', '#F2603E'],
     gradientRing: ['#F7D98A', '#F2A24C', '#F2603E'],
+    sessionBg: ['#FFF3E2', '#FBF1E4', '#F3E7D8'],
   },
 } as const;
 

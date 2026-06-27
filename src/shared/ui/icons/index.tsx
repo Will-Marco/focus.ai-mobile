@@ -73,6 +73,14 @@ export const PlayIcon = ({ size = 22, color = '#fff' }: IconProps) => (
   </Svg>
 );
 
+// Konsentrik doiralar — Focus AI logotipi (Auth) va "nishon" mazmuni.
+export const TargetIcon = ({ size = 24, color = '#fff', strokeWidth = 2.4 }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}>
+    <Circle cx="12" cy="12" r="9" />
+    <Circle cx="12" cy="12" r="3" />
+  </Svg>
+);
+
 export const PauseIcon = (p: IconProps) => (
   <Stroke {...p}>
     <Path d="M8 5v14M16 5v14" />

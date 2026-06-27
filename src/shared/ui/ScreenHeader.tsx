@@ -20,9 +20,9 @@ export function ScreenHeader({ title, onBack, right }: ScreenHeaderProps) {
           accessibilityRole="button"
           accessibilityLabel="back"
           onPress={onBack}
-          style={styles.back}
+          style={styles.backBtn}
         >
-          <ChevronLeftIcon size={24} color={theme.colors.textStrong} />
+          <ChevronLeftIcon size={22} color={theme.colors.text} />
         </Pressable>
       ) : (
         <View style={styles.back} />
@@ -49,5 +49,15 @@ const styles = StyleSheet.create((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: { flex: 1, fontSize: theme.fontSize.xl },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: theme.colors.surfaceStrong,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: { flex: 1, fontSize: theme.fontSize.xl, fontFamily: theme.fontFamily.extrabold },
 }));

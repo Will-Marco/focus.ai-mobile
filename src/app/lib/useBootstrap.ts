@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { runMigrations } from '@shared/lib/db/db';
 import { useHabitStore } from '@entities/habit';
 import { useSessionStore } from '@entities/session';
+import { useProfileStore } from '@entities/profile';
 
 // Ilova ishga tushishi: SQLite migratsiyalari → habit store hydrate.
 // `ready` bo'lguncha UI render qilinmaydi (holat to'liq tiklanadi).
@@ -10,6 +11,7 @@ export function useBootstrap(): { ready: boolean; error: Error | null } {
   const [error, setError] = useState<Error | null>(null);
   const hydrateHabits = useHabitStore((s) => s.hydrate);
   const hydrateSessions = useSessionStore((s) => s.hydrate);
+  const hydrateProfile = useProfileStore((s) => s.hydrate);
 
   useEffect(() => {
     let cancelled = false;
@@ -18,6 +20,7 @@ export function useBootstrap(): { ready: boolean; error: Error | null } {
         await runMigrations();
         await hydrateHabits();
         hydrateSessions(); // MMKV — sinxron qaynoq sessiyalarni tiklash
+        hydrateProfile(); // MMKV — profil + onboarding holati
         if (!cancelled) setReady(true);
       } catch (e) {
         if (!cancelled) setError(e as Error);
@@ -26,7 +29,7 @@ export function useBootstrap(): { ready: boolean; error: Error | null } {
     return () => {
       cancelled = true;
     };
-  }, [hydrateHabits, hydrateSessions]);
+  }, [hydrateHabits, hydrateSessions, hydrateProfile]);
 
   return { ready, error };
 }

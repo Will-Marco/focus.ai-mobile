@@ -7,7 +7,6 @@ import {
   HabitIcon,
   HABIT_ICON_KEYS,
   Input,
-  Segmented,
   Text,
 } from '@shared/ui';
 import { HABIT_COLOR_KEYS, habitColorHex } from '@shared/theme';
@@ -128,37 +127,61 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
                 accessibilityRole="button"
                 accessibilityState={{ selected: active }}
                 onPress={() => setColor(key)}
-                style={[
-                  styles.colorDot,
-                  { backgroundColor: habitColorHex(key) },
-                  active && styles.colorDotActive,
-                ]}
-              />
+                style={styles.colorWrap}
+              >
+                <View style={[styles.colorDot, { backgroundColor: habitColorHex(key) }]} />
+                {active ? <View style={styles.colorRing} /> : null}
+              </Pressable>
             );
           })}
         </View>
 
         <Text style={styles.section}>{t('addHabit.type')}</Text>
-        <Segmented
-          value={type}
-          onChange={onTypeChange}
-          options={TYPE_OPTIONS.map((v) => ({
-            value: v,
-            label: v === 'cumulative' ? t('addHabit.typeCumulative') : t('addHabit.typeRecurring'),
-          }))}
-        />
+        <View style={styles.typeRow}>
+          {TYPE_OPTIONS.map((v) => {
+            const active = type === v;
+            return (
+              <Pressable
+                key={v}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+                onPress={() => onTypeChange(v)}
+                style={[styles.typeCard, active && styles.typeCardActive]}
+              >
+                <Text style={[styles.typeTitle, active && styles.typeTitleActive]}>
+                  {v === 'cumulative' ? t('addHabit.typeCumulative') : t('addHabit.typeRecurring')}
+                </Text>
+                <Text style={styles.typeDesc}>
+                  {v === 'cumulative'
+                    ? t('addHabit.typeCumulativeDesc')
+                    : t('addHabit.typeRecurringDesc')}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
 
         {type === 'recurring' ? (
           <>
             <Text style={styles.section}>{t('addHabit.period')}</Text>
-            <Segmented
-              value={period}
-              onChange={setPeriod}
-              options={PERIOD_OPTIONS.map((v) => ({
-                value: v,
-                label: t(`addHabit.period${v[0].toUpperCase()}${v.slice(1)}`),
-              }))}
-            />
+            <View style={styles.periodRow}>
+              {PERIOD_OPTIONS.map((v) => {
+                const active = period === v;
+                return (
+                  <Pressable
+                    key={v}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                    onPress={() => setPeriod(v)}
+                    style={[styles.periodChip, active && styles.periodChipActive]}
+                  >
+                    <Text style={[styles.periodTxt, active && styles.periodTxtActive]}>
+                      {t(`addHabit.period${v[0].toUpperCase()}${v.slice(1)}`)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
             {errors.period ? <Text style={styles.error}>{t('addHabit.errors.period')}</Text> : null}
           </>
         ) : null}
@@ -218,7 +241,46 @@ const styles = StyleSheet.create((theme) => ({
   iconGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing(2) },
   iconCell: {
     width: '22%',
-    height: 64,
+    height: 58,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  colorRow: { flexDirection: 'row', gap: 14 },
+  colorWrap: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  colorDot: { width: 44, height: 44, borderRadius: 22 },
+  colorRing: {
+    position: 'absolute',
+    top: -5,
+    left: -5,
+    right: -5,
+    bottom: -5,
+    borderRadius: 27,
+    borderWidth: 2,
+    borderColor: theme.colors.textStrong,
+  },
+
+  typeRow: { flexDirection: 'row', gap: 10 },
+  typeCard: {
+    flex: 1,
+    padding: 14,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+  },
+  typeCardActive: { borderColor: theme.colors.brand, backgroundColor: 'rgba(242,162,76,0.12)' },
+  typeTitle: { fontSize: 15, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
+  typeTitleActive: { color: theme.colors.brand },
+  typeDesc: { fontSize: 12, color: theme.colors.textDim, marginTop: 2 },
+
+  periodRow: { flexDirection: 'row', gap: 10 },
+  periodChip: {
+    flex: 1,
+    height: 46,
     borderRadius: theme.radius.md,
     borderWidth: 1,
     borderColor: theme.colors.border,
@@ -226,9 +288,9 @@ const styles = StyleSheet.create((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  colorRow: { flexDirection: 'row', gap: theme.spacing(3) },
-  colorDot: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: 'transparent' },
-  colorDotActive: { borderColor: theme.colors.textStrong },
+  periodChipActive: { borderColor: theme.colors.brand, backgroundColor: 'rgba(242,162,76,0.12)' },
+  periodTxt: { fontSize: 14, fontFamily: theme.fontFamily.semibold, color: theme.colors.textMuted },
+  periodTxtActive: { color: theme.colors.brand },
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
