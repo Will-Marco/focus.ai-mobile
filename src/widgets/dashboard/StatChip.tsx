@@ -32,9 +32,9 @@ const styles = StyleSheet.create((theme) => ({
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
+    borderColor: theme.colors.border,
   },
   value: {
     fontFamily: theme.fontFamily.monoSemibold,

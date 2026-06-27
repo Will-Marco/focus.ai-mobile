@@ -27,7 +27,7 @@ export function ActiveSessionBanner({ sessionId, onPress }: ActiveSessionBannerP
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>
       <LinearGradient
-        colors={['rgba(242,162,76,0.2)', 'rgba(242,96,62,0.08)']}
+        colors={[...theme.colors.bannerBg]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.banner}
@@ -76,7 +76,7 @@ const styles = StyleSheet.create((theme) => ({
     padding: 14,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(242,162,76,0.32)',
+    borderColor: theme.colors.bannerBorder,
   },
   ringWrap: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   ringFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
@@ -88,7 +88,7 @@ const styles = StyleSheet.create((theme) => ({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: `rgba(${theme.colors.trackRgb},0.1)`,
     alignItems: 'center',
     justifyContent: 'center',
   },

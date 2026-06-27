@@ -48,7 +48,7 @@ export function ProgressRing({
         path={ring}
         style="stroke"
         strokeWidth={strokeWidth}
-        color={`rgba(255,255,255,${trackOpacity})`}
+        color={`rgba(${theme.colors.trackRgb},${trackOpacity})`}
       />
       {/* drop-shadow glow qatlam (dizayn: 0 0 14px rgba(242,160,76,.6)) */}
       {glow && !color ? (
