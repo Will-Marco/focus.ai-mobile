@@ -142,7 +142,26 @@
     "signOut": "Chiqish",
     "signIn": "Hisobga kirish"
   },
-  "stats": { "title": "Statistika", "empty": "Ma'lumot hali yo'q" },
+  "stats": {
+    "title": "Statistika",
+    "subtitle": "Sening rivojing",
+    "currentStreak": "Joriy streak",
+    "longest": "Eng uzun",
+    "dayUnit": "kun",
+    "level": "Daraja",
+    "last7": "SO'NGGI 7 KUN",
+    "activity": "Faollik",
+    "week": "Hafta",
+    "month": "Oy",
+    "year": "Yil",
+    "comparePrev": "o'tgan davrga",
+    "lastYear": "So'nggi yil",
+    "active": "faol",
+    "less": "Kam",
+    "more": "Ko'p",
+    "badges": "Nishonlar",
+    "empty": "Ma'lumot hali yo'q"
+  },
   "team": { "title": "Jamoa", "empty": "Hali guruh yo'q" },
   "common": {
     "loading": "Yuklanmoqda...",

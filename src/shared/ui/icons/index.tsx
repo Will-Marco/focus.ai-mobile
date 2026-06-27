@@ -81,6 +81,13 @@ export const TargetIcon = ({ size = 24, color = '#fff', strokeWidth = 2.4 }: Ico
   </Svg>
 );
 
+// To'ldirilgan alanga — streak indikatori (Statistika).
+export const FlameIcon = ({ size = 16, color = '#F2603E' }: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+    <Path d="M12 2c1 3-1 4.5-2 6.5s.5 4 2.5 4 3-2.5 1.5-5.5c2.5 1.5 4 4.5 4 7.5a6 6 0 11-12 0c0-3 2-5.5 3-7.5 1-2 1-3 0-5z" />
+  </Svg>
+);
+
 export const PauseIcon = (p: IconProps) => (
   <Stroke {...p}>
     <Path d="M8 5v14M16 5v14" />
