@@ -3,8 +3,10 @@ import { Pressable, ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, ProfileIcon, RadialGlow, Screen, TargetIcon, Text } from '@shared/ui';
+import { Button, GoogleIcon, Input, ProfileIcon, RadialGlow, Screen, TargetIcon, Text } from '@shared/ui';
 import { useProfileStore } from '@entities/profile';
+import { useAuthForm } from '@features/auth';
+import { haptics } from '@shared/lib/haptics';
 
 type Mode = 'signin' | 'signup';
 
@@ -12,13 +14,32 @@ export function AuthScreen() {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
   const continueAsGuest = useProfileStore((s) => s.continueAsGuest);
+  const { busy, errorKey, clearError, submitEmail, submitGoogle } = useAuthForm();
 
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showSoon, setShowSoon] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const isSignin = mode === 'signin';
+  const shownError = localError ?? errorKey;
+
+  const onSubmitEmail = () => {
+    if (!email.includes('@') || password.length < 6) {
+      clearError();
+      setLocalError('auth.err.invalid');
+      return;
+    }
+    setLocalError(null);
+    haptics.light();
+    submitEmail(mode, email, password);
+  };
+
+  const onGoogle = () => {
+    setLocalError(null);
+    haptics.light();
+    submitGoogle();
+  };
 
   return (
     <Screen edges={['top', 'bottom']}>
@@ -69,16 +90,17 @@ export function AuthScreen() {
           />
 
           {isSignin ? (
-            <Pressable accessibilityRole="button" onPress={() => setShowSoon(true)} hitSlop={8}>
+            <Pressable accessibilityRole="button" onPress={() => setLocalError('auth.err.resetSoon')} hitSlop={8}>
               <Text style={styles.forgot}>{t('auth.forgot')}</Text>
             </Pressable>
           ) : null}
 
-          {showSoon ? <Text style={styles.soon}>{t('auth.soon')}</Text> : null}
+          {shownError ? <Text style={styles.soon}>{t(shownError)}</Text> : null}
 
           <Button
-            title={isSignin ? t('auth.signIn') : t('auth.signUp')}
-            onPress={() => setShowSoon(true)}
+            title={busy ? t('auth.loading') : isSignin ? t('auth.signIn') : t('auth.signUp')}
+            onPress={onSubmitEmail}
+            disabled={busy}
             style={styles.cta}
           />
 
@@ -101,6 +123,16 @@ export function AuthScreen() {
           <Text style={styles.or}>{t('auth.or')}</Text>
           <View style={styles.line} />
         </View>
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={onGoogle}
+          disabled={busy}
+          style={[styles.guestBtn, styles.googleBtn]}
+        >
+          <GoogleIcon size={20} />
+          <Text style={styles.guestTxt}>{t('auth.continueGoogle')}</Text>
+        </Pressable>
 
         <Pressable
           accessibilityRole="button"
@@ -168,6 +200,7 @@ const styles = StyleSheet.create((theme) => ({
     justifyContent: 'center',
     gap: 10,
   },
+  googleBtn: { marginBottom: 12 },
   guestTxt: { fontSize: 16, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
   footer: { textAlign: 'center', fontSize: 12, lineHeight: 17, color: theme.colors.textDim, marginTop: 14 },
 }));

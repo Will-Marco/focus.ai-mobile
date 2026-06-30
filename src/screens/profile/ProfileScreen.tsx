@@ -7,6 +7,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Avatar, Button, Screen, Segmented, Text } from '@shared/ui';
 import { setThemePref, getStoredThemePref, type ThemePref } from '@shared/theme';
 import { useProfileStore } from '@entities/profile';
+import { signOutRemote } from '@features/auth';
+import { useSyncStore } from '@features/sync';
+import { isSupabaseConfigured } from '@shared/config/env';
 import type { RootStackParamList } from '@shared/config/navigation';
 
 export function ProfileScreen() {
@@ -15,7 +18,13 @@ export function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const profile = useProfileStore((s) => s.profile);
   const updateName = useProfileStore((s) => s.updateName);
-  const signOut = useProfileStore((s) => s.signOut);
+  const signOutLocal = useProfileStore((s) => s.signOut);
+
+  // Local profil + remote sessiya (Supabase/Google) ni birga tozalash.
+  const signOut = () => {
+    signOutRemote().catch(() => {});
+    signOutLocal();
+  };
 
   const [pref, setPref] = useState<ThemePref>(getStoredThemePref());
   const [name, setName] = useState(profile?.name ?? '');
@@ -26,6 +35,18 @@ export function ProfileScreen() {
   };
 
   const isGuest = profile?.authMode !== 'registered';
+
+  const syncStatus = useSyncStore((s) => s.status);
+  const runSync = useSyncStore((s) => s.runSync);
+  const showSync = !isGuest && isSupabaseConfigured;
+  const syncValue =
+    syncStatus === 'syncing'
+      ? t('profile.syncing')
+      : syncStatus === 'error'
+        ? t('profile.syncError')
+        : syncStatus === 'done'
+          ? t('profile.syncDone')
+          : t('profile.syncReady');
 
   return (
     <Screen>
@@ -75,8 +96,11 @@ export function ProfileScreen() {
             label={t('profile.quietHours')}
             value={t('profile.quietHoursValue')}
             onPress={() => navigation.navigate('NotificationSettings')}
-            last
+            last={!showSync}
           />
+          {showSync ? (
+            <Row label={t('profile.sync')} value={syncValue} onPress={() => { runSync().catch(() => {}); }} last />
+          ) : null}
         </View>
 
         <Button

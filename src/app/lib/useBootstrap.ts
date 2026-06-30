@@ -4,6 +4,7 @@ import { useHabitStore } from '@entities/habit';
 import { useSessionStore } from '@entities/session';
 import { useProfileStore } from '@entities/profile';
 import { useNotificationStore } from '@entities/notification';
+import { configureGoogle } from '@features/auth';
 
 // Ilova ishga tushishi: SQLite migratsiyalari → habit store hydrate.
 // `ready` bo'lguncha UI render qilinmaydi (holat to'liq tiklanadi).
@@ -24,6 +25,7 @@ export function useBootstrap(): { ready: boolean; error: Error | null } {
         hydrateSessions(); // MMKV — sinxron qaynoq sessiyalarni tiklash
         hydrateProfile(); // MMKV — profil + onboarding holati
         hydrateNotifications(); // MMKV — bildirishnoma sozlamalari
+        configureGoogle(); // Google Sign In (sozlangan bo'lsa) — xavfsiz no-op
         if (!cancelled) setReady(true);
       } catch (e) {
         if (!cancelled) setError(e as Error);

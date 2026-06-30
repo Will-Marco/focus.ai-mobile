@@ -81,3 +81,6 @@ Focus AI*.html
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Local secrets (Supabase / Google OAuth) — M8
+.env

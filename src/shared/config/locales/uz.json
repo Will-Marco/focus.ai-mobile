@@ -135,7 +135,19 @@
     "or": "yoki",
     "guest": "Mehmon sifatida davom etish",
     "guestHint": "Hisobsiz ham hamma narsa ishlaydi",
-    "soon": "Ro'yxatdan o'tish tez orada qo'shiladi. Hozircha mehmon rejimida bemalol davom eting."
+    "soon": "Ro'yxatdan o'tish tez orada qo'shiladi. Hozircha mehmon rejimida bemalol davom eting.",
+    "loading": "Kuting…",
+    "continueGoogle": "Google bilan davom etish",
+    "err": {
+      "invalid": "Email to'g'ri va parol kamida 6 belgidan iborat bo'lsin.",
+      "signin": "Kirib bo'lmadi — email yoki parol noto'g'ri.",
+      "signup": "Ro'yxatdan o'tib bo'lmadi. Boshqa email bilan urinib ko'ring.",
+      "confirmEmail": "Emailingizga tasdiq xati yuborildi — havolani bosing.",
+      "google": "Google bilan kirib bo'lmadi. Qayta urinib ko'ring.",
+      "googleNotConfigured": "Google Sign In hali sozlanmagan.",
+      "notConfigured": "Onlayn xizmat hali sozlanmagan — mehmon rejimida davom eting.",
+      "resetSoon": "Parolni tiklash tez orada qo'shiladi."
+    }
   },
   "profile": {
     "title": "Profil",
@@ -154,6 +166,11 @@
     "notificationsValue": "Yoqilgan",
     "quietHours": "Tinch soatlar",
     "quietHoursValue": "22:00 – 07:00",
+    "sync": "Sinxronlash",
+    "syncReady": "Tayyor ›",
+    "syncing": "Sinxronlanmoqda…",
+    "syncDone": "Sinxronlandi ✓",
+    "syncError": "Xato — qayta urinish",
     "signOut": "Chiqish",
     "signIn": "Hisobga kirish"
   },
