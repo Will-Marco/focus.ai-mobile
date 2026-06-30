@@ -8,6 +8,7 @@ export function rowToCompletedSession(row: SessionRow): CompletedSession {
     durationMs: row.duration_ms,
     targetMinutes: row.target_minutes,
     completed: row.completed === 1,
+    awayMs: row.away_ms ?? 0,
     startedAt: row.started_at,
     endedAt: row.ended_at,
     createdAt: row.created_at,

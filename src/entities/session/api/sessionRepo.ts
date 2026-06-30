@@ -8,6 +8,8 @@ export interface SessionDraft {
   durationMs: number;
   targetMinutes: number;
   completed: boolean;
+  /** telefonsiz (Away) davomiyligi ms — XP 2× bonus (M6). Default 0. */
+  awayMs?: number;
   startedAt: number;
   endedAt: number;
 }
@@ -19,20 +21,22 @@ export const sessionRepo = {
     const session: CompletedSession = {
       id: uuid(),
       ...draft,
+      awayMs: draft.awayMs ?? 0,
       createdAt: now,
       updatedAt: now,
       deletedAt: null,
     };
     await db.execute(
       `INSERT INTO sessions
-         (id, habit_id, duration_ms, target_minutes, completed, started_at, ended_at, created_at, updated_at, deleted_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL);`,
+         (id, habit_id, duration_ms, target_minutes, completed, away_ms, started_at, ended_at, created_at, updated_at, deleted_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL);`,
       [
         session.id,
         session.habitId,
         session.durationMs,
         session.targetMinutes,
         session.completed ? 1 : 0,
+        session.awayMs,
         session.startedAt,
         session.endedAt,
         session.createdAt,

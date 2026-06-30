@@ -43,4 +43,12 @@ export const migrations: Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_habits_deleted   ON habits   (deleted_at);
     `,
   },
+  {
+    // Phone-down "Away" davomiyligi (ms) — M6 XP 2× bonus manbai.
+    // Eski yozuvlar 0 bo'ladi (telefonsiz vaqt qayd etilmagan).
+    name: '002_add_away_ms',
+    sql: `
+      ALTER TABLE sessions ADD COLUMN away_ms INTEGER NOT NULL DEFAULT 0;
+    `,
+  },
 ];

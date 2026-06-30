@@ -6,29 +6,15 @@ import Svg, { Path } from 'react-native-svg';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { CheckIcon, FlameIcon, RadialGlow, Screen, Text } from '@shared/ui';
+import { formatSpent } from '@shared/lib/time/formatSpent';
+import { buildSeries, useStatsSummary, type BadgeId, type ChartPeriod } from '@entities/stats';
 
-// ⚠️ Mock data (UI build) — streak/XP/heatmap/badges M6 (gamifikatsiya)da real ulanadi.
 const DAY_LABELS = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'] as const;
-const DONE_7 = [true, true, true, false, true, true, true] as const;
 
-type Period = 'week' | 'month' | 'year';
-interface ChartSet {
-  labels: string[];
-  mins: number[];
-  total: string;
-  cmp: string;
-  up: boolean;
-}
-const CHART_SETS: Record<Period, ChartSet> = {
-  week: { labels: ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'], mins: [95, 120, 60, 140, 80, 45, 150], total: '11s 30d', cmp: '+20%', up: true },
-  month: { labels: ['1-h', '2-h', '3-h', '4-h'], mins: [620, 540, 710, 480], total: '39s 10d', cmp: '+12%', up: true },
-  year: {
-    labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
-    mins: [1200, 1500, 1800, 1600, 2100, 1900, 2200, 1700, 2000, 2300, 1850, 900],
-    total: '372 soat',
-    cmp: '−6%',
-    up: false,
-  },
+const PERIOD_LABELS: Record<ChartPeriod, string[]> = {
+  week: ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'],
+  month: ['1-h', '2-h', '3-h', '4-h'],
+  year: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
 };
 
 const heatColors = (trackRgb: string) => [
@@ -39,44 +25,25 @@ const heatColors = (trackRgb: string) => [
   '#F2603E',
 ];
 
-// Deterministik heatmap (53 hafta × 7 kun) — Park-Miller LCG, dekorativ.
-function buildHeatmap(): number[][] {
-  let s = 7;
-  const rnd = () => {
-    s = (s * 16807) % 2147483647;
-    return s / 2147483647;
-  };
-  const cols: number[][] = [];
-  for (let w = 0; w < 53; w++) {
-    const col: number[] = [];
-    for (let d = 0; d < 7; d++) {
-      const boost = w > 40 ? 0.15 : 0;
-      const rr = Math.min(rnd() + boost, 0.999);
-      col.push(rr < 0.42 ? 0 : rr < 0.64 ? 1 : rr < 0.82 ? 2 : rr < 0.94 ? 3 : 4);
-    }
-    cols.push(col);
-  }
-  return cols;
-}
-
+// Badge ikonkalari (UI) — id dizayn tartibida `BADGE_IDS` bilan mos.
 interface BadgeDef {
+  id: BadgeId;
   name: string;
-  earned: boolean;
   d: string;
 }
 const BADGES: BadgeDef[] = [
-  { name: 'Ilk qadam', earned: true, d: 'M5 12l4.5 4.5L19 7' },
-  { name: '7 kun streak', earned: true, d: 'M12 2c1 3-1 4.5-2 6.5s.5 4 2.5 4 3-2.5 1.5-5.5c2.5 1.5 4 4.5 4 7.5a6 6 0 11-12 0' },
-  { name: 'Fokus ustasi', earned: true, d: 'M12 3a9 9 0 100 18 9 9 0 000-18zM12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z' },
-  { name: "Tungi boyo'g'li", earned: true, d: 'M20 13.5A8 8 0 1110.5 4 6.5 6.5 0 0020 13.5z' },
-  { name: 'Telefonsiz', earned: true, d: 'M12 18h.01M8 21h8a1 1 0 001-1V4a1 1 0 00-1-1H8a1 1 0 00-1 1v16a1 1 0 001 1z' },
-  { name: 'Jamoaviy', earned: true, d: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 19c0-3 3-5 6-5s6 2 6 5' },
-  { name: 'Marafonchi', earned: false, d: 'M13 2L4 14h7l-2 8 9-12h-7z' },
-  { name: 'Oltin halqa', earned: false, d: 'M12 3a9 9 0 100 18 9 9 0 000-18z' },
-  { name: 'Doimiy', earned: false, d: 'M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z' },
-  { name: 'Erta qush', earned: false, d: 'M12 3v2M5.6 5.6l1.5 1.5M3 12h2M12 14a3 3 0 100-6 3 3 0 000 6z' },
-  { name: 'Chuqur ish', earned: false, d: 'M4 6h16M4 12h16M4 18h10' },
-  { name: 'Sahar', earned: false, d: 'M3 18h18M12 3v6M8 7l4-4 4 4M5 13a7 7 0 0114 0' },
+  { id: 'first-step', name: 'Ilk qadam', d: 'M5 12l4.5 4.5L19 7' },
+  { id: 'streak-7', name: '7 kun streak', d: 'M12 2c1 3-1 4.5-2 6.5s.5 4 2.5 4 3-2.5 1.5-5.5c2.5 1.5 4 4.5 4 7.5a6 6 0 11-12 0' },
+  { id: 'focus-master', name: 'Fokus ustasi', d: 'M12 3a9 9 0 100 18 9 9 0 000-18zM12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z' },
+  { id: 'night-owl', name: "Tungi boyo'g'li", d: 'M20 13.5A8 8 0 1110.5 4 6.5 6.5 0 0020 13.5z' },
+  { id: 'phone-free', name: 'Telefonsiz', d: 'M12 18h.01M8 21h8a1 1 0 001-1V4a1 1 0 00-1-1H8a1 1 0 00-1 1v16a1 1 0 001 1z' },
+  { id: 'team', name: 'Jamoaviy', d: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 19c0-3 3-5 6-5s6 2 6 5' },
+  { id: 'marathon', name: 'Marafonchi', d: 'M13 2L4 14h7l-2 8 9-12h-7z' },
+  { id: 'golden-ring', name: 'Oltin halqa', d: 'M12 3a9 9 0 100 18 9 9 0 000-18z' },
+  { id: 'consistent', name: 'Doimiy', d: 'M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z' },
+  { id: 'early-bird', name: 'Erta qush', d: 'M12 3v2M5.6 5.6l1.5 1.5M3 12h2M12 14a3 3 0 100-6 3 3 0 000 6z' },
+  { id: 'deep-work', name: 'Chuqur ish', d: 'M4 6h16M4 12h16M4 18h10' },
+  { id: 'dawn', name: 'Sahar', d: 'M3 18h18M12 3v6M8 7l4-4 4 4M5 13a7 7 0 0114 0' },
 ];
 
 const BAR_MAX = 90;
@@ -85,14 +52,20 @@ const fmtVal = (m: number) => (m >= 60 ? `${Math.floor(m / 60)}s` : `${m}d`);
 export function StatsScreen() {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
-  const [period, setPeriod] = useState<Period>('week');
-  const heatmap = useMemo(buildHeatmap, []);
-  const earnedCount = BADGES.filter((b) => b.earned).length;
+  const [period, setPeriod] = useState<ChartPeriod>('week');
+  const summary = useStatsSummary();
 
-  const ds = CHART_SETS[period];
-  const maxMin = Math.max(...ds.mins);
+  const series = useMemo(
+    () => buildSeries(period, summary.sessions, summary.now),
+    [period, summary.sessions, summary.now],
+  );
+  const labels = PERIOD_LABELS[period];
+  const earnedCount = BADGES.filter((b) => summary.badges[b.id]).length;
+
+  const maxMin = Math.max(1, ...series.mins);
   const gradient = [...theme.colors.gradientBrand];
   const HEAT_COLORS = heatColors(theme.colors.trackRgb);
+  const heatmap = summary.heatmap.weeks;
 
   return (
     <Screen>
@@ -103,7 +76,7 @@ export function StatsScreen() {
         </View>
         <View style={styles.streakPill}>
           <FlameIcon size={15} color={theme.colors.brandCoral} />
-          <Text style={styles.streakPillTxt}>12</Text>
+          <Text style={styles.streakPillTxt}>{summary.streak.current}</Text>
         </View>
       </View>
 
@@ -115,12 +88,12 @@ export function StatsScreen() {
             <Text style={styles.cardLabel}>{t('stats.currentStreak')}</Text>
             <View style={styles.streakValueRow}>
               <Text variant="mono" style={styles.streakBig}>
-                12
+                {summary.streak.current}
               </Text>
               <Text style={styles.streakUnit}>{t('stats.dayUnit')}</Text>
             </View>
             <Text style={styles.cardSub}>
-              {t('stats.longest')} · 21 {t('stats.dayUnit')}
+              {t('stats.longest')} · {summary.streak.longest} {t('stats.dayUnit')}
             </Text>
           </View>
 
@@ -128,14 +101,21 @@ export function StatsScreen() {
             <View style={styles.levelTop}>
               <Text style={styles.cardLabel}>{t('stats.level')}</Text>
               <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.levelBadge}>
-                <Text style={styles.levelBadgeTxt}>7</Text>
+                <Text style={styles.levelBadgeTxt}>{summary.level.level}</Text>
               </LinearGradient>
             </View>
             <Text variant="mono" style={styles.xpTxt}>
-              1 240<Text style={styles.xpMax}> / 1 500 XP</Text>
+              {summary.level.current}
+              <Text style={styles.xpMax}> / {summary.level.span} XP</Text>
             </Text>
             <View style={styles.xpTrack}>
-              <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.xpFill} />
+              <LinearGradient
+                colors={gradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                // eslint-disable-next-line react-native/no-inline-styles -- foiz dinamik
+                style={{ width: `${Math.round((summary.level.current / summary.level.span) * 100)}%`, height: 6, borderRadius: 3 }}
+              />
             </View>
           </View>
         </View>
@@ -146,7 +126,7 @@ export function StatsScreen() {
           <View style={styles.weekRow}>
             {DAY_LABELS.map((label, i) => (
               <View key={label} style={styles.dayItem}>
-                {DONE_7[i] ? (
+                {summary.last7[i] ? (
                   <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.dayDot}>
                     <CheckIcon size={15} color={theme.colors.onBrand} strokeWidth={3.2} />
                   </LinearGradient>
@@ -164,7 +144,7 @@ export function StatsScreen() {
           <View style={styles.chartHead}>
             <Text style={styles.cardTitle}>{t('stats.activity')}</Text>
             <View style={styles.toggle}>
-              {(['week', 'month', 'year'] as Period[]).map((p) => {
+              {(['week', 'month', 'year'] as ChartPeriod[]).map((p) => {
                 const active = p === period;
                 return active ? (
                   <LinearGradient key={p} colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.toggleItem}>
@@ -183,22 +163,25 @@ export function StatsScreen() {
 
           <View style={styles.chartTotalRow}>
             <Text variant="mono" style={styles.chartTotal}>
-              {ds.total}
+              {formatSpent(series.totalMin * 60_000)}
             </Text>
-            <Text style={[styles.compare, ds.up ? styles.compareUp : styles.compareDown]}>
-              {ds.up ? '↑' : '↓'} {ds.cmp} {t('stats.comparePrev')}
-            </Text>
+            {series.comparePct !== null ? (
+              <Text style={[styles.compare, series.up ? styles.compareUp : styles.compareDown]}>
+                {series.up ? '↑' : '↓'} {series.up ? '+' : ''}
+                {series.comparePct}% {t('stats.comparePrev')}
+              </Text>
+            ) : null}
           </View>
 
           <View style={styles.barsRow}>
-            {ds.labels.map((label, i) => (
+            {labels.map((label, i) => (
               <View key={`${period}-${label}`} style={styles.barCol}>
                 <Text variant="mono" style={styles.barVal}>
-                  {fmtVal(ds.mins[i])}
+                  {fmtVal(series.mins[i])}
                 </Text>
                 <Bar
-                  height={(ds.mins[i] / maxMin) * BAR_MAX}
-                  colors={ds.mins[i] === maxMin ? [theme.colors.goldSoft, theme.colors.brandCoral] : gradient}
+                  height={(series.mins[i] / maxMin) * BAR_MAX}
+                  colors={series.mins[i] === maxMin && series.mins[i] > 0 ? [theme.colors.goldSoft, theme.colors.brandCoral] : gradient}
                 />
                 <Text style={styles.barLabel}>{label}</Text>
               </View>
@@ -211,7 +194,7 @@ export function StatsScreen() {
           <View style={styles.cardHeadRow}>
             <Text style={styles.cardTitle}>{t('stats.lastYear')}</Text>
             <Text style={styles.cardSub}>
-              248 {t('stats.dayUnit')} {t('stats.active')}
+              {summary.heatmap.activeDays} {t('stats.dayUnit')} {t('stats.active')}
             </Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -245,9 +228,11 @@ export function StatsScreen() {
             </Text>
           </View>
           <View style={styles.badgeGrid}>
-            {BADGES.map((b) => (
-              <View key={b.name} style={[styles.badgeCard, b.earned ? styles.badgeCardOn : styles.badgeCardOff]}>
-                {b.earned ? (
+            {BADGES.map((b) => {
+              const earned = summary.badges[b.id];
+              return (
+              <View key={b.id} style={[styles.badgeCard, earned ? styles.badgeCardOn : styles.badgeCardOff]}>
+                {earned ? (
                   <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.badgeIcon}>
                     <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={theme.colors.onBrand} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <Path d={b.d} />
@@ -260,9 +245,10 @@ export function StatsScreen() {
                     </Svg>
                   </View>
                 )}
-                <Text style={[styles.badgeName, b.earned ? styles.badgeNameOn : styles.badgeNameOff]}>{b.name}</Text>
+                <Text style={[styles.badgeName, earned ? styles.badgeNameOn : styles.badgeNameOff]}>{b.name}</Text>
               </View>
-            ))}
+              );
+            })}
           </View>
         </View>
       </ScrollView>

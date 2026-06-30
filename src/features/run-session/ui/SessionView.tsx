@@ -20,6 +20,7 @@ import { usePulse } from '@shared/lib/animation/usePulse';
 import { haptics } from '@shared/lib/haptics';
 import { useHabitStore } from '@entities/habit';
 import { remainingMs, useHabitProgress, useSessionStore } from '@entities/session';
+import { sessionXp } from '@entities/stats';
 import { useSessionTimer } from '../model/useSessionTimer';
 import { useFaceDown } from '../lib/useFaceDown';
 import { useFocusDnd } from '../lib/useFocusDnd';
@@ -250,11 +251,20 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   const completed = timer.complete && !overtime;
   const tMin = timer.session?.targetMin ?? targetMin;
   const centerMs = completed ? timer.elapsed : showRemaining ? remainingMs(timer.elapsed, tMin) : timer.elapsed;
+  // Bu sessiyada olinadigan XP (M6) — celebration ekranida ko'rsatiladi.
+  const xpEarned = sessionXp({
+    habitId,
+    durationMs: timer.elapsed,
+    targetMinutes: tMin,
+    completed: timer.complete,
+    awayMs,
+    startedAt: 0,
+  });
 
   const onFinish = async () => {
     haptics.medium();
     useAudioStore.getState().stop();
-    await finish(sessionId);
+    await finish(sessionId, { awayMs: awayMsRef.current });
     onClose();
   };
 
@@ -380,6 +390,9 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
                   <Text style={styles.primaryTxt}>{t('session.close')}</Text>
                 </LinearGradient>
               </Pressable>
+            </View>
+            <View style={styles.xpChip}>
+              <Text style={styles.xpChipTxt}>{t('session.xpEarned', { xp: xpEarned })}</Text>
             </View>
             <Text style={styles.hint}>{t('session.overtimeNote')}</Text>
             {awayMs > 0 ? (
@@ -564,6 +577,17 @@ const styles = StyleSheet.create((theme) => ({
   },
   finishTxt: { fontSize: 15, fontFamily: theme.fontFamily.semibold, color: theme.colors.text },
   hint: { textAlign: 'center', fontSize: 12, color: theme.colors.textDim },
+  xpChip: {
+    alignSelf: 'center',
+    marginBottom: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 16,
+    borderRadius: theme.radius.pill,
+    backgroundColor: 'rgba(242,162,76,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(242,162,76,0.30)',
+  },
+  xpChipTxt: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 14, color: theme.colors.gold },
   awayBonusNote: { textAlign: 'center', fontSize: 12, color: theme.colors.gold, marginTop: 4, fontFamily: theme.fontFamily.semibold },
   awayWord: { color: theme.colors.gold },
 }));

@@ -9,6 +9,7 @@ export interface FinishResult {
   completed: boolean;
   durationMs: number;
   minutes: number;
+  awayMs: number;
 }
 
 interface SessionState {
@@ -20,7 +21,7 @@ interface SessionState {
   pause: (id: string, now?: number) => void;
   resume: (id: string, now?: number) => void;
   /** Yakunlaydi: completed sessiyani SQLite'ga yozadi, active'dan olib tashlaydi. */
-  finish: (id: string, now?: number) => Promise<FinishResult | null>;
+  finish: (id: string, opts?: { awayMs?: number; now?: number }) => Promise<FinishResult | null>;
   /** Yozmasdan bekor qiladi (reset/tashlab ketish). */
   discard: (id: string) => void;
   byId: (id: string) => ActiveSession | undefined;
@@ -66,17 +67,20 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     persist(active);
   },
 
-  finish: async (id, now = Date.now()) => {
+  finish: async (id, { awayMs = 0, now = Date.now() } = {}) => {
     const session = get().active.find((s) => s.id === id);
     if (!session) return null;
 
     const durationMs = elapsedMs(session, now);
     const completed = isComplete(durationMs, session.targetMin);
+    // away vaqti haqiqiy davomiylikdan oshmasin (himoya).
+    const safeAwayMs = Math.max(0, Math.min(awayMs, durationMs));
     await sessionRepo.insert({
       habitId: session.habitId,
       durationMs,
       targetMinutes: session.targetMin,
       completed,
+      awayMs: safeAwayMs,
       startedAt: session.startedAt,
       endedAt: now,
     });
@@ -84,7 +88,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     const active = get().active.filter((s) => s.id !== id);
     set({ active });
     persist(active);
-    return { completed, durationMs, minutes: msToMinutes(durationMs) };
+    return { completed, durationMs, minutes: msToMinutes(durationMs), awayMs: safeAwayMs };
   },
 
   discard: (id) => {

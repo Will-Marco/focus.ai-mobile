@@ -23,6 +23,8 @@ export interface CompletedSession {
   targetMinutes: number;
   /** 100% maqsadga yetdimi (yutuq). */
   completed: boolean;
+  /** telefonsiz (face-down "Away") davomiyligi ms — XP 2× bonus (M6). */
+  awayMs: number;
   startedAt: number;
   endedAt: number;
   createdAt: number;
@@ -37,6 +39,7 @@ export interface SessionRow {
   duration_ms: number;
   target_minutes: number;
   completed: number;
+  away_ms: number;
   started_at: number;
   ended_at: number;
   created_at: number;

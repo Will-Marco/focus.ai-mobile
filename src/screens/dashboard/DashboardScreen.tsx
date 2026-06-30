@@ -13,6 +13,7 @@ import { formatSpent } from '@shared/lib/time/formatSpent';
 import { useHabitStore, type Habit } from '@entities/habit';
 import { sessionRepo, useSessionStore } from '@entities/session';
 import { useProfileStore } from '@entities/profile';
+import { useCurrentStreak } from '@entities/stats';
 import { HabitCard, ActiveSessionBanner, StatChip } from '@widgets/dashboard';
 import type { RootStackParamList } from '@shared/config/navigation';
 
@@ -25,6 +26,7 @@ export function DashboardScreen() {
   const habits = useHabitStore((s) => s.habits);
   const active = useSessionStore((s) => s.active);
   const profileName = useProfileStore((s) => s.profile?.name ?? '');
+  const streak = useCurrentStreak();
 
   const [focusTick, setFocusTick] = useState(0);
   const [todayMs, setTodayMs] = useState(0);
@@ -103,7 +105,7 @@ export function DashboardScreen() {
       </View>
 
       <View style={styles.stats}>
-        <StatChip value="—" unit={t('dashboard.day')} dotColor={theme.colors.brandCoral} label={t('dashboard.streak')} />
+        <StatChip value={String(streak)} unit={t('dashboard.day')} dotColor={theme.colors.brandCoral} label={t('dashboard.streak')} />
         <StatChip value={formatSpent(todayMs)} dotColor={theme.colors.brand} label={t('dashboard.todayFocus')} />
       </View>
 
