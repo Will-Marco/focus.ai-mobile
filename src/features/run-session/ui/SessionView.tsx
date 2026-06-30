@@ -18,7 +18,9 @@ import { ChevronLeftIcon, CheckIcon, PlayIcon, ProgressRing, RadialGlow, Text } 
 import { formatClock } from '@shared/lib/time/formatClock';
 import { usePulse } from '@shared/lib/animation/usePulse';
 import { haptics } from '@shared/lib/haptics';
+import { displayNow } from '@shared/lib/notifications';
 import { useHabitStore } from '@entities/habit';
+import { useNotificationStore } from '@entities/notification';
 import { remainingMs, useHabitProgress, useSessionStore } from '@entities/session';
 import { sessionXp } from '@entities/stats';
 import { useSessionTimer } from '../model/useSessionTimer';
@@ -138,9 +140,13 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
     }
   }, [away]);
 
-  // 100% maqsadga yetganда — yutuq haptic (bir marta).
+  // 100% maqsadga yetganда — yutuq haptic + (yoqilgan bo'lsa) tizim bildirishnomasi (bir marta).
+  const achieveOn = useNotificationStore((s) => s.settings.toggles.achieve);
   useEffect(() => {
-    if (timer.complete) haptics.success();
+    if (!timer.complete) return;
+    haptics.success();
+    if (achieveOn) displayNow(t('notif.push.achieveTitle'), t('notif.push.achieveBody'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timer.complete]);
 
   // Odat (umrlik/davriy) umumiy progressi — markazdagi thin bar (jonli sessiya qo'shiladi).

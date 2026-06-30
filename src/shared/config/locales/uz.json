@@ -180,7 +180,17 @@
     "quietTitle": "Tinch soatlar",
     "quietSub": "Bu oraliqda bildirishnoma kelmaydi",
     "start": "Boshlanish",
-    "end": "Tugash"
+    "end": "Tugash",
+    "push": {
+      "reminderTitle": "Fokus vaqti keldi",
+      "reminderBody": "Bugun bir sessiyaga vaqt ajrating — kichik qadam ham muhim.",
+      "streakTitle": "Streak'ingni saqlab qol",
+      "streakBody": "Bugun hali sessiya yo'q. Qatorni uzma — bir necha daqiqa yetadi.",
+      "weeklyTitle": "Haftalik tahlil tayyor",
+      "weeklyBody": "O'tgan haftadagi fokus natijalaringni ko'rib chiqing.",
+      "achieveTitle": "Maqsadga yetding! 🎯",
+      "achieveBody": "Sessiya 100% bajarildi — zo'r ish!"
+    }
   },
   "stats": {
     "title": "Statistika",

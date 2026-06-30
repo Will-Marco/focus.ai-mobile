@@ -5,10 +5,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer, DefaultTheme, DarkTheme, type Theme } from '@react-navigation/native';
 import { useUnistyles } from 'react-native-unistyles';
 import { useBootstrap } from '@app/lib/useBootstrap';
+import { useNotificationSync } from '@app/lib/useNotificationSync';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const { ready } = useBootstrap();
   const { theme } = useUnistyles();
+  useNotificationSync(); // bildirishnoma jadvalini sozlamalarга sinxronlash
 
   // Navigatsiya konteyner mavzusi — transition paytida oq fon chaqnashining oldini oladi.
   const navTheme = useMemo<Theme>(() => {

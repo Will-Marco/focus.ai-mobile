@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
@@ -7,15 +7,16 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { Screen, ScreenHeader, Text } from '@shared/ui';
 import type { RootScreenProps } from '@shared/config/navigation';
+import { useNotificationStore, type NotifToggleKey } from '@entities/notification';
+import { haptics } from '@shared/lib/haptics';
 
 // Animated.View'ga Unistyles style BERMA — plain const.
 const TOGGLE_FILL = { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 100 } as const;
 const KNOB = { width: 22, height: 22, borderRadius: 11, backgroundColor: '#fff' } as const;
 
-// ⚠️ Mock holat (UI build) — Notifee jadval/ruxsat M7da real ulanadi.
-type ToggleKey = 'reminder' | 'achieve' | 'streak' | 'team' | 'weekly';
+// Sozlamalar real (MMKV persist) + jadval Notifee orqali sinxronlanadi (useNotificationSync).
 interface RowDef {
-  key: ToggleKey;
+  key: NotifToggleKey;
   title: string;
   sub: string;
   d: string;
@@ -34,18 +35,33 @@ const ENDS = ['06:00', '07:00', '08:00'];
 
 export function NotificationSettingsScreen({ navigation }: RootScreenProps<'NotificationSettings'>) {
   const { t } = useTranslation();
-  const [toggles, setToggles] = useState<Record<ToggleKey, boolean>>({
-    reminder: true,
-    achieve: true,
-    streak: true,
-    team: false,
-    weekly: true,
-  });
-  const [quietOn, setQuietOn] = useState(true);
-  const [startI, setStartI] = useState(1);
-  const [endI, setEndI] = useState(1);
+  const settings = useNotificationStore((s) => s.settings);
+  const toggle = useNotificationStore((s) => s.toggle);
+  const setQuietEnabled = useNotificationStore((s) => s.setQuietEnabled);
+  const setQuietStart = useNotificationStore((s) => s.setQuietStart);
+  const setQuietEnd = useNotificationStore((s) => s.setQuietEnd);
 
-  const flip = (k: ToggleKey) => setToggles((s) => ({ ...s, [k]: !s[k] }));
+  const toggles = settings.toggles;
+  const quietOn = settings.quietEnabled;
+
+  const flip = (k: NotifToggleKey) => {
+    haptics.selection();
+    toggle(k);
+  };
+  const flipQuiet = () => {
+    haptics.selection();
+    setQuietEnabled(!quietOn);
+  };
+  const cycleStart = () => {
+    haptics.selection();
+    const next = (STARTS.indexOf(settings.quietStart) + 1) % STARTS.length;
+    setQuietStart(STARTS[next]);
+  };
+  const cycleEnd = () => {
+    haptics.selection();
+    const next = (ENDS.indexOf(settings.quietEnd) + 1) % ENDS.length;
+    setQuietEnd(ENDS[next]);
+  };
 
   return (
     <Screen edges={['top']}>
@@ -80,7 +96,7 @@ export function NotificationSettingsScreen({ navigation }: RootScreenProps<'Noti
         <View>
           <Text style={styles.section}>{t('notif.quietSection')}</Text>
           <View style={styles.quietCard}>
-            <Pressable accessibilityRole="switch" accessibilityState={{ checked: quietOn }} onPress={() => setQuietOn((q) => !q)} style={styles.quietRow}>
+            <Pressable accessibilityRole="switch" accessibilityState={{ checked: quietOn }} onPress={flipQuiet} style={styles.quietRow}>
               <View style={[styles.rowIcon, styles.quietIcon]}>
                 <Svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke="#9A8CF0" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <Path d="M20 13.5A8 8 0 1110.5 4 6.5 6.5 0 0020 13.5z" />
@@ -90,22 +106,22 @@ export function NotificationSettingsScreen({ navigation }: RootScreenProps<'Noti
                 <Text style={styles.rowTitle}>{t('notif.quietTitle')}</Text>
                 <Text style={styles.rowSub}>{t('notif.quietSub')}</Text>
               </View>
-              <Toggle value={quietOn} onChange={() => setQuietOn((q) => !q)} />
+              <Toggle value={quietOn} onChange={flipQuiet} />
             </Pressable>
 
             {quietOn ? (
               <View style={styles.timeRow}>
-                <Pressable accessibilityRole="button" onPress={() => setStartI((i) => (i + 1) % STARTS.length)} style={styles.timeBox}>
+                <Pressable accessibilityRole="button" onPress={cycleStart} style={styles.timeBox}>
                   <Text style={styles.timeLabel}>{t('notif.start')}</Text>
                   <Text variant="mono" style={styles.timeValue}>
-                    {STARTS[startI]}
+                    {settings.quietStart}
                   </Text>
                 </Pressable>
                 <Text style={styles.timeArrow}>→</Text>
-                <Pressable accessibilityRole="button" onPress={() => setEndI((i) => (i + 1) % ENDS.length)} style={styles.timeBox}>
+                <Pressable accessibilityRole="button" onPress={cycleEnd} style={styles.timeBox}>
                   <Text style={styles.timeLabel}>{t('notif.end')}</Text>
                   <Text variant="mono" style={styles.timeValue}>
-                    {ENDS[endI]}
+                    {settings.quietEnd}
                   </Text>
                 </Pressable>
               </View>
