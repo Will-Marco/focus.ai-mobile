@@ -63,6 +63,8 @@ export function ProfileScreen() {
             onEndEditing={() => updateName(name)}
             placeholder={t('profile.namePlaceholder')}
             placeholderTextColor={theme.colors.textDim}
+            cursorColor={theme.colors.brand}
+            selectionColor={theme.colors.brand}
             maxLength={40}
             style={styles.nameInput}
             textAlign="center"

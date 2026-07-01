@@ -17,7 +17,11 @@ interface HapticsNative {
 
 let native: HapticsNative | null | undefined;
 
+// Global vibratsiya o'chirilgan (Sir talabi). Yoqish uchun `true` qiling.
+const HAPTICS_ENABLED = false;
+
 function get(): HapticsNative | null {
+  if (!HAPTICS_ENABLED) return null;
   if (native !== undefined) return native;
   try {
     native = require('react-native-nitro-haptics').Haptics as HapticsNative;

@@ -14,6 +14,8 @@ export function Input({ label, style, ...rest }: InputProps) {
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <TextInput
         placeholderTextColor={theme.colors.textDim}
+        cursorColor={theme.colors.brand}
+        selectionColor={theme.colors.brand}
         style={[styles.input, style]}
         {...rest}
       />

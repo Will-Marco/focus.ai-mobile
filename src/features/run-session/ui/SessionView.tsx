@@ -21,6 +21,8 @@ import { haptics } from '@shared/lib/haptics';
 import { displayNow } from '@shared/lib/notifications';
 import { useHabitStore } from '@entities/habit';
 import { useNotificationStore } from '@entities/notification';
+import { useProfileStore } from '@entities/profile';
+import { groupRepo } from '@entities/group';
 import { remainingMs, useHabitProgress, useSessionStore } from '@entities/session';
 import { sessionXp } from '@entities/stats';
 import { useSessionTimer } from '../model/useSessionTimer';
@@ -89,6 +91,7 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   const { t } = useTranslation();
   const { theme } = useUnistyles();
   const habit = useHabitStore((s) => s.habits.find((h) => h.id === habitId));
+  const myName = useProfileStore((s) => s.profile?.name) ?? 'Men';
   const start = useSessionStore((s) => s.start);
   const pause = useSessionStore((s) => s.pause);
   const resume = useSessionStore((s) => s.resume);
@@ -271,6 +274,10 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
     haptics.medium();
     useAudioStore.getState().stop();
     await finish(sessionId, { awayMs: awayMsRef.current });
+    // Jamoa feediga sessiya yakunini yuborish (online bo'lsa; fire-and-forget).
+    groupRepo
+      .broadcastActivity('completed', t('team.actCompleted', { name: myName, habit: habit?.name ?? '' }), '#F2603E')
+      .catch(() => {});
     onClose();
   };
 

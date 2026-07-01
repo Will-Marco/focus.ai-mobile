@@ -1,189 +1,270 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Pressable, RefreshControl, ScrollView, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { CheckIcon, ChevronLeftIcon, ProgressRing, RadialBackground, RadialGlow, Text } from '@shared/ui';
+import { useFocusEffect } from '@react-navigation/native';
+import { ChevronLeftIcon, GroupCardSkeleton, MemberRowSkeleton, ProgressRing, RadialBackground, RadialGlow, Text } from '@shared/ui';
 import { usePulse } from '@shared/lib/animation/usePulse';
+import { haptics } from '@shared/lib/haptics';
+import { supabase } from '@shared/api/supabase';
+import { isSupabaseConfigured } from '@shared/config/env';
+import { useProfileStore } from '@entities/profile';
+import { GROUP_COLORS, groupRepo, useGroupStore, type GroupSummary, type Invite } from '@entities/group';
+import { useGroupRoom, useRoomPresence } from '@features/focus-room';
 
-// ⚠️ Mock data (UI build) — Team/presence/feed M9 (Supabase Realtime)da real ulanadi.
-type Status = 'focusing' | 'online' | 'offline';
-interface Member {
-  id: string;
-  name: string;
-  ini: string;
-  color: string;
-  habit?: string;
-  status: Status;
-  startMs?: number;
-  targetMs?: number;
-  completed?: boolean;
-  note?: string;
-}
-interface FeedItem {
-  id: string;
-  text: string;
-  ago: string;
-  color: string;
-}
-type View4 = 'list' | 'detail' | 'invite' | 'invitation';
+type View5 = 'list' | 'detail' | 'invite' | 'invitation' | 'create';
 
 const TEAL = '#5FD0C5';
 const GREEN = '#9bd07f';
 
+// Team timer: <1soat → MM:SS, aks holда HH:MM:SS (padded soat, Sir talabi).
 const fmt = (ms: number) => {
-  const s = Math.max(0, Math.floor(ms / 1000));
-  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  const p = (n: number) => String(n).padStart(2, '0');
+  return h > 0 ? `${p(h)}:${p(m)}:${p(s)}` : `${p(m)}:${p(s)}`;
 };
 
-const initialMembers = (now: number): Member[] => [
-  { id: 'm1', name: 'Dilnoza', ini: 'D', color: '#F2A24C', habit: 'Chuqur ish', status: 'focusing', startMs: now - 32 * 60000, targetMs: 45 * 60000 },
-  { id: 'm2', name: 'Sardor', ini: 'S', color: TEAL, habit: 'Mutolaa', status: 'focusing', startMs: now - 12 * 60000, targetMs: 25 * 60000 },
-  { id: 'm3', name: 'Kamola', ini: 'K', color: '#EC5C7D', status: 'online', note: "bo'sh" },
-  { id: 'me', name: 'Aziz (sen)', ini: 'A', color: '#F2603E', status: 'online', note: 'fokusda emas' },
-  { id: 'm4', name: 'Jasur', ini: 'J', color: '#9A8CF0', status: 'offline', note: '2 soat oldin' },
-];
+const initial = (name: string) => (name.trim()[0] ?? '?').toUpperCase();
 
-const initialFeed: FeedItem[] = [
-  { id: 'f1', text: 'Dilnoza Chuqur ish sessiyasini boshladi', ago: '5 daq oldin', color: '#F2A24C' },
-  { id: 'f2', text: 'Sen 45 daqiqalik sessiyani yakunlading', ago: '22 daq oldin', color: '#F2603E' },
-  { id: 'f3', text: "Kamola guruhga qo'shildi", ago: '1 soat oldin', color: '#EC5C7D' },
-];
-
-const SUGGESTIONS = [
-  { id: 's1', name: 'Bekzod', handle: '@bekzod', ini: 'B', color: '#F2C879' },
-  { id: 's2', name: 'Madina', handle: '@madina_k', ini: 'M', color: '#EC5C7D' },
-  { id: 's3', name: 'Oybek', handle: '@oybek', ini: 'O', color: '#9A8CF0' },
-];
+function agoText(createdAt: number, now: number, t: (k: string) => string): string {
+  const s = Math.max(0, Math.floor((now - createdAt) / 1000));
+  if (s < 60) return t('team.now');
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} ${t('team.minAgo')}`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} ${t('team.hourAgo')}`;
+  return `${Math.floor(h / 24)} ${t('team.dayAgo')}`;
+}
 
 export function TeamScreen() {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
-  const [view, setView] = useState<View4>('list');
-  const [now, setNow] = useState(() => Date.now());
-  const [members, setMembers] = useState<Member[]>(() => initialMembers(Date.now()));
-  const [feed, setFeed] = useState<FeedItem[]>(initialFeed);
-  const [banner, setBanner] = useState<{ name: string; habit: string } | null>(null);
-  const [invitePending, setInvitePending] = useState(true);
-  const [invited, setInvited] = useState<Record<string, boolean>>({});
-  const bannerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isRegistered = useProfileStore((s) => s.profile?.authMode === 'registered');
+  const online = isSupabaseConfigured && isRegistered;
 
-  // Jonli tick (faqat detail) — timerlar/ringlar yangilanadi, maqsadga yetganlar yakunlanadi.
+  const groups = useGroupStore((s) => s.groups);
+  const invites = useGroupStore((s) => s.invites);
+  const refresh = useGroupStore((s) => s.refresh);
+  const listLoading = useGroupStore((s) => s.loading);
+
+  const [userId, setUserId] = useState<string | null>(null);
+  const [view, setView] = useState<View5>('list');
+  const [group, setGroup] = useState<GroupSummary | null>(null);
+  const [invite, setInvite] = useState<Invite | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+
+  // Yangi guruh / taklif formasi holati.
+  const [groupName, setGroupName] = useState('');
+  const [groupColor, setGroupColor] = useState<string>(GROUP_COLORS[0]);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteSent, setInviteSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Faol guruh kanali — faqat detail ko'rinishida.
+  const activeGroupId = view === 'detail' && group ? group.id : null;
+  const presences = useRoomPresence(activeGroupId, userId);
+  const { members, feed, loading: roomLoading, reload } = useGroupRoom(activeGroupId);
+
+  const onRefreshList = useCallback(async () => {
+    setRefreshing(true);
+    await refresh();
+    setRefreshing(false);
+  }, [refresh]);
+
+  const onRefreshDetail = useCallback(async () => {
+    setRefreshing(true);
+    await reload();
+    setRefreshing(false);
+  }, [reload]);
+
+  useEffect(() => {
+    if (!online || !supabase) return;
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+  }, [online]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (online) refresh().catch(() => {});
+    }, [online, refresh]),
+  );
+
+  // Jonli tick (detail) — fokus timerlari/ringlari va feed "ago".
   useEffect(() => {
     if (view !== 'detail') return;
-    const id = setInterval(() => {
-      const t2 = Date.now();
-      setNow(t2);
-      setMembers((prev) => {
-        const done = prev.find(
-          (m) => m.status === 'focusing' && !m.completed && m.startMs != null && m.targetMs != null && t2 - m.startMs >= m.targetMs,
-        );
-        if (!done) return prev;
-        const mins = Math.round((done.targetMs ?? 0) / 60000);
-        setFeed((f) => [
-          { id: `f${t2}`, text: `${done.name} ${mins} daqiqalik ${done.habit} sessiyasini yakunladi`, ago: 'hozir', color: done.color },
-          ...f,
-        ]);
-        setBanner({ name: done.name, habit: done.habit ?? '' });
-        if (bannerTimer.current) clearTimeout(bannerTimer.current);
-        bannerTimer.current = setTimeout(() => setBanner(null), 4000);
-        return prev.map((m) => (m.id === done.id ? { ...m, status: 'online', completed: true, note: 'hozir yakunladi' } : m));
-      });
-    }, 1000);
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, [view]);
 
-  useEffect(
-    () => () => {
-      if (bannerTimer.current) clearTimeout(bannerTimer.current);
-    },
-    [],
-  );
-
-  const openGroup = () => {
-    const t2 = Date.now();
-    setNow(t2);
-    setMembers((prev) =>
-      prev.map((m) => {
-        if (m.id === 'm1') return { ...m, startMs: t2 - 32 * 60000, completed: false, status: 'focusing' };
-        if (m.id === 'm2') return { ...m, startMs: t2 - ((m.targetMs ?? 0) - 9000), completed: false, status: 'focusing', note: undefined };
-        return m;
-      }),
+  // ── Gate: mehmon yoki online sozlanmagan ──
+  if (!online) {
+    return (
+      <Screen2>
+        <View style={styles.listHead}>
+          <View>
+            <Text style={styles.subtitle}>{t('team.subtitle')}</Text>
+            <Text style={styles.title}>{t('team.title')}</Text>
+          </View>
+        </View>
+        <View style={styles.gate}>
+          <RadialGlow size={200} color={theme.colors.brand} blur={30} opacity={0.14} style={styles.gateGlow} />
+          <Text style={styles.gateTitle}>{t('team.gateTitle')}</Text>
+          <Text style={styles.gateSub}>{t('team.gateSub')}</Text>
+        </View>
+      </Screen2>
     );
-    setView('detail');
-  };
+  }
 
-  const focusing = members.filter((m) => m.status === 'focusing');
-  const online = members.filter((m) => m.status === 'online');
-  const offline = members.filter((m) => m.status === 'offline');
-
-  if (view === 'invitation') {
+  // ── INVITATION (kelgan taklif) ──
+  if (view === 'invitation' && invite) {
+    const respond = async (accept: boolean) => {
+      setBusy(true);
+      await groupRepo.respondInvite(invite, accept);
+      await refresh();
+      setBusy(false);
+      setInvite(null);
+      setView('list');
+    };
     return (
       <InvitationView
-        onAccept={() => {
-          setInvitePending(false);
-          setView('list');
-        }}
-        onReject={() => {
-          setInvitePending(false);
-          setView('list');
-        }}
+        groupName={invite.groupName ?? t('team.aGroup')}
+        busy={busy}
+        onAccept={() => respond(true)}
+        onReject={() => respond(false)}
         onBack={() => setView('list')}
       />
     );
   }
 
-  if (view === 'invite') {
+  // ── INVITE (email bo'yicha taklif yuborish) ──
+  if (view === 'invite' && group) {
+    const send = async () => {
+      if (!inviteEmail.includes('@')) return;
+      setBusy(true);
+      haptics.light();
+      const ok = await groupRepo.createInvite(group.id, inviteEmail);
+      setBusy(false);
+      if (ok) {
+        setInviteSent(true);
+        setInviteEmail('');
+      }
+    };
     return (
       <Screen2>
         <Header onBack={() => setView('detail')} title={t('team.inviteMember')} />
         <View style={styles.invBody}>
           <View style={styles.search}>
             <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#8a7263" strokeWidth={2}>
-              <Circle cx="11" cy="11" r="7" />
-              <Path d="M21 21l-4-4" />
+              <Path d="M4 6h16v12H4zM4 7l8 6 8-6" />
             </Svg>
-            <TextInput placeholder={t('team.searchPlaceholder')} placeholderTextColor={theme.colors.textDim} style={styles.searchInput} />
+            <TextInput
+              placeholder={t('team.inviteEmailPlaceholder')}
+              placeholderTextColor={theme.colors.textDim}
+              cursorColor={theme.colors.brand}
+              selectionColor={theme.colors.brand}
+              style={styles.searchInput}
+              value={inviteEmail}
+              onChangeText={(v) => {
+                setInviteEmail(v);
+                setInviteSent(false);
+              }}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
           </View>
-          <View>
-            <Text style={styles.section}>{t('team.canInvite')}</Text>
-            <View style={styles.gap8}>
-              {SUGGESTIONS.map((s) => {
-                const inv = !!invited[s.id];
-                return (
-                  <View key={s.id} style={styles.suggRow}>
-                    <MemberAvatar color={s.color} ini={s.ini} size={40} />
-                    <View style={styles.flex1}>
-                      <Text style={styles.suggName}>{s.name}</Text>
-                      <Text style={styles.suggHandle}>{s.handle}</Text>
-                    </View>
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => setInvited((p) => ({ ...p, [s.id]: true }))}
-                      style={inv ? styles.inviteBtnOff : null}
-                    >
-                      {inv ? (
-                        <Text style={styles.inviteBtnOffTxt}>{t('team.invitedBtn')}</Text>
-                      ) : (
-                        <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.inviteBtnOn}>
-                          <Text style={styles.inviteBtnOnTxt}>{t('team.inviteBtn')}</Text>
-                        </LinearGradient>
-                      )}
-                    </Pressable>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
+          <Pressable accessibilityRole="button" onPress={send} disabled={busy} style={styles.sendWrap}>
+            <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.sendBtn}>
+              <Text style={styles.sendTxt}>{busy ? t('team.sending') : t('team.sendInvite')}</Text>
+            </LinearGradient>
+          </Pressable>
+          {inviteSent ? <Text style={styles.sentNote}>{t('team.inviteSent')}</Text> : null}
         </View>
       </Screen2>
     );
   }
 
-  if (view === 'detail') {
+  // ── CREATE (yangi guruh) ──
+  if (view === 'create') {
+    const create = async () => {
+      if (groupName.trim().length < 2) {
+        setFormError('team.nameShort');
+        return;
+      }
+      setFormError(null);
+      setBusy(true);
+      haptics.light();
+      const g = await groupRepo.createGroup(groupName.trim(), groupColor);
+      await refresh();
+      setBusy(false);
+      if (g) {
+        setGroupName('');
+        setView('list');
+      } else {
+        setFormError('team.createFailed');
+      }
+    };
+    return (
+      <Screen2>
+        <Header onBack={() => setView('list')} title={t('team.createTitle')} />
+        <View style={styles.invBody}>
+          <View style={styles.search}>
+            <TextInput
+              placeholder={t('team.groupNamePlaceholder')}
+              placeholderTextColor={theme.colors.textDim}
+              cursorColor={theme.colors.brand}
+              selectionColor={theme.colors.brand}
+              style={styles.searchInput}
+              value={groupName}
+              onChangeText={(v) => {
+                setGroupName(v);
+                setFormError(null);
+              }}
+              maxLength={40}
+            />
+          </View>
+          <View>
+            <Text style={styles.section}>{t('team.colorLabel')}</Text>
+            <View style={styles.colorRow}>
+              {GROUP_COLORS.map((c) => (
+                <Pressable
+                  key={c}
+                  accessibilityRole="button"
+                  onPress={() => {
+                    haptics.selection();
+                    setGroupColor(c);
+                  }}
+                  style={[styles.colorDot, { backgroundColor: c }, groupColor === c && styles.colorDotOn]}
+                />
+              ))}
+            </View>
+          </View>
+          <Pressable accessibilityRole="button" onPress={create} disabled={busy} style={styles.sendWrap}>
+            <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.sendBtn}>
+              <Text style={styles.sendTxt}>{busy ? t('team.creating') : t('team.create')}</Text>
+            </LinearGradient>
+          </Pressable>
+          {formError ? <Text style={styles.errNote}>{t(formError)}</Text> : null}
+        </View>
+      </Screen2>
+    );
+  }
+
+  // ── DETAIL (guruh xonasi — jonli) ──
+  if (view === 'detail' && group) {
+    const presById = new Map(presences.map((p) => [p.userId, p]));
+    const focusing = presences.filter((p) => p.focusing);
+    const onlineMembers = presences.filter((p) => !p.focusing);
+    const offlineMembers = members.filter((m) => !presById.has(m.userId));
+    const meTag = (id: string) => (id === userId ? ` ${t('team.youSuffix')}` : '');
+
     return (
       <Screen2>
         <View style={styles.detailHead}>
@@ -192,16 +273,16 @@ export function TeamScreen() {
           </Pressable>
           <View style={styles.flex1}>
             <Text style={styles.detailTitle} numberOfLines={1}>
-              Imtihonga tayyorgarlik
+              {group.name}
             </Text>
             <View style={styles.detailMetaRow}>
               <LiveDot size={6} color={TEAL} />
               <Text style={styles.detailMeta}>
-                {focusing.length} {t('team.nowFocusing')} · 5 {t('team.memberUnit')}
+                {focusing.length} {t('team.nowFocusing')} · {group.memberCount} {t('team.memberUnit')}
               </Text>
             </View>
           </View>
-          <Pressable accessibilityRole="button" onPress={() => setView('invite')} style={styles.inviteIconBtn}>
+          <Pressable accessibilityRole="button" onPress={() => { setInviteSent(false); setView('invite'); }} style={styles.inviteIconBtn}>
             <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={theme.colors.gold} strokeWidth={2}>
               <Circle cx="9" cy="8" r="3.2" />
               <Path d="M4 20c0-3 2.5-5 5-5s5 2 5 5M18 8v6M21 11h-6" />
@@ -209,83 +290,102 @@ export function TeamScreen() {
           </Pressable>
         </View>
 
-        {banner ? (
-          <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.banner}>
-            <View style={styles.bannerCheck}>
-              <CheckIcon size={18} color={theme.colors.onBrand} strokeWidth={3} />
+        <ScrollView
+          contentContainerStyle={styles.detailBody}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefreshDetail} tintColor={theme.colors.brand} colors={[theme.colors.brand]} />
+          }
+        >
+          {roomLoading && members.length === 0 ? (
+            <View style={styles.gap8}>
+              <MemberRowSkeleton />
+              <MemberRowSkeleton />
+              <MemberRowSkeleton />
             </View>
-            <View style={styles.flex1}>
-              <Text style={styles.bannerTitle}>{banner.name} {t('team.reachedGoal')}</Text>
-              <Text style={styles.bannerSub}>
-                {banner.habit} · {t('team.justFinished')}
+          ) : null}
+          {focusing.length > 0 ? (
+            <View>
+              <Text style={styles.sectionGold}>
+                {t('team.focusingNow')} · {focusing.length}
               </Text>
+              <View style={styles.gap10}>
+                {focusing.map((m) => {
+                  const running = m.runningSince != null;
+                  const sessionElapsed = (m.accumulatedMs ?? 0) + (running ? Math.max(0, now - (m.runningSince ?? now)) : 0);
+                  const dayTotal = (m.todayBaseMs ?? 0) + sessionElapsed; // bugungi JAMI (barcha odatlar)
+                  const progress = Math.min(sessionElapsed / (m.targetMs ?? 1), 1);
+                  return (
+                    <View key={m.userId} style={styles.focusRow}>
+                      <View style={styles.avatarWrap}>
+                        <MemberAvatar color={m.color} ini={initial(m.name)} size={46} />
+                        <View style={[styles.presenceDot, running ? styles.presenceFocus : styles.presenceOnline]} />
+                      </View>
+                      <View style={styles.flex1}>
+                        <Text style={styles.memberName}>
+                          {m.name}
+                          {meTag(m.userId)}
+                        </Text>
+                        <Text style={styles.memberSub}>
+                          {m.habit ?? ''} · {Math.round((m.targetMs ?? 0) / 60000)} {t('team.fromMinutes')}
+                          {running ? '' : ` · ${t('team.paused')}`}
+                        </Text>
+                      </View>
+                      <View style={styles.focusRight}>
+                        <View style={styles.focusTimeCol}>
+                          <Text variant="mono" style={[styles.focusTime, !running && styles.focusTimePaused]}>
+                            {fmt(dayTotal)}
+                          </Text>
+                          <Text style={styles.focusCaption}>{t('team.todayTotal')}</Text>
+                        </View>
+                        <ProgressRing size={38} strokeWidth={4} progress={progress} color={m.color} trackOpacity={0.1} />
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
             </View>
-          </LinearGradient>
-        ) : null}
-
-        <ScrollView contentContainerStyle={styles.detailBody} showsVerticalScrollIndicator={false}>
-          <View>
-            <Text style={[styles.sectionGold]}>
-              {t('team.focusingNow')} · {focusing.length}
-            </Text>
-            <View style={styles.gap10}>
-              {focusing.map((m) => {
-                const elapsed = now - (m.startMs ?? now);
-                const progress = Math.min(elapsed / (m.targetMs ?? 1), 1);
-                return (
-                  <View key={m.id} style={styles.focusRow}>
-                    <View style={styles.avatarWrap}>
-                      <MemberAvatar color={m.color} ini={m.ini} size={46} />
-                      <View style={[styles.presenceDot, styles.presenceFocus]} />
-                    </View>
-                    <View style={styles.flex1}>
-                      <Text style={styles.memberName}>{m.name}</Text>
-                      <Text style={styles.memberSub}>
-                        {m.habit} · {Math.round((m.targetMs ?? 0) / 60000)} {t('team.fromMinutes')}
-                      </Text>
-                    </View>
-                    <View style={styles.focusRight}>
-                      <Text variant="mono" style={styles.focusTime}>
-                        {fmt(elapsed)}
-                      </Text>
-                      <ProgressRing size={38} strokeWidth={4} progress={progress} color={m.color} trackOpacity={0.1} />
-                    </View>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
+          ) : null}
 
           <View>
             <Text style={styles.section}>
-              {t('team.online')} · {online.length}
+              {t('team.online')} · {onlineMembers.length}
             </Text>
             <View style={styles.gap8}>
-              {online.map((m) => (
-                <View key={m.id} style={styles.onlineRow}>
+              {onlineMembers.map((m) => (
+                <View key={m.userId} style={styles.onlineRow}>
                   <View style={styles.avatarWrap}>
-                    <MemberAvatar color={m.color} ini={m.ini} size={38} />
+                    <MemberAvatar color={m.color} ini={initial(m.name)} size={38} />
                     <View style={[styles.presenceDotSm, styles.presenceOnline]} />
                   </View>
-                  <Text style={[styles.flex1, styles.onlineName]}>{m.name}</Text>
-                  <Text style={styles.note}>{m.note}</Text>
+                  <Text style={[styles.flex1, styles.onlineName]}>
+                    {m.name}
+                    {meTag(m.userId)}
+                  </Text>
+                  <Text style={styles.note}>
+                    {m.todayBaseMs && m.todayBaseMs > 0
+                      ? t('team.todayFocus', { time: fmt(m.todayBaseMs) })
+                      : t('team.notFocusing')}
+                  </Text>
                 </View>
               ))}
+              {onlineMembers.length === 0 ? <Text style={styles.note}>{t('team.noneOnline')}</Text> : null}
             </View>
           </View>
 
-          <View>
-            <Text style={styles.sectionDim}>
-              {t('team.offline')} · {offline.length}
-            </Text>
-            {offline.map((m) => (
-              <View key={m.id} style={styles.offlineRow}>
-                <MemberAvatar color="#3a2e24" ini={m.ini} size={38} mutedText />
-                <Text style={[styles.flex1, styles.offlineName]}>{m.name}</Text>
-                <Text style={styles.noteDim}>{m.note}</Text>
-              </View>
-            ))}
-          </View>
+          {offlineMembers.length > 0 ? (
+            <View>
+              <Text style={styles.sectionDim}>
+                {t('team.offline')} · {offlineMembers.length}
+              </Text>
+              {offlineMembers.map((m) => (
+                <View key={m.userId} style={styles.offlineRow}>
+                  <MemberAvatar color="#3a2e24" ini={initial(m.displayName)} size={38} mutedText />
+                  <Text style={[styles.flex1, styles.offlineName]}>{m.displayName}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
 
           <View>
             <Text style={styles.section}>{t('team.activity')}</Text>
@@ -294,17 +394,23 @@ export function TeamScreen() {
                 <View style={[styles.feedDot, { backgroundColor: ev.color }]} />
                 <View style={styles.flex1}>
                   <Text style={styles.feedText}>{ev.text}</Text>
-                  <Text style={styles.feedAgo}>{ev.ago}</Text>
+                  <Text style={styles.feedAgo}>{agoText(ev.createdAt, now, t)}</Text>
                 </View>
               </View>
             ))}
+            {feed.length === 0 ? <Text style={styles.note}>{t('team.noActivity')}</Text> : null}
           </View>
+
+          <Pressable accessibilityRole="button" onPress={() => { reload().catch(() => {}); }} style={styles.refreshRow}>
+            <Text style={styles.refreshTxt}>{t('team.refresh')}</Text>
+          </Pressable>
         </ScrollView>
       </Screen2>
     );
   }
 
-  // ----- LIST -----
+  // ── LIST (guruhlar) ──
+  const firstInvite = invites[0] ?? null;
   return (
     <Screen2>
       <View style={styles.listHead}>
@@ -312,13 +418,20 @@ export function TeamScreen() {
           <Text style={styles.subtitle}>{t('team.subtitle')}</Text>
           <Text style={styles.title}>{t('team.title')}</Text>
         </View>
-        <Pressable accessibilityRole="button" style={styles.plusBtn}>
+        <Pressable accessibilityRole="button" onPress={() => setView('create')} style={styles.plusBtn}>
           <Text style={styles.plusTxt}>+</Text>
         </Pressable>
       </View>
 
-      {invitePending ? (
-        <Pressable accessibilityRole="button" onPress={() => setView('invitation')} style={styles.inviteBanner}>
+      {firstInvite ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            setInvite(firstInvite);
+            setView('invitation');
+          }}
+          style={styles.inviteBanner}
+        >
           <View style={styles.inviteBannerIcon}>
             <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={theme.colors.gold} strokeWidth={2}>
               <Rect x="3" y="5" width="18" height="14" rx="2" />
@@ -327,19 +440,49 @@ export function TeamScreen() {
           </View>
           <View style={styles.flex1}>
             <Text style={styles.inviteBannerTitle}>{t('team.newInviteTitle')}</Text>
-            <Text style={styles.inviteBannerSub}>Nigora sizni "Dizaynerlar" guruhiga taklif qildi</Text>
+            <Text style={styles.inviteBannerSub}>
+              {t('team.invitedToGroup', { group: firstInvite.groupName ?? t('team.aGroup') })}
+            </Text>
           </View>
           <Text style={styles.chev}>›</Text>
         </Pressable>
       ) : null}
 
-      <ScrollView contentContainerStyle={styles.listBody} showsVerticalScrollIndicator={false}>
-        <GroupCard name="Imtihonga tayyorgarlik" color="#F2A24C" live={focusing.length} members={5} mem={members} onPress={openGroup} />
-        <GroupCard name="Erta turuvchilar" color={TEAL} live={1} members={8} mem={members.slice(0, 4)} onPress={() => {}} />
-        <View style={styles.createBtn}>
+      <ScrollView
+        contentContainerStyle={styles.listBody}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefreshList} tintColor={theme.colors.brand} colors={[theme.colors.brand]} />
+        }
+      >
+        {listLoading && groups.length === 0 ? (
+          <>
+            <GroupCardSkeleton />
+            <GroupCardSkeleton />
+            <GroupCardSkeleton />
+          </>
+        ) : (
+          groups.map((g) => (
+            <GroupCard
+              key={g.id}
+              group={g}
+              onPress={() => {
+                setGroup(g);
+                setView('detail');
+              }}
+            />
+          ))
+        )}
+        {!listLoading && groups.length === 0 ? (
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyTitle}>{t('team.emptyTitle')}</Text>
+            <Text style={styles.emptySub}>{t('team.emptySub')}</Text>
+          </View>
+        ) : null}
+        <Pressable accessibilityRole="button" onPress={() => setView('create')} style={styles.createBtn}>
           <Text style={styles.createPlus}>+</Text>
           <Text style={styles.createTxt}>{t('team.createGroup')}</Text>
-        </View>
+        </Pressable>
       </ScrollView>
     </Screen2>
   );
@@ -379,53 +522,49 @@ function MemberAvatar({ color, ini, size, mutedText }: { color: string; ini: str
   );
 }
 
-function AvatarStack({ mem }: { mem: Member[] }) {
-  const { theme } = useUnistyles();
-  return (
-    <View style={styles.row}>
-      {mem.slice(0, 4).map((m, i) => (
-        // eslint-disable-next-line react-native/no-inline-styles -- rang/overlap dinamik
-        <View key={m.id} style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: m.color, alignItems: 'center', justifyContent: 'center', marginLeft: i ? -8 : 0, borderWidth: 2, borderColor: theme.colors.background }}>
-          <Text style={styles.stackIni}>{m.ini}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
-
 function LiveDot({ size = 7, color = TEAL }: { size?: number; color?: string }) {
   const pulse = usePulse(0.35, 1, 800);
   const st = useAnimatedStyle(() => ({ opacity: pulse.value }));
   return <Animated.View style={[{ width: size, height: size, borderRadius: size / 2, backgroundColor: color }, st]} />;
 }
 
-function GroupCard({ name, color, live, members, mem, onPress }: { name: string; color: string; live: number; members: number; mem: Member[]; onPress: () => void }) {
+function GroupCard({ group, onPress }: { group: GroupSummary; onPress: () => void }) {
   const { t } = useTranslation();
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={styles.groupCard}>
-      <View style={[styles.groupBar, { backgroundColor: color }]} />
+      <View style={[styles.groupBar, { backgroundColor: group.color }]} />
       <View style={styles.groupBody}>
         <View style={styles.rowBetween}>
-          <Text style={styles.groupName}>{name}</Text>
+          <Text style={styles.groupName}>{group.name}</Text>
           <View style={styles.liveRow}>
-            <LiveDot />
-            <Text style={styles.liveTxt}>
-              {live} {t('team.focusingUnit')}
-            </Text>
+            <LiveDot color={group.color} />
+            <Text style={styles.liveTxt}>{t('team.live')}</Text>
           </View>
         </View>
         <View style={[styles.rowBetween, styles.groupFooter]}>
-          <AvatarStack mem={mem} />
           <Text style={styles.memberText}>
-            {members} {t('team.memberUnit')}
+            {group.memberCount} {t('team.memberUnit')}
           </Text>
+          <Text style={styles.chev}>›</Text>
         </View>
       </View>
     </Pressable>
   );
 }
 
-function InvitationView({ onAccept, onReject, onBack }: { onAccept: () => void; onReject: () => void; onBack: () => void }) {
+function InvitationView({
+  groupName,
+  busy,
+  onAccept,
+  onReject,
+  onBack,
+}: {
+  groupName: string;
+  busy: boolean;
+  onAccept: () => void;
+  onReject: () => void;
+  onBack: () => void;
+}) {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
   return (
@@ -440,26 +579,19 @@ function InvitationView({ onAccept, onReject, onBack }: { onAccept: () => void; 
         </View>
         <View style={styles.invitationCenter}>
           <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.invitationAvatar}>
-            <Text style={styles.invitationAvatarTxt}>D</Text>
+            <Text style={styles.invitationAvatarTxt}>{initial(groupName)}</Text>
           </LinearGradient>
-          <Text style={styles.invitationFrom}>Nigora sizni taklif qilmoqda</Text>
-          <Text style={styles.invitationName}>Dizaynerlar uyushmasi</Text>
-          <Text style={styles.invitationSub}>Kunlik birga-fokus · 6 {t('team.memberUnit')}</Text>
-          <View style={styles.invitationAvatars}>
-            {['#F2A24C', TEAL, '#EC5C7D', '#9A8CF0', '#F2C879', '#F2603E'].map((c, i) => (
-              // eslint-disable-next-line react-native/no-inline-styles -- rang/overlap dinamik
-              <View key={c} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: c, marginLeft: i ? -10 : 0, borderWidth: 2, borderColor: theme.colors.background }} />
-            ))}
-          </View>
-          <Text style={styles.invitationNames}>Dilnoza, Sardor, Kamola va yana 3 kishi</Text>
+          <Text style={styles.invitationFrom}>{t('team.invitedYou')}</Text>
+          <Text style={styles.invitationName}>{groupName}</Text>
+          <Text style={styles.invitationSub}>{t('team.invitationSub')}</Text>
         </View>
         <View style={styles.invitationActions}>
-          <Pressable accessibilityRole="button" onPress={onAccept} style={styles.acceptWrap}>
+          <Pressable accessibilityRole="button" onPress={onAccept} disabled={busy} style={styles.acceptWrap}>
             <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.acceptBtn}>
-              <Text style={styles.acceptTxt}>{t('team.accept')}</Text>
+              <Text style={styles.acceptTxt}>{busy ? t('team.sending') : t('team.accept')}</Text>
             </LinearGradient>
           </Pressable>
-          <Pressable accessibilityRole="button" onPress={onReject} style={styles.rejectBtn}>
+          <Pressable accessibilityRole="button" onPress={onReject} disabled={busy} style={styles.rejectBtn}>
             <Text style={styles.rejectTxt}>{t('team.reject')}</Text>
           </Pressable>
         </View>
@@ -482,6 +614,12 @@ const styles = StyleSheet.create((theme) => ({
   plusBtn: { width: 42, height: 42, borderRadius: 14, backgroundColor: theme.colors.surfaceStrong, borderWidth: 1, borderColor: theme.colors.border, alignItems: 'center', justifyContent: 'center' },
   plusTxt: { fontSize: 24, color: theme.colors.gold, marginTop: -2 },
 
+  // gate (mehmon/sozlanmagan)
+  gate: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingBottom: 60 },
+  gateGlow: { position: 'absolute', top: '30%' },
+  gateTitle: { fontSize: 20, fontFamily: theme.fontFamily.extrabold, color: theme.colors.textStrong, textAlign: 'center', marginBottom: 8 },
+  gateSub: { fontSize: 14, color: theme.colors.textMuted, textAlign: 'center', lineHeight: 20 },
+
   // invite banner (list)
   inviteBanner: { marginHorizontal: 20, marginTop: 10, marginBottom: 4, padding: 14, borderRadius: 18, backgroundColor: 'rgba(242,162,76,0.10)', borderWidth: 1, borderColor: 'rgba(242,162,76,0.3)', flexDirection: 'row', alignItems: 'center', gap: 13 },
   inviteBannerIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(242,162,76,0.18)', alignItems: 'center', justifyContent: 'center' },
@@ -503,6 +641,10 @@ const styles = StyleSheet.create((theme) => ({
   createPlus: { fontSize: 20, color: theme.colors.gold },
   createTxt: { fontSize: 15, fontFamily: theme.fontFamily.semibold, color: theme.colors.gold },
 
+  emptyBox: { alignItems: 'center', paddingVertical: 36, paddingHorizontal: 20 },
+  emptyTitle: { fontSize: 16, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong, marginBottom: 6 },
+  emptySub: { fontSize: 13, color: theme.colors.textMuted, textAlign: 'center', lineHeight: 19 },
+
   // detail head
   detailHead: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 18, paddingTop: 16, paddingBottom: 8 },
   circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: theme.colors.surfaceStrong, borderWidth: 1, borderColor: theme.colors.border, alignItems: 'center', justifyContent: 'center' },
@@ -510,11 +652,6 @@ const styles = StyleSheet.create((theme) => ({
   detailMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
   detailMeta: { fontSize: 12, color: theme.colors.textMuted },
   inviteIconBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(242,162,76,0.14)', borderWidth: 1, borderColor: 'rgba(242,162,76,0.3)', alignItems: 'center', justifyContent: 'center' },
-
-  banner: { marginHorizontal: 18, marginVertical: 6, paddingVertical: 13, paddingHorizontal: 15, borderRadius: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  bannerCheck: { width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
-  bannerTitle: { fontSize: 14, fontFamily: theme.fontFamily.extrabold, color: theme.colors.onBrand },
-  bannerSub: { fontSize: 12, fontFamily: theme.fontFamily.semibold, color: theme.colors.onBrand, opacity: 0.85 },
 
   detailBody: { paddingHorizontal: 18, paddingTop: 8, paddingBottom: 24, gap: 16 },
   section: { fontSize: 12, letterSpacing: 0.7, color: theme.colors.textMuted, fontFamily: theme.fontFamily.bold, marginBottom: 10 },
@@ -530,7 +667,10 @@ const styles = StyleSheet.create((theme) => ({
   memberName: { fontSize: 15, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
   memberSub: { fontSize: 12, color: theme.colors.textMuted, marginTop: 1 },
   focusRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  focusTimeCol: { alignItems: 'flex-end' },
   focusTime: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 16, color: theme.colors.goldSoft },
+  focusTimePaused: { color: theme.colors.textMuted },
+  focusCaption: { fontSize: 10, color: theme.colors.textDim, marginTop: 1 },
 
   onlineRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 13, borderRadius: 16, backgroundColor: theme.colors.surfaceAlt },
   onlineName: { fontSize: 14, fontFamily: theme.fontFamily.semibold, color: theme.colors.text },
@@ -543,23 +683,26 @@ const styles = StyleSheet.create((theme) => ({
   feedDot: { width: 8, height: 8, borderRadius: 4, marginTop: 6 },
   feedText: { fontSize: 13, color: theme.colors.text, lineHeight: 18 },
   feedAgo: { fontSize: 11, color: theme.colors.textMuted, marginTop: 1 },
+  refreshRow: { alignItems: 'center', paddingVertical: 8 },
+  refreshTxt: { fontSize: 13, fontFamily: theme.fontFamily.semibold, color: theme.colors.gold },
 
   avatarIni: { fontFamily: theme.fontFamily.extrabold, color: theme.colors.onBrand },
   avatarIniMuted: { color: theme.colors.textMuted },
 
-  // invite view
+  // invite / create view
   simpleHead: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 18, paddingTop: 16, paddingBottom: 8 },
   simpleTitle: { fontSize: 20, fontFamily: theme.fontFamily.extrabold, color: theme.colors.textStrong },
   invBody: { paddingHorizontal: 20, paddingTop: 8, gap: 18 },
   search: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, borderRadius: 14, backgroundColor: theme.colors.surfaceStrong, borderWidth: 1, borderColor: theme.colors.border, paddingHorizontal: 16 },
   searchInput: { flex: 1, color: theme.colors.textStrong, fontSize: 15, fontFamily: theme.fontFamily.regular, padding: 0 },
-  suggRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 16, backgroundColor: theme.colors.surfaceAlt },
-  suggName: { fontSize: 15, fontFamily: theme.fontFamily.semibold, color: theme.colors.textStrong },
-  suggHandle: { fontSize: 12, color: theme.colors.textDim },
-  inviteBtnOn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: theme.radius.pill },
-  inviteBtnOnTxt: { fontSize: 13, fontFamily: theme.fontFamily.bold, color: theme.colors.onBrand },
-  inviteBtnOff: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: theme.radius.pill, backgroundColor: theme.colors.surfaceStrong, borderWidth: 1, borderColor: theme.colors.borderStrong },
-  inviteBtnOffTxt: { fontSize: 13, fontFamily: theme.fontFamily.bold, color: theme.colors.textMuted },
+  colorRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
+  colorDot: { width: 40, height: 40, borderRadius: 20 },
+  colorDotOn: { borderWidth: 3, borderColor: theme.colors.textStrong },
+  sendWrap: { borderRadius: 16, overflow: 'hidden' },
+  sendBtn: { height: 54, alignItems: 'center', justifyContent: 'center' },
+  sendTxt: { fontSize: 16, fontFamily: theme.fontFamily.bold, color: theme.colors.onBrand },
+  sentNote: { fontSize: 13, color: theme.colors.gold, textAlign: 'center' },
+  errNote: { fontSize: 13, color: theme.colors.brandCoral, textAlign: 'center' },
 
   // invitation view
   invitationGlow: { position: 'absolute', left: '50%', marginLeft: -150, top: -40 },
@@ -570,8 +713,6 @@ const styles = StyleSheet.create((theme) => ({
   invitationFrom: { fontSize: 13, color: theme.colors.gold, letterSpacing: 0.4 },
   invitationName: { fontSize: 26, fontFamily: theme.fontFamily.extrabold, color: theme.colors.textStrong, marginTop: 6, marginBottom: 4, textAlign: 'center' },
   invitationSub: { fontSize: 14, color: theme.colors.textMuted, marginBottom: 22 },
-  invitationAvatars: { flexDirection: 'row', marginBottom: 8 },
-  invitationNames: { fontSize: 13, color: theme.colors.textDim, marginTop: 8, textAlign: 'center' },
   invitationActions: { paddingHorizontal: 22, paddingBottom: 34, gap: 12 },
   acceptWrap: { borderRadius: 18, overflow: 'hidden', shadowColor: theme.colors.brandCoral, shadowOpacity: 0.4, shadowRadius: 18, shadowOffset: { width: 0, height: 12 }, elevation: 10 },
   acceptBtn: { height: 56, alignItems: 'center', justifyContent: 'center' },

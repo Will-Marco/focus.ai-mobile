@@ -19,6 +19,7 @@ export function AuthScreen() {
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
   const isSignin = mode === 'signin';
@@ -28,6 +29,11 @@ export function AuthScreen() {
     if (!email.includes('@') || password.length < 6) {
       clearError();
       setLocalError('auth.err.invalid');
+      return;
+    }
+    if (!isSignin && password !== confirm) {
+      clearError();
+      setLocalError('auth.err.mismatch');
       return;
     }
     setLocalError(null);
@@ -88,6 +94,15 @@ export function AuthScreen() {
             onChangeText={setPassword}
             secureTextEntry
           />
+          {!isSignin ? (
+            <Input
+              label={t('auth.confirmPassword')}
+              placeholder={t('auth.passwordPlaceholder')}
+              value={confirm}
+              onChangeText={setConfirm}
+              secureTextEntry
+            />
+          ) : null}
 
           {isSignin ? (
             <Pressable accessibilityRole="button" onPress={() => setLocalError('auth.err.resetSoon')} hitSlop={8}>
