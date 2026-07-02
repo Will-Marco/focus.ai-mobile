@@ -18,14 +18,14 @@
             </gradient>
         </aapt:attr>
     </path>
-    <!-- Target (ikki oq doira) -->
+    <!-- Target (ikki qora doira — Login onBrand) -->
     <path
-        android:strokeColor="#FFFFFF"
+        android:strokeColor="#1F140B"
         android:strokeWidth="5.4"
         android:fillColor="#00000000"
         android:pathData="M34,54 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0" />
     <path
-        android:strokeColor="#FFFFFF"
+        android:strokeColor="#1F140B"
         android:strokeWidth="5.4"
         android:fillColor="#00000000"
         android:pathData="M47.3,54 a6.7,6.7 0 1,0 13.4,0 a6.7,6.7 0 1,0 -13.4,0" />
