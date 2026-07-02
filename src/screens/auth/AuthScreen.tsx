@@ -1,172 +1,73 @@
-import React, { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import React from 'react';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { Button, GoogleIcon, Input, ProfileIcon, RadialGlow, Screen, TargetIcon, Text } from '@shared/ui';
+import { GoogleIcon, ProfileIcon, RadialGlow, Screen, TargetIcon, Text } from '@shared/ui';
 import { useProfileStore } from '@entities/profile';
 import { useAuthForm } from '@features/auth';
 import { haptics } from '@shared/lib/haptics';
-
-type Mode = 'signin' | 'signup';
 
 export function AuthScreen() {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
   const continueAsGuest = useProfileStore((s) => s.continueAsGuest);
-  const { busy, errorKey, clearError, submitEmail, submitGoogle } = useAuthForm();
-
-  const [mode, setMode] = useState<Mode>('signin');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
-  const [localError, setLocalError] = useState<string | null>(null);
-
-  const isSignin = mode === 'signin';
-  const shownError = localError ?? errorKey;
-
-  const onSubmitEmail = () => {
-    if (!email.includes('@') || password.length < 6) {
-      clearError();
-      setLocalError('auth.err.invalid');
-      return;
-    }
-    if (!isSignin && password !== confirm) {
-      clearError();
-      setLocalError('auth.err.mismatch');
-      return;
-    }
-    setLocalError(null);
-    haptics.light();
-    submitEmail(mode, email, password);
-  };
+  const { busy, errorKey, submitGoogle } = useAuthForm();
 
   const onGoogle = () => {
-    setLocalError(null);
     haptics.light();
     submitGoogle();
   };
 
   return (
     <Screen edges={['top', 'bottom']}>
-      <RadialGlow
-        size={300}
-        color={theme.colors.brandCoral}
-        opacity={0.16}
-        blur={34}
-        style={styles.cornerGlow}
-      />
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+      <RadialGlow size={300} color={theme.colors.brandCoral} opacity={0.16} blur={34} style={styles.cornerGlow} />
+
+      <View style={styles.content}>
+        {/* Brand */}
         <View>
           <View style={styles.logoRow}>
-            <LinearGradient
-              colors={[...theme.colors.gradientBrand]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.logoBox}
-            >
+            <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.logoBox}>
               <TargetIcon size={24} color={theme.colors.onBrand} strokeWidth={2.4} />
             </LinearGradient>
             <Text style={styles.wordmark}>{t('app.name')}</Text>
           </View>
-
-          <Text style={styles.title}>{isSignin ? t('auth.signinTitle') : t('auth.signupTitle')}</Text>
-          <Text style={styles.subtitle}>{isSignin ? t('auth.signinSub') : t('auth.signupSub')}</Text>
+          <Text style={styles.title}>{t('auth.title')}</Text>
+          <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
         </View>
 
-        <View style={styles.form}>
-          <Input
-            label={t('auth.email')}
-            placeholder={t('auth.emailPlaceholder')}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          <Input
-            label={t('auth.password')}
-            placeholder={t('auth.passwordPlaceholder')}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          {!isSignin ? (
-            <Input
-              label={t('auth.confirmPassword')}
-              placeholder={t('auth.passwordPlaceholder')}
-              value={confirm}
-              onChangeText={setConfirm}
-              secureTextEntry
-            />
-          ) : null}
+        <View style={styles.spacer} />
 
-          {isSignin ? (
-            <Pressable accessibilityRole="button" onPress={() => setLocalError('auth.err.resetSoon')} hitSlop={8}>
-              <Text style={styles.forgot}>{t('auth.forgot')}</Text>
-            </Pressable>
-          ) : null}
+        {/* Amallar — Google (asosiy) + Mehmon (ikkilamchi) */}
+        <View style={styles.actions}>
+          {errorKey ? <Text style={styles.error}>{t(errorKey)}</Text> : null}
 
-          {shownError ? <Text style={styles.soon}>{t(shownError)}</Text> : null}
-
-          <Button
-            title={busy ? t('auth.loading') : isSignin ? t('auth.signIn') : t('auth.signUp')}
-            onPress={onSubmitEmail}
-            disabled={busy}
-            style={styles.cta}
-          />
-
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setMode((m) => (m === 'signin' ? 'signup' : 'signin'))}
-            hitSlop={8}
-          >
-            <Text style={styles.switch}>
-              {isSignin ? t('auth.switchToSignupText') : t('auth.switchToSigninText')}{' '}
-              <Text style={styles.switchCta}>
-                {isSignin ? t('auth.switchToSignupCta') : t('auth.switchToSigninCta')}
-              </Text>
-            </Text>
+          <Pressable accessibilityRole="button" onPress={onGoogle} disabled={busy} style={styles.googleBtn}>
+            {busy ? (
+              <ActivityIndicator color={theme.colors.textStrong} />
+            ) : (
+              <>
+                <GoogleIcon size={20} />
+                <Text style={styles.googleTxt}>{t('auth.continueGoogle')}</Text>
+              </>
+            )}
           </Pressable>
+
+          <Pressable accessibilityRole="button" onPress={() => continueAsGuest()} disabled={busy} style={styles.guestBtn}>
+            <ProfileIcon size={19} color={theme.colors.gold} />
+            <Text style={styles.guestTxt}>{t('auth.guest')}</Text>
+          </Pressable>
+
+          <Text style={styles.footer}>{t('auth.guestFooter')}</Text>
         </View>
-
-        <View style={styles.divider}>
-          <View style={styles.line} />
-          <Text style={styles.or}>{t('auth.or')}</Text>
-          <View style={styles.line} />
-        </View>
-
-        <Pressable
-          accessibilityRole="button"
-          onPress={onGoogle}
-          disabled={busy}
-          style={[styles.guestBtn, styles.googleBtn]}
-        >
-          <GoogleIcon size={20} />
-          <Text style={styles.guestTxt}>{t('auth.continueGoogle')}</Text>
-        </Pressable>
-
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => continueAsGuest()}
-          style={styles.guestBtn}
-        >
-          <ProfileIcon size={20} color={theme.colors.gold} />
-          <Text style={styles.guestTxt}>{t('auth.guest')}</Text>
-        </Pressable>
-
-        <Text style={styles.footer}>{t('auth.guestFooter')}</Text>
-      </ScrollView>
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create((theme) => ({
   cornerGlow: { position: 'absolute', right: -80, top: -40 },
-  content: { paddingHorizontal: 26, paddingTop: 40, paddingBottom: 30 },
+  content: { flex: 1, paddingHorizontal: 26, paddingTop: 48, paddingBottom: 30 },
 
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 6 },
   logoBox: {
@@ -185,27 +86,21 @@ const styles = StyleSheet.create((theme) => ({
 
   title: {
     fontSize: 28,
-    lineHeight: 32,
+    lineHeight: 34,
     fontFamily: theme.fontFamily.extrabold,
     color: theme.colors.textStrong,
-    marginTop: 24,
-    marginBottom: 6,
+    marginTop: 28,
+    marginBottom: 8,
   },
-  subtitle: { fontSize: 15, color: theme.colors.textMuted, marginBottom: 26 },
+  subtitle: { fontSize: 15, lineHeight: 21, color: theme.colors.textMuted },
 
-  form: { gap: 14 },
-  forgot: { textAlign: 'right', fontSize: 13, fontFamily: theme.fontFamily.semibold, color: theme.colors.gold },
-  soon: { fontSize: 13, color: theme.colors.gold, textAlign: 'center' },
-  cta: { marginTop: 4 },
-  switch: { textAlign: 'center', fontSize: 14, color: theme.colors.textMuted, marginTop: 2 },
-  switchCta: { color: theme.colors.gold, fontFamily: theme.fontFamily.bold },
+  spacer: { flex: 1 },
 
-  divider: { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 22 },
-  line: { flex: 1, height: 1, backgroundColor: theme.colors.border },
-  or: { fontSize: 12, color: theme.colors.textDim },
+  actions: { gap: 12 },
+  error: { fontSize: 13, color: theme.colors.gold, textAlign: 'center', marginBottom: 2 },
 
-  guestBtn: {
-    height: 54,
+  googleBtn: {
+    height: 56,
     borderRadius: 16,
     backgroundColor: theme.colors.surfaceStrong,
     borderWidth: 1,
@@ -215,7 +110,17 @@ const styles = StyleSheet.create((theme) => ({
     justifyContent: 'center',
     gap: 10,
   },
-  googleBtn: { marginBottom: 12 },
-  guestTxt: { fontSize: 16, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
-  footer: { textAlign: 'center', fontSize: 12, lineHeight: 17, color: theme.colors.textDim, marginTop: 14 },
+  googleTxt: { fontSize: 16, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
+
+  guestBtn: {
+    height: 52,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 9,
+  },
+  guestTxt: { fontSize: 15, fontFamily: theme.fontFamily.semibold, color: theme.colors.textMuted },
+
+  footer: { textAlign: 'center', fontSize: 12, lineHeight: 17, color: theme.colors.textDim, marginTop: 8 },
 }));

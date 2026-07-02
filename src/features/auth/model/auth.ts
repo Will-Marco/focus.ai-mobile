@@ -32,23 +32,8 @@ export function configureGoogle(): void {
   }
 }
 
-export async function signUpWithEmail(email: string, password: string): Promise<AuthResult> {
-  if (!isSupabaseConfigured || !supabase) return NOT_CONFIGURED;
-  const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
-  if (error) return { ok: false, errorKey: 'auth.err.signup' };
-  applyRegistered(nameFromEmail(email), email.trim());
-  // Email tasdiqlash yoqilgan bo'lsa sessiya hali bo'lmaydi — lekin local profil yaratiladi.
-  return { ok: true, errorKey: data.session ? undefined : 'auth.err.confirmEmail' };
-}
-
-export async function signInWithEmail(email: string, password: string): Promise<AuthResult> {
-  if (!isSupabaseConfigured || !supabase) return NOT_CONFIGURED;
-  const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-  if (error) return { ok: false, errorKey: 'auth.err.signin' };
-  applyRegistered(nameFromEmail(email), email.trim());
-  return { ok: true };
-}
-
+// Auth modeli: FAQAT Google OAuth (parol/email YO'Q). Sabab — email+parol
+// tasdiqsiz xavfsiz emas; Google darhol tasdiqlangan sessiya beradi (taklif oqimi ishlaydi).
 export async function signInWithGoogle(): Promise<AuthResult> {
   if (!isSupabaseConfigured || !supabase) return NOT_CONFIGURED;
   if (!isGoogleConfigured) return { ok: false, errorKey: 'auth.err.googleNotConfigured' };
