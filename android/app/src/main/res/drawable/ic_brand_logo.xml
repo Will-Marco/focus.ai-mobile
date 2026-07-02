@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Gradient rounded-square (hero markazidagi logo box) -->
+    <path android:pathData="M30,6 h48 a24,24 0 0 1 24,24 v48 a24,24 0 0 1 -24,24 h-48 a24,24 0 0 1 -24,-24 v-48 a24,24 0 0 1 24,-24 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="6"
+                android:startY="6"
+                android:endX="102"
+                android:endY="102">
+                <item android:offset="0" android:color="#F2A24C" />
+                <item android:offset="1" android:color="#F2603E" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Target (ikki oq doira) -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5.4"
+        android:fillColor="#00000000"
+        android:pathData="M34,54 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5.4"
+        android:fillColor="#00000000"
+        android:pathData="M47.3,54 a6.7,6.7 0 1,0 13.4,0 a6.7,6.7 0 1,0 -13.4,0" />
+</vector>
