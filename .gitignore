@@ -84,3 +84,6 @@ Focus AI*.html
 
 # Local secrets (Supabase / Google OAuth) — M8
 .env
+
+# Supabase CLI temp
+supabase/.temp/

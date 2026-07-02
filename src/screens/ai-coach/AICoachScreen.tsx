@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -6,58 +6,70 @@ import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { AiOrb, CheckIcon, PlayIcon, RadialGlow, Text } from '@shared/ui';
 import { usePulse } from '@shared/lib/animation/usePulse';
-
-// ⚠️ Mock kontent (UI build) — AI matn/tahlil M10 (Edge Function → bepul AI + kesh)da real ulanadi.
-const MESSAGES = [
-  "Salom Aziz! Kecha 2s 40d fokuslanding — bu haftaning eng kuchli kuni. Bugun \"Chuqur ish\"ni ertalab boshlasang, miyang eng tetik paytda ishlaydi. 45 daqiqalik sessiya bilan boshlaymizmi?",
-  "12 kunlik streak — ajoyib! Lekin \"Mutolaa\" odatingga 3 kundan beri vaqt ajratmading. Bugun atigi 20 daqiqa ham seriyani tirik saqlaydi va kayfiyatni ko'taradi.",
-  "Bu hafta o'tgan haftaga nisbatan +20% ko'proq fokuslanding. Eng samarali vaqting — ertalab 9:00–11:00. Eng muhim ishlaringni shu oraliqqa rejalashtir.",
-];
-const CTAS = ['45 daq sessiya', '20 daq Mutolaa', 'Reja tuzish'];
+import { useStatsSummary } from '@entities/stats';
+import { buildMetrics, DAILY_LIMIT, useCoachStore, type WeeklyKind } from '@features/ai-coach';
 
 // Animated.Text'ga Unistyles style BERMA (crash) — plain const.
 const CARET = { color: '#F2C879' } as const;
 
-interface Card {
-  tag: string;
-  title: string;
-  body: string;
-  d: string;
-  iconBg: string;
-  iconCol: string;
-  tagCol: string;
-  toast: string;
-}
-const CARDS: Card[] = [
-  { tag: 'Eng samarali vaqt', title: 'Ertalab 9:00 – 11:00', body: 'Sessiyalaringning 64%i shu oraliqda — diqqating eng yuqori.', d: 'M12 7v5l3 2M12 3a9 9 0 100 18 9 9 0 000-18z', iconBg: 'rgba(242,162,76,0.16)', iconCol: '#F2A24C', tagCol: '#F2C879', toast: "Eng samarali vaqt: ertalab 9–11. Muhim ishlarni shu paytga qo'y." },
-  { tag: "E'tibor talab", title: '"Mutolaa" 3 kun tanaffusda', body: "Kichik qadam — bugun 20 daqiqa o'qishni sinab ko'r.", d: 'M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z', iconBg: 'rgba(236,92,125,0.14)', iconCol: '#EC5C7D', tagCol: '#EC8AA0', toast: '"Mutolaa" 3 kundan beri to\'xtagan — bugun boshlasang seriya saqlanadi.' },
-  { tag: "O'sish", title: '+20% bu hafta', body: "Jami 11s 30d fokus — o'tgan haftadan ancha yaxshi.", d: 'M3 17l6-6 4 4 7-7M21 8v5h-5', iconBg: 'rgba(95,208,197,0.14)', iconCol: '#5FD0C5', tagCol: '#7FD6CC', toast: "Bu hafta +20% — sur'atni shu tarzda saqla!" },
-  { tag: 'Tavsiya', title: 'Sport sessiyalarini qisqartir', body: '25 daqiqalik sessiyalar yakunlash ehtimolini oshiradi.', d: 'M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z', iconBg: 'rgba(154,140,240,0.14)', iconCol: '#9A8CF0', tagCol: '#B3A7F0', toast: "Sport uchun 25 daq sinab ko'r — kichik maqsad, ko'p g'alaba." },
-];
+// Haftalik karta turi → ikonka + ranglar (dizaynning 4 karta uslubi).
+const KIND_STYLE: Record<WeeklyKind, { d: string; iconBg: string; iconCol: string; tagCol: string }> = {
+  time: { d: 'M12 7v5l3 2M12 3a9 9 0 100 18 9 9 0 000-18z', iconBg: 'rgba(242,162,76,0.16)', iconCol: '#F2A24C', tagCol: '#F2C879' },
+  attention: { d: 'M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z', iconBg: 'rgba(236,92,125,0.14)', iconCol: '#EC5C7D', tagCol: '#EC8AA0' },
+  growth: { d: 'M3 17l6-6 4 4 7-7M21 8v5h-5', iconBg: 'rgba(95,208,197,0.14)', iconCol: '#5FD0C5', tagCol: '#7FD6CC' },
+  tip: { d: 'M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z', iconBg: 'rgba(154,140,240,0.14)', iconCol: '#9A8CF0', tagCol: '#B3A7F0' },
+};
 
 export function AICoachScreen() {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
-  const [msgIdx, setMsgIdx] = useState(0);
+  const navigation = useNavigation();
+
+  const summary = useStatsSummary();
+  const metrics = useMemo(() => buildMetrics(summary, summary.now), [summary]);
+
+  const insight = useCoachStore((s) => s.insight);
+  const status = useCoachStore((s) => s.status);
+  const source = useCoachStore((s) => s.source);
+  const cachedAt = useCoachStore((s) => s.cachedAt);
+  const offline = useCoachStore((s) => s.offline);
+  const limitReached = useCoachStore((s) => s.limitReached);
+  const remaining = useCoachStore((s) => s.remaining);
+  const ensureToday = useCoachStore((s) => s.ensureToday);
+  const refresh = useCoachStore((s) => s.refresh);
+
   const [typed, setTyped] = useState('');
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requested = useRef(false);
 
-  const full = MESSAGES[msgIdx];
-  const typing = typed.length < full.length;
+  // Statistika yuklangach bir marta bugungi insightni ta'minlaymiz (kesh yoki AI).
+  useEffect(() => {
+    if (summary.loaded && !requested.current) {
+      requested.current = true;
+      ensureToday(metrics);
+    }
+  }, [summary.loaded, metrics, ensureToday]);
 
+  const message = insight?.daily.message ?? '';
+  const typing = typed.length < message.length;
+  const loadingFirst = status === 'loading' && !insight;
+
+  // Typewriter — xabar o'zgarganda qaytadan yoziladi.
   useEffect(() => {
     setTyped('');
+    if (!message) return;
     let i = 0;
     const id = setInterval(() => {
       i += 2;
-      setTyped(MESSAGES[msgIdx].slice(0, i));
-      if (i >= MESSAGES[msgIdx].length) clearInterval(id);
+      setTyped(message.slice(0, i));
+      if (i >= message.length) clearInterval(id);
     }, 16);
     return () => clearInterval(id);
-  }, [msgIdx]);
+  }, [message]);
 
   useEffect(
     () => () => {
@@ -72,8 +84,23 @@ export function AICoachScreen() {
     toastTimer.current = setTimeout(() => setToast(null), 2600);
   };
 
+  const onRegenerate = () => {
+    if (limitReached) {
+      showToast(t('aiCoach.limitToast'));
+      return;
+    }
+    if (status === 'loading') return;
+    refresh(metrics);
+  };
+
+  // CTA — tavsiyaga amal qilish: murabbiyni yopib Bosh ekranga qaytadi (sessiya shu yerdan boshlanadi).
+  const onStart = () => navigation.goBack();
+
   const caret = usePulse(1, 0, 500);
   const caretStyle = useAnimatedStyle(() => ({ opacity: caret.value }));
+
+  const footer = footerText({ t, status, source, offline, limitReached, remaining, cachedAt, now: summary.now });
+  const cards = insight?.weekly ?? [];
 
   return (
     <Screen2>
@@ -83,11 +110,6 @@ export function AICoachScreen() {
           <Text style={styles.subtitle}>{t('aiCoach.subtitle')}</Text>
           <Text style={styles.title}>{t('aiCoach.title')}</Text>
         </View>
-        <Pressable accessibilityRole="button" onPress={() => setMsgIdx((i) => (i + 1) % MESSAGES.length)} style={styles.refreshBtn}>
-          <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={theme.colors.gold} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <Path d="M21 12a9 9 0 11-2.6-6.4M21 4v5h-5" />
-          </Svg>
-        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
@@ -96,55 +118,78 @@ export function AICoachScreen() {
           <RadialGlow size={140} color={theme.colors.brandCoral} spread={0.7} blur={20} opacity={0.3} style={styles.heroGlow} />
           <View style={styles.heroLabelRow}>
             <Text style={styles.heroLabel}>{t('aiCoach.todayLabel')}</Text>
-            <Text style={styles.heroDate}>· {t('aiCoach.today')}</Text>
+            {loadingFirst ? <Text style={styles.heroDate}>· {t('aiCoach.thinking')}</Text> : null}
           </View>
           <Text style={styles.heroText}>
-            {typed}
-            {typing ? <Animated.Text style={[CARET, caretStyle]}>▏</Animated.Text> : null}
+            {loadingFirst ? t('aiCoach.thinking') : typed}
+            {typing && !loadingFirst ? <Animated.Text style={[CARET, caretStyle]}>▏</Animated.Text> : null}
           </Text>
-          {!typing ? (
+          {insight && !typing && !loadingFirst ? (
             <View style={styles.heroActions}>
-              <Pressable accessibilityRole="button" onPress={() => showToast(t('aiCoach.preparing'))} style={styles.ctaWrap}>
+              <Pressable accessibilityRole="button" onPress={onStart} style={styles.ctaWrap}>
                 <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.ctaBtn}>
                   <PlayIcon size={16} color={theme.colors.onBrand} />
-                  <Text style={styles.ctaTxt}>{CTAS[msgIdx]}</Text>
+                  <Text style={styles.ctaTxt}>{insight.daily.cta}</Text>
                 </LinearGradient>
-              </Pressable>
-              <Pressable accessibilityRole="button" onPress={() => showToast(t('aiCoach.reminderSet'))} style={styles.laterBtn}>
-                <Text style={styles.laterTxt}>{t('aiCoach.later')}</Text>
               </Pressable>
             </View>
           ) : null}
         </View>
 
         {/* WEEKLY */}
-        <View>
-          <View style={styles.weeklyHead}>
-            <Text style={styles.weeklyTitle}>{t('aiCoach.weekly')}</Text>
-            <Text style={styles.weeklyRange}>{t('aiCoach.weekRange')}</Text>
+        {cards.length > 0 ? (
+          <View>
+            <View style={styles.weeklyHead}>
+              <Text style={styles.weeklyTitle}>{t('aiCoach.weekly')}</Text>
+              <Text style={styles.weeklyRange}>{t('aiCoach.weekRange')}</Text>
+            </View>
+            <View style={styles.cards}>
+              {cards.map((c, i) => {
+                const ks = KIND_STYLE[c.kind] ?? KIND_STYLE.tip;
+                return (
+                  <Pressable key={`${c.kind}-${i}`} accessibilityRole="button" onPress={() => showToast(c.body)} style={styles.card}>
+                    <View style={[styles.cardIcon, { backgroundColor: ks.iconBg }]}>
+                      <Svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke={ks.iconCol} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <Path d={ks.d} />
+                      </Svg>
+                    </View>
+                    <View style={styles.flex1}>
+                      <Text style={[styles.cardTag, { color: ks.tagCol }]}>{c.tag}</Text>
+                      <Text style={styles.cardTitle}>{c.title}</Text>
+                      <Text style={styles.cardBody}>{c.body}</Text>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
-          <View style={styles.cards}>
-            {CARDS.map((c) => (
-              <Pressable key={c.tag} accessibilityRole="button" onPress={() => showToast(c.toast)} style={styles.card}>
-                <View style={[styles.cardIcon, { backgroundColor: c.iconBg }]}>
-                  <Svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke={c.iconCol} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <Path d={c.d} />
-                  </Svg>
-                </View>
-                <View style={styles.flex1}>
-                  <Text style={[styles.cardTag, { color: c.tagCol }]}>{c.tag}</Text>
-                  <Text style={styles.cardTitle}>{c.title}</Text>
-                  <Text style={styles.cardBody}>{c.body}</Text>
-                </View>
-              </Pressable>
-            ))}
-          </View>
-        </View>
+        ) : null}
 
-        <View style={styles.cachedRow}>
-          <CheckIcon size={13} color={theme.colors.textDim} />
-          <Text style={styles.cachedTxt}>{t('aiCoach.cached')}</Text>
-        </View>
+        {/* Yangi tavsiya — header ikonka o'rniga aniq matnli boshqaruv */}
+        <Pressable
+          accessibilityRole="button"
+          onPress={onRegenerate}
+          disabled={limitReached || status === 'loading'}
+          style={[styles.regenBtn, (limitReached || status === 'loading') && styles.regenDisabled]}
+        >
+          <Svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={limitReached ? theme.colors.textDim : theme.colors.gold} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <Path d="M21 12a9 9 0 11-2.6-6.4M21 4v5h-5" />
+          </Svg>
+          <Text style={[styles.regenTxt, limitReached && styles.regenTxtOff]}>
+            {limitReached
+              ? t('aiCoach.limitDone')
+              : source === 'live'
+                ? t('aiCoach.regenerateCount', { n: remaining, max: DAILY_LIMIT })
+                : t('aiCoach.regenerate')}
+          </Text>
+        </Pressable>
+
+        {footer ? (
+          <View style={styles.cachedRow}>
+            <CheckIcon size={13} color={theme.colors.textDim} />
+            <Text style={styles.cachedTxt}>{footer}</Text>
+          </View>
+        ) : null}
       </ScrollView>
 
       {toast ? (
@@ -154,6 +199,38 @@ export function AICoachScreen() {
       ) : null}
     </Screen2>
   );
+}
+
+// Manba + holatga qarab pastki izoh (jonli / kesh / offline / limit).
+function footerText(args: {
+  t: (k: string, o?: Record<string, unknown>) => string;
+  status: string;
+  source: string | null;
+  offline: boolean;
+  limitReached: boolean;
+  remaining: number;
+  cachedAt: number | null;
+  now: number;
+}): string | null {
+  const { t, status, source, limitReached, remaining, cachedAt, now } = args;
+  if (status === 'loading' && !source) return null;
+  if (limitReached) return t('aiCoach.limitReached');
+  if (source === 'live') {
+    return remaining > 0 ? `${t('aiCoach.sourceLive')} · ${t('aiCoach.remaining', { n: remaining })}` : t('aiCoach.sourceLive');
+  }
+  if (source === 'fallback') return t('aiCoach.sourceFallback');
+  if (source === 'cache') return cacheAgo(t, cachedAt, now);
+  return null;
+}
+
+function cacheAgo(t: (k: string, o?: Record<string, unknown>) => string, at: number | null, now: number): string {
+  if (!at) return t('aiCoach.sourceFallback');
+  const min = Math.max(0, Math.floor((now - at) / 60_000));
+  if (min < 1) return t('aiCoach.sourceCacheNow');
+  if (min < 60) return t('aiCoach.sourceCacheMin', { n: min });
+  const h = Math.floor(min / 60);
+  if (h < 24) return t('aiCoach.sourceCacheHour', { n: h });
+  return t('aiCoach.sourceCacheDay', { n: Math.floor(h / 24) });
 }
 
 function Screen2({ children }: { children: React.ReactNode }) {
@@ -172,7 +249,6 @@ const styles = StyleSheet.create((theme) => ({
   header: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 12 },
   subtitle: { fontSize: 13, color: theme.colors.textMuted },
   title: { fontSize: 22, fontFamily: theme.fontFamily.extrabold, color: theme.colors.textStrong, lineHeight: 24 },
-  refreshBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: theme.colors.surfaceStrong, borderWidth: 1, borderColor: theme.colors.border, alignItems: 'center', justifyContent: 'center' },
 
   body: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 28, gap: 18 },
 
@@ -186,8 +262,11 @@ const styles = StyleSheet.create((theme) => ({
   ctaWrap: { flex: 1, borderRadius: 14, overflow: 'hidden' },
   ctaBtn: { height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 },
   ctaTxt: { fontSize: 14, fontFamily: theme.fontFamily.bold, color: theme.colors.onBrand },
-  laterBtn: { height: 48, paddingHorizontal: 18, borderRadius: 14, backgroundColor: theme.colors.surfaceStrong, borderWidth: 1, borderColor: theme.colors.borderStrong, alignItems: 'center', justifyContent: 'center' },
-  laterTxt: { fontSize: 14, fontFamily: theme.fontFamily.semibold, color: theme.colors.text },
+
+  regenBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 46, borderRadius: 14, backgroundColor: theme.colors.surfaceAlt, borderWidth: 1, borderColor: theme.colors.border },
+  regenDisabled: { opacity: 0.6 },
+  regenTxt: { fontSize: 13, fontFamily: theme.fontFamily.semibold, color: theme.colors.gold },
+  regenTxtOff: { color: theme.colors.textDim },
 
   weeklyHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   weeklyTitle: { fontSize: 15, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
