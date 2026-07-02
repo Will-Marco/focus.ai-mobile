@@ -4,17 +4,17 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Gradient rounded-square (side 66) — Android 12 splash AYLANA niqobi ICHIGA sig'adi
-         (burchaklar r≈47 < 54). Transparent burchaklar espresso fon ustida ko'rinmaydi →
-         foydalanuvchi TO'RTBURCHAK logoni ko'radi, aylana chegara YO'Q. -->
-    <path android:pathData="M37,21 h34 a16,16 0 0 1 16,16 v34 a16,16 0 0 1 -16,16 h-34 a16,16 0 0 1 -16,-16 v-34 a16,16 0 0 1 16,-16 z">
+    <!-- Gradient rounded-square (side 46) — burchaklar r≈33, Android 12 splash niqob
+         aylanasi (~r40) ICHIDA to'liq qoladi → kesilmaydi, toza TO'RTBURCHAK.
+         Transparent burchaklar espresso ustida ko'rinmaydi (aylana chegara yo'q). -->
+    <path android:pathData="M43,31 h22 a12,12 0 0 1 12,12 v22 a12,12 0 0 1 -12,12 h-22 a12,12 0 0 1 -12,-12 v-22 a12,12 0 0 1 12,-12 z">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:type="linear"
-                android:startX="21"
-                android:startY="21"
-                android:endX="87"
-                android:endY="87">
+                android:startX="31"
+                android:startY="31"
+                android:endX="77"
+                android:endY="77">
                 <item android:offset="0" android:color="#F2A24C" />
                 <item android:offset="1" android:color="#F2603E" />
             </gradient>
@@ -23,12 +23,12 @@
     <!-- Target (ikki qora doira — Login onBrand) -->
     <path
         android:strokeColor="#1F140B"
-        android:strokeWidth="3.1"
+        android:strokeWidth="2.1"
         android:fillColor="#00000000"
-        android:pathData="M42.5,54 a11.5,11.5 0 1,0 23,0 a11.5,11.5 0 1,0 -23,0" />
+        android:pathData="M46,54 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0" />
     <path
         android:strokeColor="#1F140B"
-        android:strokeWidth="3.1"
+        android:strokeWidth="2.1"
         android:fillColor="#00000000"
-        android:pathData="M50.2,54 a3.8,3.8 0 1,0 7.6,0 a3.8,3.8 0 1,0 -7.6,0" />
+        android:pathData="M51.3,54 a2.7,2.7 0 1,0 5.4,0 a2.7,2.7 0 1,0 -5.4,0" />
 </vector>
