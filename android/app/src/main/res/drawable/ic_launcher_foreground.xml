@@ -1,17 +1,32 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Target (ikki konsentrik doira) — oq stroke, xavfsiz zonada (markaz 54,54). -->
+    <!-- Gradient rounded-square (Login logo box, side 72 — launcher niqobi ichiga sig'adi) -->
+    <path android:pathData="M36,18 h36 a18,18 0 0 1 18,18 v36 a18,18 0 0 1 -18,18 h-36 a18,18 0 0 1 -18,-18 v-36 a18,18 0 0 1 18,-18 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="18"
+                android:startY="18"
+                android:endX="90"
+                android:endY="90">
+                <item android:offset="0" android:color="#F2A24C" />
+                <item android:offset="1" android:color="#F2603E" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Target (ikki oq doira) -->
     <path
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="6.7"
+        android:strokeWidth="3.4"
         android:fillColor="#00000000"
-        android:pathData="M29,54 a25,25 0 1,0 50,0 a25,25 0 1,0 -50,0" />
+        android:pathData="M41.4,54 a12.6,12.6 0 1,0 25.2,0 a12.6,12.6 0 1,0 -25.2,0" />
     <path
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="6.7"
+        android:strokeWidth="3.4"
         android:fillColor="#00000000"
-        android:pathData="M45.7,54 a8.3,8.3 0 1,0 16.6,0 a8.3,8.3 0 1,0 -16.6,0" />
+        android:pathData="M49.8,54 a4.2,4.2 0 1,0 8.4,0 a4.2,4.2 0 1,0 -8.4,0" />
 </vector>
