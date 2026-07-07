@@ -72,7 +72,7 @@ export const groupRepo = {
     }
     const me = await currentUser();
     if (!me) {
-      if (__DEV__) console.warn('[Group] createGroup: SESSIYA YO\'Q (Confirm email yoqilgan? Google bilan kiring)');
+      if (__DEV__) console.warn('[Group] createGroup: SESSIYA YO\'Q (telefon bilan kirilganmi?)');
       return null;
     }
     const now = Date.now();

@@ -9,8 +9,8 @@ interface ProfileState {
   completeOnboarding: () => void;
   /** Mehmon sifatida davom etish (default yo'l). */
   continueAsGuest: (name?: string) => void;
-  /** M8: Supabase auth ulanganda registered profil yaratiladi. */
-  registerLocal: (name: string, email: string) => void;
+  /** M8: Supabase auth ulanganda registered profil yaratiladi (Telegram → phone). */
+  registerLocal: (name: string, email: string | null, phone?: string | null) => void;
   updateName: (name: string) => void;
   signOut: () => void;
 }
@@ -34,6 +34,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     const profile: Profile = {
       name: name?.trim() || GUEST_NAME,
       email: null,
+      phone: null,
       authMode: 'guest',
       createdAt: Date.now(),
     };
@@ -41,10 +42,11 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     set({ profile });
   },
 
-  registerLocal: (name, email) => {
+  registerLocal: (name, email, phone = null) => {
     const profile: Profile = {
       name: name.trim() || GUEST_NAME,
       email,
+      phone,
       authMode: 'registered',
       createdAt: Date.now(),
     };

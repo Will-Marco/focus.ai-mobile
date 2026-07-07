@@ -1,2 +1,3 @@
-export { useAuthForm } from './model/useAuthForm';
-export { configureGoogle, signOutRemote } from './model/auth';
+export { signOutRemote } from './model/auth';
+export { usePhoneLogin } from './model/usePhoneLogin';
+export { usePhoneRegister } from './model/usePhoneRegister';

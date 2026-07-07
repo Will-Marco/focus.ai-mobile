@@ -114,19 +114,44 @@
   "auth": {
     "title": "Focus AI'ga xush kelibsiz",
     "subtitle": "Vaqtni o'lchaydigan fokus hamrohingiz",
-    "guestFooter": "Hisobsiz ham hammasi to'liq ishlaydi.\nSinxronlash va jamoa uchun Google bilan kirasiz.",
+    "guestFooter": "Hisobsiz ham hammasi to'liq ishlaydi.\nSinxronlash va jamoa uchun telefon raqami bilan ro'yxatdan o'tasiz.",
     "guest": "Mehmon sifatida davom etish",
-    "continueGoogle": "Google bilan davom etish",
     "err": {
-      "google": "Google bilan kirib bo'lmadi. Qayta urinib ko'ring.",
-      "googleNotConfigured": "Google Sign In hali sozlanmagan.",
-      "notConfigured": "Onlayn xizmat hali sozlanmagan — mehmon rejimida davom eting."
+      "notConfigured": "Onlayn xizmat hali sozlanmagan — mehmon rejimida davom eting.",
+      "phone": {
+        "invalid": "Telefon raqami noto'g'ri. Namuna: 90 123 45 67",
+        "weakPassword": "Parol kamida 6 belgidan iborat bo'lishi kerak",
+        "mismatch": "Parollar mos kelmadi",
+        "generic": "Xatolik yuz berdi. Qayta urinib ko'ring.",
+        "expired": "Vaqt tugadi. Qaytadan urinib ko'ring.",
+        "alreadyRegistered": "Bu raqam bilan hisob allaqachon mavjud. Kirish'ga o'ting.",
+        "loginFailed": "Telefon yoki parol noto'g'ri.",
+        "providerDisabled": "Telefon orqali kirish hali sozlanmagan. Birozdan so'ng qayta urinib ko'ring."
+      }
+    },
+    "phone": {
+      "phoneLabel": "Telefon raqami",
+      "phonePlaceholder": "90 123 45 67",
+      "passwordLabel": "Parol",
+      "passwordPlaceholder": "Kamida 6 belgi",
+      "confirmPasswordLabel": "Parolni tasdiqlang",
+      "confirmPasswordPlaceholder": "Parolni qayta kiriting",
+      "registerButton": "Ro'yxatdan o'tish",
+      "loginButton": "Kirish",
+      "switchToLogin": "Hisobingiz bormi? Kirish",
+      "switchToRegister": "Hisobingiz yo'qmi? Ro'yxatdan o'tish",
+      "waitingTitle": "Telegram orqali tasdiqlang",
+      "waitingBody": "Pastdagi tugma orqali Telegram botni oching, raqamingizni ulashing — ro'yxatdan o'tish avtomatik yakunlanadi.",
+      "openBot": "Telegram botni ochish",
+      "waitingHint": "Tasdiqlanishini kutyapmiz…"
     }
   },
   "profile": {
     "title": "Profil",
     "guestMode": "Mehmon rejimi",
     "registered": "Ro'yxatdan o'tgan",
+    "memberSince": "A'zo: {{date}}",
+    "phoneVerified": "Telegram orqali tasdiqlangan",
     "nameLabel": "Ism",
     "namePlaceholder": "Ismingiz",
     "save": "Saqlash",

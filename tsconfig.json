@@ -13,5 +13,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["**/node_modules", "**/Pods", "supabase"]
+  "exclude": ["**/node_modules", "**/Pods", "supabase", "focus-together"]
 }
