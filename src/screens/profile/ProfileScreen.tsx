@@ -4,8 +4,10 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Avatar, Button, Screen, Segmented, Text } from '@shared/ui';
+import { Avatar, Button, CheckIcon, PhoneIcon, Screen, Segmented, Text } from '@shared/ui';
 import { setThemePref, getStoredThemePref, type ThemePref } from '@shared/theme';
+import { formatJoinDate } from '@shared/lib/time/formatJoinDate';
+import { formatPhoneDisplay } from '@shared/lib/phone/phone';
 import { useProfileStore } from '@entities/profile';
 import { signOutRemote } from '@features/auth';
 import { useSyncStore } from '@features/sync';
@@ -72,6 +74,21 @@ export function ProfileScreen() {
           <Text style={styles.sub}>
             {isGuest ? t('profile.guestMode') : t('profile.registered')}
           </Text>
+          {profile?.phone ? (
+            <View style={styles.phoneRow}>
+              <PhoneIcon size={13} color={theme.colors.textMuted} strokeWidth={2} />
+              <Text style={styles.phoneText}>{formatPhoneDisplay(profile.phone)}</Text>
+              <View style={styles.verifiedTag}>
+                <CheckIcon size={10} color={theme.colors.brand} strokeWidth={3.5} />
+                <Text style={styles.verifiedText}>{t('profile.phoneVerified')}</Text>
+              </View>
+            </View>
+          ) : null}
+          {profile ? (
+            <Text style={styles.joinDate}>
+              {t('profile.memberSince', { date: formatJoinDate(profile.createdAt) })}
+            </Text>
+          ) : null}
         </View>
 
         <View style={styles.block}>
@@ -152,6 +169,20 @@ const styles = StyleSheet.create((theme) => ({
     minWidth: 120,
   },
   sub: { fontSize: 13, color: theme.colors.textMuted },
+
+  phoneRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
+  phoneText: { fontSize: 13, color: theme.colors.textMuted, fontFamily: theme.fontFamily.mono },
+  verifiedTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 8,
+    backgroundColor: 'rgba(242,160,76,0.12)',
+  },
+  verifiedText: { fontSize: 10, color: theme.colors.brand, fontFamily: theme.fontFamily.semibold },
+  joinDate: { fontSize: 12, color: theme.colors.textDim },
 
   block: { gap: 10 },
   section: { fontSize: 13, color: theme.colors.textMuted, fontFamily: theme.fontFamily.bold },

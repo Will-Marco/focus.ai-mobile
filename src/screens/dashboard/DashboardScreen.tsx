@@ -6,7 +6,7 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AiOrb, BellIcon, Screen, Text, Fab, HabitIcon } from '@shared/ui';
+import { AiOrb, BellIcon, Screen, Text, Fab, HabitIcon, StatChip } from '@shared/ui';
 import { haptics } from '@shared/lib/haptics';
 import { periodWindow } from '@shared/lib/time/periodWindow';
 import { formatSpent } from '@shared/lib/time/formatSpent';
@@ -14,7 +14,7 @@ import { useHabitStore, type Habit } from '@entities/habit';
 import { sessionRepo, useSessionStore } from '@entities/session';
 import { useProfileStore } from '@entities/profile';
 import { useCurrentStreak } from '@entities/stats';
-import { HabitCard, ActiveSessionBanner, StatChip } from '@widgets/dashboard';
+import { HabitCard, ActiveSessionBanner } from '@widgets/dashboard';
 import type { RootStackParamList } from '@shared/config/navigation';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;

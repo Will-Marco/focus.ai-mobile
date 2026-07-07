@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
-import { Text } from '@shared/ui';
+import { Text } from './Text';
 
 export interface StatChipProps {
   value: string;
@@ -10,7 +10,7 @@ export interface StatChipProps {
   label: string;
 }
 
-// Dashboard stat chip (dizayn): katta mono raqam + unit yuqorida, dot + label pastda.
+// Stat chip (dizayn): katta mono raqam + unit yuqorida, dot + label pastda.
 export function StatChip({ value, unit, dotColor, label }: StatChipProps) {
   return (
     <View style={styles.chip}>
