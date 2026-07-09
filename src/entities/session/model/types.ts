@@ -13,6 +13,9 @@ export interface ActiveSession {
   isForeground: boolean;
   /** boshlangan timestamp — davr oynasini (qaysi kun) belgilaydi. */
   startedAt: number;
+  /** target'ga yetmasdan "Yakunlash" bilan pauzaga qo'yilgan (2026-07-08, FR-2.10) —
+   * Dashboard'da faol qatordan pastga, xiraroq bo'limga tushadi. Davom ettirilsa false'ga qaytadi. */
+  parked: boolean;
 }
 
 // Yakunlangan sessiya (SQLite — doimiy tarix, statistika/streak manbai).

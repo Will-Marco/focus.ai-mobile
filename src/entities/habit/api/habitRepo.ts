@@ -26,16 +26,15 @@ export const habitRepo = {
     };
     await db.execute(
       `INSERT INTO habits
-         (id, name, icon, color, type, period, target_minutes, sort_order, created_at, updated_at, deleted_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL);`,
+         (id, name, icon, color, period, target_count, sort_order, created_at, updated_at, deleted_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL);`,
       [
         habit.id,
         habit.name,
         habit.icon,
         habit.color,
-        habit.type,
         habit.period,
-        habit.targetMinutes,
+        habit.targetCount,
         habit.sortOrder,
         habit.createdAt,
         habit.updatedAt,
@@ -51,9 +50,8 @@ export const habitRepo = {
       name: 'name',
       icon: 'icon',
       color: 'color',
-      type: 'type',
       period: 'period',
-      targetMinutes: 'target_minutes',
+      targetCount: 'target_count',
     };
     (Object.keys(patch) as Array<keyof HabitDraft>).forEach((k) => {
       fields.push(`${col[k]} = ?`);

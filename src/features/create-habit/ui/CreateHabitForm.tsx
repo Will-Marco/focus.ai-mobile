@@ -11,28 +11,15 @@ import {
 } from '@shared/ui';
 import { HABIT_COLOR_KEYS, habitColorHex } from '@shared/theme';
 import { haptics } from '@shared/lib/haptics';
-import { useHabitStore, type Habit, type HabitPeriod, type HabitType } from '@entities/habit';
-import {
-  DEFAULT_TARGET_HOURS,
-  PERIOD_OPTIONS,
-  TARGET_STEP,
-  TYPE_OPTIONS,
-} from '../config/options';
-import {
-  TARGET_MAX_HOURS,
-  TARGET_MIN_HOURS,
-  validateHabitDraft,
-  type HabitFormErrors,
-} from '../model/validate';
+import { useHabitStore, type Habit, type HabitPeriod } from '@entities/habit';
+import { PERIOD_OPTIONS, TARGET_COUNT_BOUNDS } from '../config/options';
+import { validateHabitDraft, type HabitFormErrors } from '../model/validate';
 
 export interface CreateHabitFormProps {
   /** berilsa — tahrir rejimi. */
   initial?: Habit;
   onDone: () => void;
 }
-
-const clampHours = (h: number) =>
-  Math.max(TARGET_MIN_HOURS, Math.min(TARGET_MAX_HOURS, Math.round(h * 10) / 10));
 
 export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
   const { t } = useTranslation();
@@ -44,28 +31,28 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
   const [name, setName] = useState(initial?.name ?? '');
   const [icon, setIcon] = useState(initial?.icon ?? HABIT_ICON_KEYS[0]);
   const [color, setColor] = useState<string>(initial?.color ?? HABIT_COLOR_KEYS[0]);
-  const [type, setType] = useState<HabitType>(initial?.type ?? 'cumulative');
   const [period, setPeriod] = useState<HabitPeriod>(initial?.period ?? 'daily');
-  const [targetHours, setTargetHours] = useState(
-    initial ? initial.targetMinutes / 60 : DEFAULT_TARGET_HOURS.cumulative,
+  const [targetCount, setTargetCount] = useState(
+    initial?.targetCount ?? TARGET_COUNT_BOUNDS.daily.default,
   );
   const [errors, setErrors] = useState<HabitFormErrors>({});
 
-  const onTypeChange = (next: HabitType) => {
+  const bounds = TARGET_COUNT_BOUNDS[period];
+
+  const onPeriodChange = (next: HabitPeriod) => {
     haptics.selection();
-    setType(next);
-    // tur o'zgarsa mos default maqsadga o'tamiz (umrlik 100 / davriy 1)
-    if (!initial) setTargetHours(DEFAULT_TARGET_HOURS[next]);
+    setPeriod(next);
+    // davr o'zgarsa mos default maqsadga o'tamiz (faqat yangi odat yaratishda).
+    if (!initial) setTargetCount(TARGET_COUNT_BOUNDS[next].default);
   };
 
-  const step = TARGET_STEP[type];
   const bump = (dir: 1 | -1) => {
     haptics.light();
-    setTargetHours((h) => clampHours(h + dir * step));
+    setTargetCount((c) => Math.max(bounds.min, Math.min(bounds.max, c + dir)));
   };
 
   const onSubmit = async () => {
-    const res = validateHabitDraft({ name, icon, color, type, period, targetHours });
+    const res = validateHabitDraft({ name, icon, color, period, targetCount });
     if (!res.ok) {
       setErrors(res.errors);
       return;
@@ -147,58 +134,25 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
           })}
         </View>
 
-        <Text style={styles.section}>{t('addHabit.type')}</Text>
-        <View style={styles.typeRow}>
-          {TYPE_OPTIONS.map((v) => {
-            const active = type === v;
+        <Text style={styles.section}>{t('addHabit.period')}</Text>
+        <View style={styles.periodRow}>
+          {PERIOD_OPTIONS.map((v) => {
+            const active = period === v;
             return (
               <Pressable
                 key={v}
                 accessibilityRole="button"
                 accessibilityState={{ selected: active }}
-                onPress={() => onTypeChange(v)}
-                style={[styles.typeCard, active && styles.typeCardActive]}
+                onPress={() => onPeriodChange(v)}
+                style={[styles.periodChip, active && styles.periodChipActive]}
               >
-                <Text style={[styles.typeTitle, active && styles.typeTitleActive]}>
-                  {v === 'cumulative' ? t('addHabit.typeCumulative') : t('addHabit.typeRecurring')}
-                </Text>
-                <Text style={styles.typeDesc}>
-                  {v === 'cumulative'
-                    ? t('addHabit.typeCumulativeDesc')
-                    : t('addHabit.typeRecurringDesc')}
+                <Text style={[styles.periodTxt, active && styles.periodTxtActive]}>
+                  {t(`addHabit.period${v[0].toUpperCase()}${v.slice(1)}`)}
                 </Text>
               </Pressable>
             );
           })}
         </View>
-
-        {type === 'recurring' ? (
-          <>
-            <Text style={styles.section}>{t('addHabit.period')}</Text>
-            <View style={styles.periodRow}>
-              {PERIOD_OPTIONS.map((v) => {
-                const active = period === v;
-                return (
-                  <Pressable
-                    key={v}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: active }}
-                    onPress={() => {
-                      haptics.selection();
-                      setPeriod(v);
-                    }}
-                    style={[styles.periodChip, active && styles.periodChipActive]}
-                  >
-                    <Text style={[styles.periodTxt, active && styles.periodTxtActive]}>
-                      {t(`addHabit.period${v[0].toUpperCase()}${v.slice(1)}`)}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-            {errors.period ? <Text style={styles.error}>{t('addHabit.errors.period')}</Text> : null}
-          </>
-        ) : null}
 
         <Text style={styles.section}>{t('addHabit.target')}</Text>
         <View style={styles.stepper}>
@@ -212,10 +166,10 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
           </Pressable>
           <View style={styles.stepValue}>
             <Text variant="mono" style={styles.stepNumber}>
-              {targetHours % 1 === 0 ? targetHours : targetHours.toFixed(1)}
+              {targetCount}
             </Text>
             <Text muted style={styles.stepUnit}>
-              {t('addHabit.hoursUnit')}
+              {t('addHabit.timesUnit')}
             </Text>
           </View>
           <Pressable
@@ -227,8 +181,10 @@ export function CreateHabitForm({ initial, onDone }: CreateHabitFormProps) {
             <Text style={styles.stepSign}>+</Text>
           </Pressable>
         </View>
-        {errors.targetHours ? (
-          <Text style={styles.error}>{t('addHabit.errors.targetHours')}</Text>
+        {errors.targetCount ? (
+          <Text style={styles.error}>
+            {t('addHabit.errors.targetCount', { min: bounds.min, max: bounds.max })}
+          </Text>
         ) : null}
       </ScrollView>
 
@@ -276,20 +232,6 @@ const styles = StyleSheet.create((theme) => ({
     borderWidth: 2,
     borderColor: theme.colors.textStrong,
   },
-
-  typeRow: { flexDirection: 'row', gap: 10 },
-  typeCard: {
-    flex: 1,
-    padding: 14,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-  },
-  typeCardActive: { borderColor: theme.colors.brand, backgroundColor: 'rgba(242,162,76,0.12)' },
-  typeTitle: { fontSize: 15, fontFamily: theme.fontFamily.bold, color: theme.colors.textStrong },
-  typeTitleActive: { color: theme.colors.brand },
-  typeDesc: { fontSize: 12, color: theme.colors.textDim, marginTop: 2 },
 
   periodRow: { flexDirection: 'row', gap: 10 },
   periodChip: {

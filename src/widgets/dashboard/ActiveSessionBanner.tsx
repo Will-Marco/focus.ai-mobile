@@ -3,26 +3,30 @@ import { Pressable, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { ProgressRing, Text, PlayIcon, PauseIcon } from '@shared/ui';
+import { ProgressRing, Text, PlayIcon, PauseIcon, TrashIcon } from '@shared/ui';
 import { formatClock } from '@shared/lib/time/formatClock';
 import { useHabitStore } from '@entities/habit';
-import { remainingMs } from '@entities/session';
+import { remainingMs, useSessionStore } from '@entities/session';
 import { useSessionTimer } from '@features/run-session';
 
 export interface ActiveSessionBannerProps {
   sessionId: string;
   onPress: () => void;
+  /** true = "Yakunlash" bilan pauzaga qo'yilgan (parked, 2026-07-08) — xiraroq
+   * ko'rinish + o'chirish (trash) tugmasi. Faol (parked bo'lmagan) bannerda yo'q. */
+  dim?: boolean;
 }
 
-export function ActiveSessionBanner({ sessionId, onPress }: ActiveSessionBannerProps) {
+export function ActiveSessionBanner({ sessionId, onPress, dim = false }: ActiveSessionBannerProps) {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
   const timer = useSessionTimer(sessionId);
   const habit = useHabitStore((s) => s.habits.find((h) => h.id === timer.session?.habitId));
+  const discard = useSessionStore((s) => s.discard);
   if (!timer.session) return null;
 
   const left = remainingMs(timer.elapsed, timer.session.targetMin);
-  const state = timer.running ? t('dashboard.running') : t('dashboard.paused');
+  const state = dim ? t('dashboard.saved') : timer.running ? t('dashboard.running') : t('dashboard.paused');
 
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>
@@ -30,7 +34,7 @@ export function ActiveSessionBanner({ sessionId, onPress }: ActiveSessionBannerP
         colors={[...theme.colors.bannerBg]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.banner}
+        style={[styles.banner, dim && styles.bannerDim]}
       >
         <View style={styles.ringWrap}>
           <View style={styles.ringFill}>
@@ -56,6 +60,18 @@ export function ActiveSessionBanner({ sessionId, onPress }: ActiveSessionBannerP
           </Text>
         </View>
 
+        {dim ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('dashboard.discardSession')}
+            onPress={() => discard(sessionId)}
+            style={styles.trash}
+            hitSlop={8}
+          >
+            <TrashIcon size={15} color={theme.colors.textDim} />
+          </Pressable>
+        ) : null}
+
         <View style={styles.play}>
           {timer.running ? (
             <PauseIcon size={15} color={theme.colors.textStrong} />
@@ -78,6 +94,7 @@ const styles = StyleSheet.create((theme) => ({
     borderWidth: 1,
     borderColor: theme.colors.bannerBorder,
   },
+  bannerDim: { opacity: 0.6 },
   ringWrap: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   ringFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   pct: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 11, color: theme.colors.textStrong },
@@ -89,6 +106,12 @@ const styles = StyleSheet.create((theme) => ({
     height: 38,
     borderRadius: 12,
     backgroundColor: `rgba(${theme.colors.trackRgb},0.1)`,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  trash: {
+    width: 32,
+    height: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },

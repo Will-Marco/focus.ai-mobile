@@ -20,6 +20,9 @@ interface SessionState {
   start: (input: { habitId: string; targetMin: number; now?: number }) => ActiveSession;
   pause: (id: string, now?: number) => void;
   resume: (id: string, now?: number) => void;
+  /** Target'ga yetmasdan "Yakunlash" — pauza qiladi + `parked:true` (2026-07-08, FR-2.10).
+   * Yozmaydi, active'dan olib tashlamaydi — Dashboard'da xiraroq bo'limga tushadi. */
+  saveForLater: (id: string, now?: number) => void;
   /** Yakunlaydi: completed sessiyani SQLite'ga yozadi, active'dan olib tashlaydi. */
   finish: (id: string, opts?: { awayMs?: number; now?: number }) => Promise<FinishResult | null>;
   /** Yozmasdan bekor qiladi (reset/tashlab ketish). */
@@ -48,6 +51,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       runningSince: now,
       isForeground: true,
       startedAt: now,
+      parked: false,
     };
     const active = [...get().active, session];
     set({ active });
@@ -62,7 +66,17 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   },
 
   resume: (id, now = Date.now()) => {
-    const active = get().active.map((s) => (s.id === id ? resumeSession(s, now) : s));
+    const active = get().active.map((s) =>
+      s.id === id ? { ...resumeSession(s, now), parked: false } : s,
+    );
+    set({ active });
+    persist(active);
+  },
+
+  saveForLater: (id, now = Date.now()) => {
+    const active = get().active.map((s) =>
+      s.id === id ? { ...pauseSession(s, now), parked: true } : s,
+    );
     set({ active });
     persist(active);
   },

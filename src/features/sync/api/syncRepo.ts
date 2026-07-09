@@ -6,8 +6,8 @@ import type { SyncRow } from '@shared/lib/sync/lww';
 export type RawRow = SyncRow & Record<string, string | number | null>;
 
 const HABIT_COLS = [
-  'id', 'name', 'icon', 'color', 'type', 'period',
-  'target_minutes', 'sort_order', 'created_at', 'updated_at', 'deleted_at',
+  'id', 'name', 'icon', 'color', 'period',
+  'target_count', 'sort_order', 'created_at', 'updated_at', 'deleted_at',
 ] as const;
 
 const SESSION_COLS = [

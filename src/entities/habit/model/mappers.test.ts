@@ -6,9 +6,8 @@ const baseRow: HabitRow = {
   name: 'Mutolaa',
   icon: 'book',
   color: 'amber',
-  type: 'cumulative',
-  period: null,
-  target_minutes: 600,
+  period: 'daily',
+  target_count: 1,
   sort_order: 0,
   created_at: 1000,
   updated_at: 2000,
@@ -22,9 +21,8 @@ describe('rowToHabit', () => {
       name: 'Mutolaa',
       icon: 'book',
       color: 'amber',
-      type: 'cumulative',
-      period: null,
-      targetMinutes: 600,
+      period: 'daily',
+      targetCount: 1,
       sortOrder: 0,
       createdAt: 1000,
       updatedAt: 2000,
@@ -32,14 +30,15 @@ describe('rowToHabit', () => {
     });
   });
 
-  it('recurring odat period va deleted_at ni saqlaydi', () => {
+  it('haftalik odat period va deleted_at ni saqlaydi', () => {
     const h = rowToHabit({
       ...baseRow,
-      type: 'recurring',
       period: 'weekly',
+      target_count: 3,
       deleted_at: 5000,
     });
     expect(h.period).toBe('weekly');
+    expect(h.targetCount).toBe(3);
     expect(h.deletedAt).toBe(5000);
   });
 });

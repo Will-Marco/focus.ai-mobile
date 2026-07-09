@@ -95,6 +95,7 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
   const start = useSessionStore((s) => s.start);
   const pause = useSessionStore((s) => s.pause);
   const resume = useSessionStore((s) => s.resume);
+  const saveForLater = useSessionStore((s) => s.saveForLater);
   const finish = useSessionStore((s) => s.finish);
 
   const [sessionId, setSessionId] = useState(initialId);
@@ -152,19 +153,19 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timer.complete]);
 
-  // Odat (umrlik/davriy) umumiy progressi — markazdagi thin bar (jonli sessiya qo'shiladi).
+  // Odat progressi — markazdagi thin bar (davr ichida bajarilgan marta soni;
+  // joriy sessiya 100%ga yetgan bo'lsa, hali yozilmagan bo'lsa ham +1 sifatida ko'rsatiladi).
   const habitProg = useHabitProgress(
     {
       habitId,
-      type: habit?.type ?? 'cumulative',
-      period: habit?.period ?? null,
-      targetMinutes: habit?.targetMinutes ?? 60,
+      period: habit?.period ?? 'daily',
+      targetCount: habit?.targetCount ?? 1,
     },
     0,
   );
-  const targetH = (habit?.targetMinutes ?? 60) / 60;
-  const odatMs = habitProg.elapsedMs + timer.elapsed;
-  const odatProgress = Math.min(1, odatMs / ((habit?.targetMinutes ?? 60) * 60_000));
+  const targetCount = habit?.targetCount ?? 1;
+  const liveCompletedCount = habitProg.completedCount + (timer.complete ? 1 : 0);
+  const odatProgress = Math.min(1, liveCompletedCount / targetCount);
   const odatPct = Math.round(odatProgress * 100);
 
   // breathe (ring 1↔1.02, 5.5s) + glowPulse (halo, 3s) + tabriklash glow (2.4s)
@@ -281,6 +282,16 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
     onClose();
   };
 
+  // Target'ga yetmasdan "Yakunlash" — endi destructive emas (2026-07-08, FR-2.10).
+  // Sessiya SQLite'ga yozilmaydi, `active`da pauzada (parked) qoladi — Dashboard'da
+  // faol qatordan pastga, xiraroq bo'limga tushadi; keyin davom ettirish yoki o'chirish mumkin.
+  const onSaveForLater = () => {
+    haptics.light();
+    useAudioStore.getState().stop();
+    saveForLater(sessionId);
+    onClose();
+  };
+
   // Focus Modes — alternativ ko'rinishlar (bir xil faol sessiya).
   if (away) {
     return <AwayView elapsedMs={timer.elapsed} onExit={() => setAway(false)} />;
@@ -355,14 +366,13 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
             <Text style={styles.subInfo}>
               {completed
                 ? t('session.completed')
-                : `${formatClock(timer.elapsed)} ${t('session.passed')} · ${tMin} ${t('session.fromMinutes')}`}
+                : `${tMin} ${t('session.fromMinutes')}`}
             </Text>
             <View style={styles.odatBarTrack}>
               <View style={[styles.odatBarFill, { width: 92 * odatProgress }]} />
             </View>
             <Text style={styles.odatTxt}>
-              {t('session.habitLabel')} · {targetH % 1 === 0 ? targetH : targetH.toFixed(1)}{' '}
-              {t('addHabit.hoursUnit')} · {odatPct}%
+              {t('session.habitLabel')} · {liveCompletedCount}/{targetCount} {t('addHabit.timesUnit')} · {odatPct}%
             </Text>
           </View>
         </Pressable>
@@ -429,7 +439,7 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
                   <Text style={styles.primaryTxt}>{timer.running ? t('session.pause') : t('session.resume')}</Text>
                 </LinearGradient>
               </Pressable>
-              <Pressable accessibilityRole="button" onPress={onFinish} style={styles.finishBtn}>
+              <Pressable accessibilityRole="button" onPress={onSaveForLater} style={styles.finishBtn}>
                 <Text style={styles.finishTxt}>{t('session.finish')}</Text>
               </Pressable>
             </View>

@@ -25,6 +25,8 @@ export function DashboardScreen() {
   const navigation = useNavigation<Nav>();
   const habits = useHabitStore((s) => s.habits);
   const active = useSessionStore((s) => s.active);
+  const runningSessions = active.filter((s) => !s.parked);
+  const parkedSessions = active.filter((s) => s.parked);
   const profileName = useProfileStore((s) => s.profile?.name ?? '');
   const streak = useCurrentStreak();
 
@@ -109,7 +111,7 @@ export function DashboardScreen() {
         <StatChip value={formatSpent(todayMs)} dotColor={theme.colors.brand} label={t('dashboard.todayFocus')} />
       </View>
 
-      {active.map((s) => (
+      {runningSessions.map((s) => (
         <ActiveSessionBanner
           key={s.id}
           sessionId={s.id}
@@ -128,6 +130,25 @@ export function DashboardScreen() {
       </View>
     </Animated.View>
   );
+
+  const footer =
+    parkedSessions.length > 0 ? (
+      <Animated.View entering={FadeInDown.duration(350)}>
+        <View style={styles.parkedWrap}>
+          <Text style={styles.parkedTitle}>{t('dashboard.savedSessions')}</Text>
+          <View style={styles.parkedList}>
+            {parkedSessions.map((s) => (
+              <ActiveSessionBanner
+                key={s.id}
+                sessionId={s.id}
+                dim
+                onPress={() => navigation.navigate('ActiveSession', { habitId: s.habitId, sessionId: s.id })}
+              />
+            ))}
+          </View>
+        </View>
+      </Animated.View>
+    ) : null;
 
   const empty = (
     <Animated.View entering={FadeInDown.duration(350)}>
@@ -150,6 +171,7 @@ export function DashboardScreen() {
         keyExtractor={(h) => h.id}
         renderItem={renderItem}
         ListHeaderComponent={header}
+        ListFooterComponent={footer}
         ListEmptyComponent={empty}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
@@ -190,6 +212,9 @@ const styles = StyleSheet.create((theme) => ({
   habitsHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 },
   habitsTitle: { fontSize: 13, letterSpacing: 0.6, color: theme.colors.textMuted, fontFamily: theme.fontFamily.bold },
   habitsCount: { fontSize: 12, color: theme.colors.textDim },
+  parkedWrap: { marginTop: 16, gap: 10 },
+  parkedTitle: { fontSize: 13, letterSpacing: 0.6, color: theme.colors.textMuted, fontFamily: theme.fontFamily.bold },
+  parkedList: { gap: 10 },
   empty: { alignItems: 'center', gap: 12, paddingVertical: 48 },
   emptyTitle: { fontSize: 18 },
   emptyHint: { textAlign: 'center', maxWidth: 260 },

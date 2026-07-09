@@ -4,28 +4,23 @@ const valid: HabitFormInput = {
   name: '  Mutolaa  ',
   icon: 'book',
   color: 'amber',
-  type: 'cumulative',
-  period: null,
-  targetHours: 10,
+  period: 'daily',
+  targetCount: 1,
 };
 
 describe('validateHabitDraft', () => {
-  it("to'g'ri kirritmani trim qilib HabitDraft qaytaradi (soat → daqiqa)", () => {
+  it("to'g'ri kirritmani trim qilib HabitDraft qaytaradi", () => {
     const res = validateHabitDraft(valid);
     expect(res.ok).toBe(true);
     if (res.ok) {
       expect(res.draft.name).toBe('Mutolaa');
-      expect(res.draft.targetMinutes).toBe(600);
-      expect(res.draft.period).toBeNull();
+      expect(res.draft.targetCount).toBe(1);
+      expect(res.draft.period).toBe('daily');
     }
   });
 
-  it('recurring odat uchun period saqlanadi', () => {
-    const res = validateHabitDraft({
-      ...valid,
-      type: 'recurring',
-      period: 'weekly',
-    });
+  it('haftalik davr saqlanadi', () => {
+    const res = validateHabitDraft({ ...valid, period: 'weekly', targetCount: 3 });
     expect(res.ok).toBe(true);
     if (res.ok) expect(res.draft.period).toBe('weekly');
   });
@@ -42,31 +37,43 @@ describe('validateHabitDraft', () => {
     if (!res.ok) expect(res.errors.name).toBeDefined();
   });
 
-  it('target 0.1 soatdan kam — xato', () => {
-    const res = validateHabitDraft({ ...valid, targetHours: 0 });
+  it('kunlik uchun targetCount 0 — xato (min 1)', () => {
+    const res = validateHabitDraft({ ...valid, period: 'daily', targetCount: 0 });
     expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.errors.targetHours).toBeDefined();
+    if (!res.ok) expect(res.errors.targetCount).toBeDefined();
   });
 
-  it("target 1000 soatdan ko'p — xato", () => {
-    const res = validateHabitDraft({ ...valid, targetHours: 1001 });
+  it('kunlik uchun targetCount 6 — xato (max 5)', () => {
+    const res = validateHabitDraft({ ...valid, period: 'daily', targetCount: 6 });
     expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.errors.targetHours).toBeDefined();
+    if (!res.ok) expect(res.errors.targetCount).toBeDefined();
   });
 
-  it("recurring, lekin period yo'q — xato", () => {
-    const res = validateHabitDraft({ ...valid, type: 'recurring', period: null });
-    expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.errors.period).toBeDefined();
-  });
-
-  it("cumulative odat period'ni majburan null qiladi", () => {
-    const res = validateHabitDraft({
-      ...valid,
-      type: 'cumulative',
-      period: 'daily',
-    });
+  it('haftalik uchun targetCount 14 — OK (max)', () => {
+    const res = validateHabitDraft({ ...valid, period: 'weekly', targetCount: 14 });
     expect(res.ok).toBe(true);
-    if (res.ok) expect(res.draft.period).toBeNull();
+  });
+
+  it('haftalik uchun targetCount 15 — xato (max 14)', () => {
+    const res = validateHabitDraft({ ...valid, period: 'weekly', targetCount: 15 });
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.errors.targetCount).toBeDefined();
+  });
+
+  it('oylik uchun targetCount 60 — OK (max)', () => {
+    const res = validateHabitDraft({ ...valid, period: 'monthly', targetCount: 60 });
+    expect(res.ok).toBe(true);
+  });
+
+  it('oylik uchun targetCount 61 — xato (max 60)', () => {
+    const res = validateHabitDraft({ ...valid, period: 'monthly', targetCount: 61 });
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.errors.targetCount).toBeDefined();
+  });
+
+  it('butun son bo\'lmagan targetCount — xato', () => {
+    const res = validateHabitDraft({ ...valid, targetCount: 1.5 });
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.errors.targetCount).toBeDefined();
   });
 });

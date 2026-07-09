@@ -1,4 +1,4 @@
-import type { Habit, HabitColor, HabitPeriod, HabitRow, HabitType } from './types';
+import type { Habit, HabitColor, HabitPeriod, HabitRow } from './types';
 
 // SQLite qator → Habit entity (snake_case → camelCase, tip cast).
 export function rowToHabit(row: HabitRow): Habit {
@@ -7,9 +7,8 @@ export function rowToHabit(row: HabitRow): Habit {
     name: row.name,
     icon: row.icon,
     color: row.color as HabitColor,
-    type: row.type as HabitType,
-    period: (row.period as HabitPeriod | null) ?? null,
-    targetMinutes: row.target_minutes,
+    period: row.period as HabitPeriod,
+    targetCount: row.target_count,
     sortOrder: row.sort_order,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

@@ -1,4 +1,3 @@
-export type HabitType = 'cumulative' | 'recurring';
 export type HabitPeriod = 'daily' | 'weekly' | 'monthly';
 
 // Habit rang kalitlari (DESIGN-SPEC: Ember habit palette).
@@ -9,11 +8,10 @@ export interface Habit {
   name: string;
   icon: string;
   color: HabitColor;
-  type: HabitType;
-  /** recurring uchun davr; cumulative (umrlik) uchun null. */
-  period: HabitPeriod | null;
-  /** maqsad daqiqada (targetHours * 60) — butun aniqlik. */
-  targetMinutes: number;
+  /** davr — majburiy (2026-07-08: "umrlik" turi olib tashlandi). */
+  period: HabitPeriod;
+  /** joriy davrda necha marta bajarilishi kerak. */
+  targetCount: number;
   sortOrder: number;
   createdAt: number;
   updatedAt: number;
@@ -25,9 +23,8 @@ export interface HabitDraft {
   name: string;
   icon: string;
   color: HabitColor;
-  type: HabitType;
-  period: HabitPeriod | null;
-  targetMinutes: number;
+  period: HabitPeriod;
+  targetCount: number;
 }
 
 // SQLite qator shakli (snake_case, integer/null).
@@ -36,9 +33,8 @@ export interface HabitRow {
   name: string;
   icon: string;
   color: string;
-  type: string;
-  period: string | null;
-  target_minutes: number;
+  period: string;
+  target_count: number;
   sort_order: number;
   created_at: number;
   updated_at: number;

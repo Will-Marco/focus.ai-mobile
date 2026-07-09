@@ -18,23 +18,18 @@ export interface HabitCardProps {
 export function HabitCard({ habit, refreshKey, onPress, onStart }: HabitCardProps) {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
-  const { progress, elapsedMs } = useHabitProgress(
+  const { progress, completedCount, elapsedMs } = useHabitProgress(
     {
       habitId: habit.id,
-      type: habit.type,
       period: habit.period,
-      targetMinutes: habit.targetMinutes,
+      targetCount: habit.targetCount,
     },
     refreshKey,
   );
   const accent = habitColorHex(habit.color);
   const pct = Math.round(progress * 100);
-  const targetH = habit.targetMinutes / 60;
 
-  const typeLabel =
-    habit.type === 'cumulative'
-      ? t('addHabit.typeCumulative')
-      : t(`addHabit.period${habit.period![0].toUpperCase()}${habit.period!.slice(1)}`);
+  const periodLabel = t(`addHabit.period${habit.period[0].toUpperCase()}${habit.period.slice(1)}`);
 
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={styles.card}>
@@ -52,7 +47,7 @@ export function HabitCard({ habit, refreshKey, onPress, onStart }: HabitCardProp
           {habit.name}
         </Text>
         <Text numberOfLines={1} style={styles.sub}>
-          {typeLabel} · {targetH % 1 === 0 ? targetH : targetH.toFixed(1)} {t('addHabit.hoursUnit')} ·{' '}
+          {periodLabel} · {completedCount}/{habit.targetCount} {t('addHabit.timesUnit')} ·{' '}
           {formatSpent(elapsedMs)}
         </Text>
       </View>

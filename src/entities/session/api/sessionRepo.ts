@@ -56,23 +56,39 @@ export const sessionRepo = {
     return (rows ?? []).map((r) => rowToCompletedSession(r as unknown as SessionRow));
   },
 
-  // Davr oynasi ichida (joriy kun/hafta/oy) odat bo'yicha to'plangan vaqt —
-  // progress = sumDurationMs / (targetMinutes*60000). [fromTs, toTs).
+  // Davr oynasi ichida (joriy kun/hafta/oy) odat bo'yicha to'plangan vaqt (statistika,
+  // "sarflangan" ko'rsatish uchun — progress emas). `ended_at` bo'yicha: pauzada uzoq
+  // turib keyin tugatilgan sessiya TUGATILGAN kuniga hisoblanadi, boshlangan kuniga emas
+  // (2026-07-08, FR-2.10). [fromTs, toTs).
   async sumDurationMs(habitId: string, fromTs: number, toTs: number): Promise<number> {
     const { rows } = await db.execute(
       `SELECT COALESCE(SUM(duration_ms), 0) AS total FROM sessions
        WHERE habit_id = ? AND deleted_at IS NULL
-         AND started_at >= ? AND started_at < ?;`,
+         AND ended_at >= ? AND ended_at < ?;`,
+      [habitId, fromTs, toTs],
+    );
+    return Number((rows?.[0] as { total?: number } | undefined)?.total ?? 0);
+  },
+
+  // Davr oynasi ichida habit'ning bajarilgan (completed=true) sessiyalar soni —
+  // habit progress = countCompleted / targetCount (2026-07-08, necha-marta modeli).
+  // `ended_at` bo'yicha (yuqoridagi izoh).
+  async countCompleted(habitId: string, fromTs: number, toTs: number): Promise<number> {
+    const { rows } = await db.execute(
+      `SELECT COUNT(*) AS total FROM sessions
+       WHERE habit_id = ? AND deleted_at IS NULL AND completed = 1
+         AND ended_at >= ? AND ended_at < ?;`,
       [habitId, fromTs, toTs],
     );
     return Number((rows?.[0] as { total?: number } | undefined)?.total ?? 0);
   },
 
   // Barcha odatlar bo'yicha oraliqdagi jami vaqt (dashboard "bugungi fokus").
+  // `ended_at` bo'yicha (yuqoridagi izoh bilan bir xil sabab).
   async sumAllDurationMs(fromTs: number, toTs: number): Promise<number> {
     const { rows } = await db.execute(
       `SELECT COALESCE(SUM(duration_ms), 0) AS total FROM sessions
-       WHERE deleted_at IS NULL AND started_at >= ? AND started_at < ?;`,
+       WHERE deleted_at IS NULL AND ended_at >= ? AND ended_at < ?;`,
       [fromTs, toTs],
     );
     return Number((rows?.[0] as { total?: number } | undefined)?.total ?? 0);

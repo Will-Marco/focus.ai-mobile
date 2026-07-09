@@ -1,19 +1,18 @@
-import type { HabitColor, HabitDraft, HabitPeriod, HabitType } from '@entities/habit';
+import type { HabitColor, HabitDraft, HabitPeriod } from '@entities/habit';
+import { TARGET_COUNT_BOUNDS } from '../config/options';
 
-// Odat yaratish form holati (UI kirritmasi). Target SOATda kiritiladi (DESIGN-SPEC stepper).
+// Odat yaratish form holati (UI kirritmasi).
 export interface HabitFormInput {
   name: string;
   icon: string;
   color: string;
-  type: HabitType;
-  period: HabitPeriod | null;
-  targetHours: number;
+  period: HabitPeriod;
+  targetCount: number;
 }
 
 export interface HabitFormErrors {
   name?: string;
-  targetHours?: string;
-  period?: string;
+  targetCount?: string;
 }
 
 export type ValidationResult =
@@ -21,8 +20,6 @@ export type ValidationResult =
   | { ok: false; errors: HabitFormErrors };
 
 export const NAME_MAX = 50;
-export const TARGET_MIN_HOURS = 0.1;
-export const TARGET_MAX_HOURS = 1000;
 
 // Pure: form kirritmasini tekshiradi va tozalangan HabitDraft qaytaradi.
 export function validateHabitDraft(input: HabitFormInput): ValidationResult {
@@ -32,11 +29,12 @@ export function validateHabitDraft(input: HabitFormInput): ValidationResult {
   if (name.length === 0) errors.name = 'empty';
   else if (name.length > NAME_MAX) errors.name = 'tooLong';
 
-  if (input.targetHours < TARGET_MIN_HOURS) errors.targetHours = 'tooSmall';
-  else if (input.targetHours > TARGET_MAX_HOURS) errors.targetHours = 'tooLarge';
-
-  const isRecurring = input.type === 'recurring';
-  if (isRecurring && input.period === null) errors.period = 'required';
+  const bounds = TARGET_COUNT_BOUNDS[input.period];
+  if (!Number.isInteger(input.targetCount) || input.targetCount < bounds.min) {
+    errors.targetCount = 'tooSmall';
+  } else if (input.targetCount > bounds.max) {
+    errors.targetCount = 'tooLarge';
+  }
 
   if (Object.keys(errors).length > 0) return { ok: false, errors };
 
@@ -46,10 +44,8 @@ export function validateHabitDraft(input: HabitFormInput): ValidationResult {
       name,
       icon: input.icon,
       color: input.color as HabitColor,
-      type: input.type,
-      // cumulative odat hech qachon period saqlamaydi (model toza).
-      period: isRecurring ? input.period : null,
-      targetMinutes: Math.round(input.targetHours * 60),
+      period: input.period,
+      targetCount: input.targetCount,
     },
   };
 }

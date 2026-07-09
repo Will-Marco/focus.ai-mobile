@@ -5,6 +5,5 @@ export type {
   Habit,
   HabitDraft,
   HabitColor,
-  HabitType,
   HabitPeriod,
 } from './model/types';

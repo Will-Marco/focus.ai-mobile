@@ -18,6 +18,7 @@ const base: ActiveSession = {
   runningSince: 1_000_000,
   isForeground: true,
   startedAt: 1_000_000,
+  parked: false,
 };
 
 describe('elapsedMs', () => {

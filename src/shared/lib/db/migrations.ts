@@ -14,9 +14,8 @@ export const migrations: Migration[] = [
         name            TEXT    NOT NULL,
         icon            TEXT    NOT NULL,
         color           TEXT    NOT NULL,
-        type            TEXT    NOT NULL CHECK (type IN ('cumulative','recurring')),
-        period          TEXT             CHECK (period IN ('daily','weekly','monthly')),
-        target_minutes  INTEGER NOT NULL,
+        period          TEXT    NOT NULL CHECK (period IN ('daily','weekly','monthly')),
+        target_count    INTEGER NOT NULL,
         sort_order      INTEGER NOT NULL DEFAULT 0,
         created_at      INTEGER NOT NULL,
         updated_at      INTEGER NOT NULL,
@@ -40,6 +39,7 @@ export const migrations: Migration[] = [
 
       CREATE INDEX IF NOT EXISTS idx_sessions_habit   ON sessions (habit_id);
       CREATE INDEX IF NOT EXISTS idx_sessions_started ON sessions (started_at);
+      CREATE INDEX IF NOT EXISTS idx_sessions_ended   ON sessions (ended_at);
       CREATE INDEX IF NOT EXISTS idx_habits_deleted   ON habits   (deleted_at);
     `,
   },

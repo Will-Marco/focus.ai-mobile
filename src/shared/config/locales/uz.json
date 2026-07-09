@@ -21,9 +21,12 @@
     "activeNow": "Hozir faol",
     "running": "davom etmoqda",
     "paused": "pauza",
+    "saved": "keyinga qoldirilgan",
     "left": "qoldi",
     "day": "kun",
-    "count": "ta"
+    "count": "ta",
+    "discardSession": "Sessiyani o'chirish",
+    "savedSessions": "Keyinga qoldirilgan"
   },
   "addHabit": {
     "title": "Yangi odat",
@@ -32,30 +35,24 @@
     "namePlaceholder": "Masalan, Mutolaa",
     "icon": "Ikonka",
     "color": "Rang",
-    "type": "Tur",
-    "typeCumulative": "Umrlik",
-    "typeCumulativeDesc": "Bir martalik, katta maqsad",
-    "typeRecurring": "Davriy",
-    "typeRecurringDesc": "Muntazam takrorlanadigan maqsad",
     "period": "Davr",
     "periodDaily": "Kunlik",
     "periodWeekly": "Haftalik",
     "periodMonthly": "Oylik",
-    "target": "Maqsad",
-    "hoursUnit": "soat",
+    "target": "Necha marta",
+    "timesUnit": "marta",
     "save": "Odatni saqlash",
     "delete": "Odatni o'chirish",
     "deleteConfirm": "Bu odat va uning tarixini o'chirishni tasdiqlaysizmi?",
     "errors": {
       "name": "Nom 1–50 belgidan iborat bo'lsin",
-      "targetHours": "Maqsad 0.1–1000 soat oralig'ida bo'lsin",
-      "period": "Davrni tanlang"
+      "targetCount": "Maqsad {{min}}–{{max}} marta oralig'ida bo'lsin"
     }
   },
   "session": {
     "activeLabel": "Faol sessiya",
     "passed": "o'tdi",
-    "fromMinutes": "daqiqadan",
+    "fromMinutes": "daqiqa",
     "setupQuestion": "Bu sessiyaga qancha vaqt ajratasiz?",
     "minutesShort": "daqiqa",
     "minAbbr": "daq",
@@ -67,7 +64,7 @@
     "remaining": "QOLDI",
     "elapsed": "O'TDI",
     "done": "BAJARILDI",
-    "overtimeNote": "Qo'shimcha vaqt ham odatingizga hisoblanadi",
+    "overtimeNote": "Qo'shimcha vaqt statistikaga qo'shiladi, lekin qo'shimcha marta hisoblanmaydi",
     "xpEarned": "+{{xp}} XP",
     "awayBonusNote": "Telefonsiz {{min}} daqiqa · 2× XP bonus",
     "completed": "Maqsadingizga yetdingiz!",
