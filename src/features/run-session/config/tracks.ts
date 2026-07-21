@@ -39,3 +39,29 @@ export const AUDIO_SOURCES: Partial<Record<string, number>> = {
 export function trackSource(id: string): number | undefined {
   return AUDIO_SOURCES[id];
 }
+
+/**
+ * Har trek uchun kalibrlangan gain (loudness normalizatsiya).
+ *
+ * NEGA: manba fayllar juda har xil balandlikda yozilgan — o'lchangan RMS
+ * `white` −14.4 dBFS dan `ocean` −37.4 dBFS gacha, ya'ni **23 dB farq**.
+ * Natijada (a) eng baland ikkitasi — `white` va `lofi` — ijro zanjirida
+ * xirillardi, (b) trek almashtirilganda ovoz keskin sakrardi.
+ *
+ * Qiymatlar ~−30 dBFS RMS ga tenglashtirish uchun hisoblangan, lekin har biri
+ * peak bilan cheklangan (peak + gain ≤ −1 dBFS) — shuning uchun dinamik
+ * materiallar (`rain`, `fire`) biroz jimroq qoladi, bu tabiiy.
+ * Fayllar qayta kodlanmadi — sifat yo'qolmaydi, qiymat kodda sozlanadi.
+ */
+export const TRACK_GAIN: Record<string, number> = {
+  rain: 1.0, // RMS −34.3 · peak −0.93 (peak cheklaydi)
+  lofi: 0.27, // RMS −18.7 — xirillar edi
+  ocean: 2.3, // RMS −37.4 · peak −15.8 (zapas bor)
+  forest: 0.78, // RMS −27.8
+  fire: 0.82, // RMS −31.7 · peak 0.0 (peak cheklaydi)
+  white: 0.17, // RMS −14.4 — eng baland, xirillar edi
+};
+
+export function trackGain(id: string): number {
+  return TRACK_GAIN[id] ?? 1;
+}

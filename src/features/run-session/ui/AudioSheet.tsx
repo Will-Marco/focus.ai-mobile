@@ -14,7 +14,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { PauseIcon, PlayIcon, Text } from '@shared/ui';
+import { GradientBox, PauseIcon, PlayIcon, Text } from '@shared/ui';
 import { usePulse } from '@shared/lib/animation/usePulse';
 import { haptics } from '@shared/lib/haptics';
 import { TRACKS } from '../config/tracks';
@@ -91,7 +91,7 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
         <Pressable style={styles.flex1} onPress={close} accessibilityRole="button" accessibilityLabel="close" />
       </Animated.View>
       <Animated.View style={[SHEET_WRAP, sheetStyle]}>
-        <LinearGradient colors={[...theme.colors.sheetBg]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[styles.sheet, { height: sheetHeight }]}>
+        <GradientBox colors={theme.colors.sheetBg} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[styles.sheet, { maxHeight: sheetHeight }]}>
           <GestureDetector gesture={sheetPan}>
             <View>
               <View style={styles.handle} />
@@ -170,7 +170,7 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
               );
             })}
           </ScrollView>
-        </LinearGradient>
+        </GradientBox>
       </Animated.View>
     </View>
   );

@@ -5,7 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { CheckIcon, FlameIcon, RadialGlow, Screen, Text } from '@shared/ui';
+import { CheckIcon, FlameIcon, GradientBox, RadialGlow, Screen, Text } from '@shared/ui';
 import { formatSpent } from '@shared/lib/time/formatSpent';
 import { buildSeries, useStatsSummary, type BadgeId, type ChartPeriod } from '@entities/stats';
 
@@ -147,11 +147,11 @@ export function StatsScreen() {
               {(['week', 'month', 'year'] as ChartPeriod[]).map((p) => {
                 const active = p === period;
                 return active ? (
-                  <LinearGradient key={p} colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.toggleItem}>
+                  <GradientBox key={p} colors={gradient} style={styles.toggleItem}>
                     <Text style={styles.toggleTxtActive} onPress={() => setPeriod(p)}>
                       {t(`stats.${p}`)}
                     </Text>
-                  </LinearGradient>
+                  </GradientBox>
                 ) : (
                   <Text key={p} style={styles.toggleTxt} onPress={() => setPeriod(p)}>
                     {t(`stats.${p}`)}

@@ -4,6 +4,8 @@ export { Button } from './Button';
 export type { ButtonProps, ButtonVariant } from './Button';
 export { Card } from './Card';
 export type { CardProps } from './Card';
+export { GradientBox } from './GradientBox';
+export type { GradientBoxProps } from './GradientBox';
 export { ProgressRing } from './ProgressRing';
 export type { ProgressRingProps } from './ProgressRing';
 export { Screen } from './Screen';

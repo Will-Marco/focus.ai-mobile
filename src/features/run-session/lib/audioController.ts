@@ -10,6 +10,8 @@ type SourceNode = any;
 type GainNode = any;
 type AudioBuffer = any;
 
+import { trackGain } from '../config/tracks';
+
 let api: any;
 let triedRequire = false;
 
@@ -29,11 +31,18 @@ let ctx: Ctx | null = null;
 let currentSource: SourceNode | null = null;
 let currentGain: GainNode | null = null;
 let currentVolume = 0.4;
+/** Joriy trekning loudness kalibrovkasi (TRACK_GAIN) — setVolume'да ham qo'llanadi. */
+let currentTrackGain = 1;
 let isPaused = false;
 let fadeTimer: ReturnType<typeof setInterval> | null = null;
 const buffers = new Map<string, AudioBuffer>();
 
 const FADE_MS = 450; // silliq kirib/chiqish
+
+/** Karnayga ketadigan haqiqiy gain — foydalanuvchi ovozi × trek kalibrovkasi. */
+function targetGain(): number {
+  return currentVolume * currentTrackGain;
+}
 
 function clearFade(): void {
   if (fadeTimer) {
@@ -91,6 +100,19 @@ async function configureSession(m: any): Promise<void> {
     await m.AudioManager?.setAudioSessionActivity?.(true);
   } catch {
     // ignore
+  }
+}
+
+/** `resume()` dan keyin AudioContext haqiqatan ishga tushishini kutadi (max ~600ms).
+ *  Timeout'да ham davom etamiz — jim qolgani crash'дан yaxshiroq. */
+async function waitUntilRunning(c: Ctx): Promise<void> {
+  for (let i = 0; i < 60; i++) {
+    try {
+      if (c.state === 'running') return;
+    } catch {
+      return;
+    }
+    await new Promise<void>((r) => setTimeout(() => r(), 10));
   }
 }
 
@@ -153,16 +175,22 @@ export const audioController = {
     isPaused = false;
     await configureSession(m);
     try {
-      // resume() ni await QILMA — audio-api'да promise hech qachon hal bo'lmaydi (state baribir running'ga o'tadi)
+      // resume() ni await QILMA — audio-api'да promise hech qachon hal bo'lmaydi.
+      // LEKIN iOS'да resume() fon thread'ida AudioEngine grafigini quradi va agar
+      // shu paytда start() chaqirilsa, ikkala thread bitta NSMutableDictionary'ga
+      // yozadi (thread-safe emas) → SIGSEGV. Shuning uchun promise o'rniga
+      // `state` ni pollingда kutamiz (dekodlangan trek keshda bo'lsa await yo'q edi).
       if (c.state === 'suspended') {
         try {
           c.resume();
         } catch {
           // ignore
         }
+        await waitUntilRunning(c);
       }
       stopCurrent();
       currentVolume = volume;
+      currentTrackGain = trackGain(trackId);
 
       let buffer = buffers.get(trackId);
       if (!buffer) {
@@ -171,7 +199,7 @@ export const audioController = {
       }
 
       const gain = c.createGain();
-      gain.gain.value = volume;
+      gain.gain.value = volume * currentTrackGain;
       const src = c.createBufferSource();
       src.buffer = buffer;
       src.loop = true;
@@ -195,7 +223,7 @@ export const audioController = {
     } catch {
       // ignore
     }
-    fadeTo(currentVolume, FADE_MS);
+    fadeTo(targetGain(), FADE_MS);
   },
 
   /** Silliq so'ndirish (manbani to'xtatmaymiz — resume tez). */
@@ -207,7 +235,7 @@ export const audioController = {
   async setVolume(volume: number): Promise<void> {
     currentVolume = volume;
     clearFade();
-    if (!isPaused) setGain(volume); // pauzaда ovozni ochib yubormaymiz
+    if (!isPaused) setGain(targetGain()); // pauzaда ovozni ochib yubormaymiz
   },
 
   async stop(): Promise<void> {

@@ -7,41 +7,42 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0606200CFB9D4BADB6021190 /* HankenGrotesk-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 771AB00FC1C248158E12DCA1 /* HankenGrotesk-ExtraBold.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-FocusAI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-FocusAI.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		50B69D86842644A88E6E704F /* HankenGrotesk-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2491D2865C14E4392E404FD /* HankenGrotesk-Medium.ttf */; };
-		D902CB6EFD6F49DEB89D7560 /* HankenGrotesk-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0002860B74974EA695FDCFBA /* HankenGrotesk-Bold.ttf */; };
-		F664E2296DBC48B3A6FE0405 /* GeistMono-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 967C288DD9B145D6B3910F04 /* GeistMono-SemiBold.ttf */; };
-		0606200CFB9D4BADB6021190 /* HankenGrotesk-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 771AB00FC1C248158E12DCA1 /* HankenGrotesk-ExtraBold.ttf */; };
-		C04B080491A74E3D8954AB14 /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 172AAE1146A344599AC1104B /* GeistMono-Medium.ttf */; };
-		E85C43A5AD0A446AAC465EB9 /* HankenGrotesk-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA7A724198004DF3AA07EFEB /* HankenGrotesk-SemiBold.ttf */; };
 		30148E953F3A474DA7C087EF /* HankenGrotesk-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 17A3A6D3DF614113A6C33872 /* HankenGrotesk-Regular.ttf */; };
-		D910165EB53941F1BC7F74D1 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 283A463DFF6B42EAB339B960 /* GeistMono-Regular.ttf */; };
+		50B69D86842644A88E6E704F /* HankenGrotesk-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2491D2865C14E4392E404FD /* HankenGrotesk-Medium.ttf */; };
+		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		7D1BE0766CE14C8B89C69D82 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 74B109FE30F54B55880DD354 /* README.md */; };
+		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		C04B080491A74E3D8954AB14 /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 172AAE1146A344599AC1104B /* GeistMono-Medium.ttf */; };
+		D902CB6EFD6F49DEB89D7560 /* HankenGrotesk-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0002860B74974EA695FDCFBA /* HankenGrotesk-Bold.ttf */; };
+		D910165EB53941F1BC7F74D1 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 283A463DFF6B42EAB339B960 /* GeistMono-Regular.ttf */; };
+		E85C43A5AD0A446AAC465EB9 /* HankenGrotesk-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA7A724198004DF3AA07EFEB /* HankenGrotesk-SemiBold.ttf */; };
+		F0FFF0BCE5873D783BEA26A8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		F664E2296DBC48B3A6FE0405 /* GeistMono-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 967C288DD9B145D6B3910F04 /* GeistMono-SemiBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0002860B74974EA695FDCFBA /* HankenGrotesk-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "HankenGrotesk-Bold.ttf"; path = "../assets/fonts/HankenGrotesk-Bold.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* FocusAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FocusAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = FocusAI/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FocusAI/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = FocusAI/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		172AAE1146A344599AC1104B /* GeistMono-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "GeistMono-Medium.ttf"; path = "../assets/fonts/GeistMono-Medium.ttf"; sourceTree = "<group>"; };
+		17A3A6D3DF614113A6C33872 /* HankenGrotesk-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "HankenGrotesk-Regular.ttf"; path = "../assets/fonts/HankenGrotesk-Regular.ttf"; sourceTree = "<group>"; };
+		283A463DFF6B42EAB339B960 /* GeistMono-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "GeistMono-Regular.ttf"; path = "../assets/fonts/GeistMono-Regular.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-FocusAI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusAI.debug.xcconfig"; path = "Target Support Files/Pods-FocusAI/Pods-FocusAI.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-FocusAI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FocusAI.release.xcconfig"; path = "Target Support Files/Pods-FocusAI/Pods-FocusAI.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-FocusAI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FocusAI.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		74B109FE30F54B55880DD354 /* README.md */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = README.md; path = ../assets/fonts/README.md; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = FocusAI/AppDelegate.swift; sourceTree = "<group>"; };
+		771AB00FC1C248158E12DCA1 /* HankenGrotesk-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "HankenGrotesk-ExtraBold.ttf"; path = "../assets/fonts/HankenGrotesk-ExtraBold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FocusAI/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		967C288DD9B145D6B3910F04 /* GeistMono-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "GeistMono-SemiBold.ttf"; path = "../assets/fonts/GeistMono-SemiBold.ttf"; sourceTree = "<group>"; };
+		BA7A724198004DF3AA07EFEB /* HankenGrotesk-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "HankenGrotesk-SemiBold.ttf"; path = "../assets/fonts/HankenGrotesk-SemiBold.ttf"; sourceTree = "<group>"; };
+		D2491D2865C14E4392E404FD /* HankenGrotesk-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "HankenGrotesk-Medium.ttf"; path = "../assets/fonts/HankenGrotesk-Medium.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		D2491D2865C14E4392E404FD /* HankenGrotesk-Medium.ttf */ = {isa = PBXFileReference; name = "HankenGrotesk-Medium.ttf"; path = "../assets/fonts/HankenGrotesk-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		0002860B74974EA695FDCFBA /* HankenGrotesk-Bold.ttf */ = {isa = PBXFileReference; name = "HankenGrotesk-Bold.ttf"; path = "../assets/fonts/HankenGrotesk-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		967C288DD9B145D6B3910F04 /* GeistMono-SemiBold.ttf */ = {isa = PBXFileReference; name = "GeistMono-SemiBold.ttf"; path = "../assets/fonts/GeistMono-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		771AB00FC1C248158E12DCA1 /* HankenGrotesk-ExtraBold.ttf */ = {isa = PBXFileReference; name = "HankenGrotesk-ExtraBold.ttf"; path = "../assets/fonts/HankenGrotesk-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		172AAE1146A344599AC1104B /* GeistMono-Medium.ttf */ = {isa = PBXFileReference; name = "GeistMono-Medium.ttf"; path = "../assets/fonts/GeistMono-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		BA7A724198004DF3AA07EFEB /* HankenGrotesk-SemiBold.ttf */ = {isa = PBXFileReference; name = "HankenGrotesk-SemiBold.ttf"; path = "../assets/fonts/HankenGrotesk-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		17A3A6D3DF614113A6C33872 /* HankenGrotesk-Regular.ttf */ = {isa = PBXFileReference; name = "HankenGrotesk-Regular.ttf"; path = "../assets/fonts/HankenGrotesk-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		283A463DFF6B42EAB339B960 /* GeistMono-Regular.ttf */ = {isa = PBXFileReference; name = "GeistMono-Regular.ttf"; path = "../assets/fonts/GeistMono-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		74B109FE30F54B55880DD354 /* README.md */ = {isa = PBXFileReference; name = "README.md"; path = "../assets/fonts/README.md"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +76,23 @@
 				5DCACB8F33CDC322A6C60F78 /* libPods-FocusAI.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5C3F4095ECB94D67939454C8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D2491D2865C14E4392E404FD /* HankenGrotesk-Medium.ttf */,
+				0002860B74974EA695FDCFBA /* HankenGrotesk-Bold.ttf */,
+				967C288DD9B145D6B3910F04 /* GeistMono-SemiBold.ttf */,
+				771AB00FC1C248158E12DCA1 /* HankenGrotesk-ExtraBold.ttf */,
+				172AAE1146A344599AC1104B /* GeistMono-Medium.ttf */,
+				BA7A724198004DF3AA07EFEB /* HankenGrotesk-SemiBold.ttf */,
+				17A3A6D3DF614113A6C33872 /* HankenGrotesk-Regular.ttf */,
+				283A463DFF6B42EAB339B960 /* GeistMono-Regular.ttf */,
+				74B109FE30F54B55880DD354 /* README.md */,
+			);
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -115,23 +133,6 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
-		};
-		5C3F4095ECB94D67939454C8 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				D2491D2865C14E4392E404FD /* HankenGrotesk-Medium.ttf */,
-				0002860B74974EA695FDCFBA /* HankenGrotesk-Bold.ttf */,
-				967C288DD9B145D6B3910F04 /* GeistMono-SemiBold.ttf */,
-				771AB00FC1C248158E12DCA1 /* HankenGrotesk-ExtraBold.ttf */,
-				172AAE1146A344599AC1104B /* GeistMono-Medium.ttf */,
-				BA7A724198004DF3AA07EFEB /* HankenGrotesk-SemiBold.ttf */,
-				17A3A6D3DF614113A6C33872 /* HankenGrotesk-Regular.ttf */,
-				283A463DFF6B42EAB339B960 /* GeistMono-Regular.ttf */,
-				74B109FE30F54B55880DD354 /* README.md */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 
@@ -204,6 +205,7 @@
 				30148E953F3A474DA7C087EF /* HankenGrotesk-Regular.ttf in Resources */,
 				D910165EB53941F1BC7F74D1 /* GeistMono-Regular.ttf in Resources */,
 				7D1BE0766CE14C8B89C69D82 /* README.md in Resources */,
+				F0FFF0BCE5873D783BEA26A8 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,7 +318,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.focusai;
 				PRODUCT_NAME = FocusAI;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -345,7 +347,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.focusai;
 				PRODUCT_NAME = FocusAI;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
@@ -415,6 +417,10 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -422,8 +428,14 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				PODFILE_DIR = "$(SRCROOT)";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -480,6 +492,10 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -487,8 +503,13 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				PODFILE_DIR = "$(SRCROOT)";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

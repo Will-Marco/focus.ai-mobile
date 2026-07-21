@@ -9,7 +9,9 @@ import { formatClock } from '@shared/lib/time/formatClock';
 import { usePulse } from '@shared/lib/animation/usePulse';
 
 // Animated uchun plain style (Unistyles emas — crash).
-const COLON_BIG = { fontFamily: 'GeistMono-SemiBold', fontSize: 150, color: '#F2A24C', lineHeight: 138 } as const;
+// lineHeight ≥ fontSize bo'lishi SHART — iOS lineHeight kichik bo'lsa glyph tepasini kesadi
+// (Android toqat qiladi). GeistMono ascender uchun 1.08em zapas.
+const COLON_BIG = { fontFamily: 'GeistMono-SemiBold', fontSize: 150, color: '#F2A24C', lineHeight: 162 } as const;
 const AWAY_RING_OUTER = {
   position: 'absolute',
   width: 200,
@@ -201,7 +203,7 @@ const styles = StyleSheet.create((theme) => ({
   fcRight: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   fcRemaining: { fontSize: 12, letterSpacing: 4, color: theme.colors.gold, marginBottom: 6 },
   fcClockRow: { flexDirection: 'row', alignItems: 'center' },
-  fcClock: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 150, lineHeight: 138, letterSpacing: -3, color: theme.colors.textStrong },
+  fcClock: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 150, lineHeight: 162, letterSpacing: -3, color: theme.colors.textStrong },
   fcBarTrack: { marginTop: 18, width: 300, height: 4, borderRadius: 3, backgroundColor: `rgba(${theme.colors.trackRgb},0.08)`, overflow: 'hidden' },
   fcBarFill: { height: 4, backgroundColor: theme.colors.brand },
   fcSub: { marginTop: 12, fontSize: 13, color: theme.colors.textMuted },

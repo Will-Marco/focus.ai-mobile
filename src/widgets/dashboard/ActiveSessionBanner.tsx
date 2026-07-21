@@ -1,9 +1,8 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { ProgressRing, Text, PlayIcon, PauseIcon, TrashIcon } from '@shared/ui';
+import { GradientBox, ProgressRing, Text, PlayIcon, PauseIcon, TrashIcon } from '@shared/ui';
 import { formatClock } from '@shared/lib/time/formatClock';
 import { useHabitStore } from '@entities/habit';
 import { remainingMs, useSessionStore } from '@entities/session';
@@ -30,12 +29,7 @@ export function ActiveSessionBanner({ sessionId, onPress, dim = false }: ActiveS
 
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>
-      <LinearGradient
-        colors={[...theme.colors.bannerBg]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.banner, dim && styles.bannerDim]}
-      >
+      <GradientBox colors={theme.colors.bannerBg} style={[styles.banner, dim && styles.bannerDim]}>
         <View style={styles.ringWrap}>
           <View style={styles.ringFill}>
             <ProgressRing
@@ -79,7 +73,7 @@ export function ActiveSessionBanner({ sessionId, onPress, dim = false }: ActiveS
             <PlayIcon size={15} color={theme.colors.textStrong} />
           )}
         </View>
-      </LinearGradient>
+      </GradientBox>
     </Pressable>
   );
 }
