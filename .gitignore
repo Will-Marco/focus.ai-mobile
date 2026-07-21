@@ -68,9 +68,16 @@ yarn-error.log
 
 # Internal — Jarvis/dizayn (GitHub'ga chiqmaydi, lokalда qoladi)
 docs/*
+# Hujjatlar — GitHub'da ko'rinadi
 !docs/SRS.md
 !docs/CONSTITUTION.md
 !docs/CREATIVE.md
+# GitHub Pages sayti (privacy/support — App Store talabi)
+!docs/index.html
+!docs/privacy.html
+!docs/support.html
+!docs/assets/
+!docs/.nojekyll
 design/
 .claude/
 CLAUDE.md
