@@ -67,6 +67,41 @@ describe('buildHeatmap', () => {
     expect(hm.activeDays).toBe(0);
     expect(hm.weeks).toHaveLength(53);
   });
+
+  describe('oy yorliqlari (GitHub uslubi)', () => {
+    it('har ustun uchun bitta yorliq qaytaradi', () => {
+      const hm = buildHeatmap([], NOW);
+      expect(hm.monthLabels).toHaveLength(hm.weeks.length);
+    });
+
+    it('oy nomi faqat shu oy boshlangan ustunda turadi, qolganlari null', () => {
+      const hm = buildHeatmap([], NOW);
+      const marked = hm.monthLabels.filter((m) => m !== null);
+      // 53 hafta ≈ 12–13 oy chegarasi
+      expect(marked.length).toBeGreaterThanOrEqual(11);
+      expect(marked.length).toBeLessThanOrEqual(13);
+    });
+
+    it('yorliqlar 0..11 oralig\'ida va vaqt bo\'yicha ketma-ket', () => {
+      const hm = buildHeatmap([], NOW);
+      const marked = hm.monthLabels.filter((m): m is number => m !== null);
+      for (const m of marked) {
+        expect(m).toBeGreaterThanOrEqual(0);
+        expect(m).toBeLessThanOrEqual(11);
+      }
+      // Ketma-ket yorliqlar takrorlanmaydi (bir oy ikki marta belgilanmaydi)
+      for (let i = 1; i < marked.length; i++) {
+        expect(marked[i]).not.toBe(marked[i - 1]);
+      }
+    });
+
+    it('oxirgi ustun joriy oyga tegishli', () => {
+      const hm = buildHeatmap([], NOW);
+      // NOW = 2026-06-28 (iyun = indeks 5). Oxirgi belgilangan yorliq iyun yoki undan oldingi oy.
+      const lastMarked = [...hm.monthLabels].reverse().find((m) => m !== null);
+      expect(lastMarked).toBe(5);
+    });
+  });
 });
 
 describe('last7Done', () => {

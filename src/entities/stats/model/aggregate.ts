@@ -21,6 +21,11 @@ export interface HeatmapData {
   weeks: number[][];
   /** oxirgi yilda faol kunlar soni. */
   activeDays: number;
+  /**
+   * Har ustun uchun oy indeksi (0=Yanvar) — faqat **oy o'zgargan** ustunda,
+   * qolganlarida `null`. GitHub contribution grafigidagi kabi yorliq qo'yish uchun.
+   */
+  monthLabels: (number | null)[];
 }
 
 const minutes = (ms: number) => Math.floor(ms / MIN_MS);
@@ -56,7 +61,9 @@ export function buildHeatmap(sessions: SessionStat[], now: number, weeksCount = 
   const thisMonday = addDays(today, -dow);
 
   const weeks: number[][] = [];
+  const monthLabels: (number | null)[] = [];
   let activeDays = 0;
+  let prevMonth = -1;
   for (let w = weeksCount - 1; w >= 0; w -= 1) {
     const monday = addDays(thisMonday, -w * 7);
     const col: number[] = [];
@@ -67,8 +74,14 @@ export function buildHeatmap(sessions: SessionStat[], now: number, weeksCount = 
       col.push(heatLevel(min));
     }
     weeks.push(col);
+
+    // Yorliq ustunning dushanbasidagi oyga qo'yiladi; oy o'zgargandagina belgilanadi,
+    // shuning uchun bir oy ikki marta yozilmaydi.
+    const month = new Date(monday).getMonth();
+    monthLabels.push(month === prevMonth ? null : month);
+    prevMonth = month;
   }
-  return { weeks, activeDays };
+  return { weeks, activeDays, monthLabels };
 }
 
 // ---- Grafiklar (hafta/oy/yil) ----
