@@ -97,3 +97,6 @@ Focus AI*.html
 
 # Supabase CLI temp
 supabase/.temp/
+
+# Demo akkaunt seed (user_id bor — lokal qoladi)
+supabase/demo-seed.local.sql

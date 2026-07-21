@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
@@ -67,6 +67,12 @@ export function StatsScreen() {
   const HEAT_COLORS = heatColors(theme.colors.trackRgb);
   const heatmap = summary.heatmap.weeks;
   const heatScrollRef = useRef<ScrollView>(null);
+  // Heatmap oxirgi haftalar bilan ochilsin. `onContentSizeChange` ichida to'g'ridan-to'g'ri
+  // chaqirsak ScrollView hali o'lchanmagan bo'ladi va scroll ta'sir qilmaydi — keyingi
+  // kadrga qoldiramiz. onLayout bilan birga: qaysi biri kech kelsa, o'sha ishlaydi.
+  const scrollHeatToEnd = useCallback(() => {
+    requestAnimationFrame(() => heatScrollRef.current?.scrollToEnd({ animated: false }));
+  }, []);
 
   return (
     <Screen>
@@ -204,23 +210,26 @@ export function StatsScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             ref={heatScrollRef}
-            onContentSizeChange={() => heatScrollRef.current?.scrollToEnd({ animated: false })}
+            onContentSizeChange={scrollHeatToEnd}
+            onLayout={scrollHeatToEnd}
           >
             <View>
               <View style={styles.monthRow}>
                 {summary.heatmap.monthLabels.map((m, ci) => (
-                  <View key={ci} style={styles.monthSlot}>
-                    {m !== null ? (
-                      <Text style={styles.monthTxt} numberOfLines={1}>
-                        {PERIOD_LABELS.year[m]}
-                      </Text>
-                    ) : null}
+                  <View key={ci} style={[styles.monthSlot, m !== null && ci > 0 && styles.monthGap]}>
+                    {m !== null ? <Text style={styles.monthTxt}>{PERIOD_LABELS.year[m]}</Text> : null}
                   </View>
                 ))}
               </View>
               <View style={styles.heatRow}>
                 {heatmap.map((col, ci) => (
-                  <View key={ci} style={styles.heatCol}>
+                  <View
+                    key={ci}
+                    style={[
+                      styles.heatCol,
+                      summary.heatmap.monthLabels[ci] !== null && ci > 0 && styles.monthGap,
+                    ]}
+                  >
                     {col.map((lvl, di) => (
                       <View key={di} style={[styles.heatCell, { backgroundColor: HEAT_COLORS[lvl] }]} />
                     ))}
@@ -367,11 +376,13 @@ const styles = StyleSheet.create((theme) => ({
   heatRow: { flexDirection: 'row', gap: 3 },
   heatCol: { flexDirection: 'column', gap: 3 },
   heatCell: { width: 11, height: 11, borderRadius: 2 },
-  // Oy yorliqlari — slot kengligi katak+gap ga teng (14), yozuv esa undan
-  // kengroq bo'lgani uchun absolute qo'yiladi va qo'shni slotlar ustidan chiqadi.
-  monthRow: { flexDirection: 'row', gap: 3, height: 15 },
+  // Oy yorliqlari — slot katak kengligida (11), yozuv esa undan kengroq, shuning
+  // uchun absolute + o'z kengligi bilan qo'yiladi (busiz ota-ona uni qirqadi).
+  monthRow: { flexDirection: 'row', gap: 3, height: 16 },
   monthSlot: { width: 11 },
-  monthTxt: { position: 'absolute', left: 0, top: 0, fontSize: 10, color: theme.colors.textDim },
+  monthTxt: { position: 'absolute', left: 0, top: 0, width: 34, fontSize: 10, color: theme.colors.textMuted },
+  /** Yangi oy boshlangan ustun oldidan ajratuvchi bo'shliq (yorliq qatorida ham bir xil). */
+  monthGap: { marginLeft: 9 },
   legend: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 6, marginTop: 12 },
   legendTxt: { fontSize: 11, color: theme.colors.textDim },
   legendSwatches: { flexDirection: 'row', gap: 3 },
