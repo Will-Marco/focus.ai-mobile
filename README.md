@@ -1,97 +1,149 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Focus AI
 
-# Getting Started
+**Odat quruvchi fokus-taymer — telefoningizni qo'yib qo'yganingiz uchun mukofotlaydi.**
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Ko'pchilik fokus ilovalari ekranga tikilib turishingizni kutadi. Focus AI teskarisini
+qiladi: telefonni **yuztuban qo'ysangiz** sessiya "Away" rejimiga o'tadi va siz **ikki
+barobar XP** olasiz. Yon burasangiz — ekran katta stol soatiga aylanadi va tizim
+"Bezovta qilmang" rejimi yoqiladi. Diqqat qurilmadan uziladi, taymer esa ishlashda davom
+etadi.
 
-## Step 1: Start Metro
+Ilova **butunlay offline ishlaydi** — ro'yxatdan o'tmasdan, internetsiz. Mehmon rejimida
+ochib, darhol sinab ko'rish mumkin.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+---
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Signature: Focus Modes (orientatsiyaga sezgir)
 
-```sh
-# Using npm
-npm start
+Telefon holatiga qarab ilova o'zini butunlay boshqacha tutadi:
 
-# OR using Yarn
-yarn start
+| Holat | Rejim | Nima bo'ladi |
+|---|---|---|
+| 📱 Tik | Odatiy sessiya | Skia ring, jonli progress, fon ovozi |
+| 🛌 **Yuztuban** | **Away** | Ekran qorayadi, sensor kuzatadi, **2× XP bonus** |
+| 🔄 **Yon** | **Focus Clock** | Katta stol soati + tizim DND (Android) |
+
+Yuztuban holat akselerometr bilan aniqlanadi — hysteresis va "hold" oynasi bilan, ya'ni
+telefonni qo'lda ushlab turganda yoki tasodifiy qimirlaganda yolg'on ishga tushmaydi.
+
+## Boshqa imkoniyatlar
+
+- **Taymer yadrosi** — bir vaqtda bir nechta sessiya, overtime (100% dan keyin ham davom
+  etadi), erta tugatilgan sessiya "pauzada" saqlanadi va keyin davom ettiriladi
+- **Odatlar** — kunlik/haftalik/oylik davr + "necha marta" maqsadi; hisob davr
+  chegarasida avtomatik tiklanadi
+- **Streak · statistika · gamifikatsiya** — auto-freeze streak, heatmap, XP/level, 12 badge
+- **Focus Rooms** — guruh yaratish, jonli presence (kim hozir fokusda), feed, taklif
+- **AI murabbiy** — anonim metrikalar asosida shaxsiy tavsiya (Gemini, Edge Function)
+- **Fon ovozi** — 6 ta ambient trek, loop + fade, har biri loudness bo'yicha kalibrlangan
+- **Bildirishnomalar** — eslatma, streak ogohlantirishi, quiet hours
+- **Sync** — Supabase, last-write-wins, offline-first ustiga qurilgan
+
+## Skrinshotlar
+
+> _(topshiruvdan oldin qo'shiladi)_
+
+---
+
+## Tech stack
+
+| Qatlam | Tanlov |
+|---|---|
+| Framework | React Native **0.86** (bare CLI, Expo'siz), **New Architecture ON** |
+| Til | TypeScript (strict, `any` yo'q) |
+| Navigatsiya | React Navigation (native-stack + bottom-tabs) |
+| State | Zustand · TanStack Query (server holati) |
+| Styling | Unistyles 3 (C++ yadro — theme almashuvi re-render'siz) |
+| Grafika | Skia + Reanimated 4 (ring UI thread'da, React re-render'siz) |
+| Local DB | op-sqlite 17 (doimiy) + MMKV 3 (issiq taymer holati) |
+| Sensor / Haptic | nitro-sensors · nitro-haptics (worklet, UI thread) |
+| Audio | react-native-audio-api (Web Audio uslubi) |
+| Notif | Notifee |
+| Backend | Supabase (auth · Postgres · Realtime · Edge Functions) |
+| AI | Gemini `2.5-flash` (Edge Function orqali, kalit ilovada emas) |
+| i18n | react-i18next (uz-Latn birlamchi) |
+
+Har bir tanlov ataylab qilingan: Unistyles C++ yadrosi tema almashuvini re-render'siz
+qiladi, Skia ring UI thread'da aylanadi (JS bloklanmaydi), MMKV esa taymer holatini
+millisekundlarda saqlaydi — ilova o'ldirilsa ham sessiya yo'qolmaydi.
+To'liq asoslar: [`docs/CONSTITUTION.md`](docs/CONSTITUTION.md).
+
+## Arxitektura — Feature-Sliced Design
+
+```
+src/
+├── app/        # init: providers, navigation, theme/i18n
+├── screens/    # ekran kompozitsiyalari (11 ta)
+├── widgets/    # mustaqil UI bloklar
+├── features/   # biznes qiymatli interaksiyalar (run-session, create-habit, sync…)
+├── entities/   # biznes modellar (habit, session, profile, stats…)
+└── shared/     # ui · lib · api · config · theme — biznes mantiqsiz
 ```
 
-## Step 2: Build and run your app
+Qatlam faqat **pastdagi** qatlamdan import qiladi, cross-slice aloqa faqat public API
+(`index.ts`) orqali. Qoida `eslint-plugin-boundaries` bilan majburlanadi — ya'ni buzilsa
+lint yiqiladi, kod-review'ga qolmaydi.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+Pure biznes mantiq (`model/`, `lib/`) UI'dan ajratilgan: timer matematikasi, streak
+hisobi, XP, quiet-hours, sync merge — hammasi toza funksiya va test bilan qoplangan.
 
-### Android
+---
 
-```sh
-# Using npm
+## Ishga tushirish
+
+**Talablar:** Node ≥ 20, JDK 17, Android Studio (Android) / Xcode 16+ (iOS).
+
+```bash
+npm install
+cp .env.example .env      # Supabase kalitlari (ixtiyoriy — mehmon rejimi ularsiz ishlaydi)
+npm start                 # Metro
+```
+
+Keyin ikkinchi terminalda:
+
+```bash
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
 ### iOS
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+```bash
+bundle install            # birinchi marta — CocoaPods
+cd ios && pod install && cd ..
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+> iOS'da tizim DND mavjud emas (Apple public API bermaydi) — face-down "Away" va
+> landscape "Focus Clock" to'liq ishlaydi, faqat tizim DND Android'ga xos.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+### Release APK
 
-## Step 3: Modify your app
+```bash
+cd android && ./gradlew assembleRelease
+# APK: android/app/build/outputs/apk/release/app-release.apk
+```
 
-Now that you have successfully run the app, let's make changes!
+## Sifat
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+```bash
+npm test              # Jest — 158 test, 25 suite
+npx tsc --noEmit      # TypeScript strict
+npm run lint          # ESLint + FSD boundaries
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+Testlar slice ichida co-located (`model/timer.test.ts`, `ui/HabitCard.test.tsx`).
+Ustuvorlik logikaga berilgan: taymer, streak, XP, quiet-hours, sync merge — bular
+deterministik va to'liq qoplangan.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+---
 
-## Congratulations! :tada:
+## Hujjatlar
 
-You've successfully run and modified your React Native App. :partying_face:
+| Fayl | Nima |
+|---|---|
+| [`docs/SRS.md`](docs/SRS.md) | To'liq spetsifikatsiya — funksional talablar, modul bo'linishi, acceptance mezonlari |
+| [`docs/CONSTITUTION.md`](docs/CONSTITUTION.md) | O'zgarmas tamoyillar va stack tanlovlarining sabablari |
 
-### Now what?
+## Litsenziya
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Konkurs topshirig'i sifatida ishlab chiqilgan.

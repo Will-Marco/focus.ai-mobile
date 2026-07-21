@@ -67,7 +67,9 @@ yarn-error.log
 /coverage
 
 # Internal — Jarvis/dizayn (GitHub'ga chiqmaydi, lokalда qoladi)
-docs/
+docs/*
+!docs/SRS.md
+!docs/CONSTITUTION.md
 design/
 .claude/
 CLAUDE.md
