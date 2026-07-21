@@ -16,16 +16,22 @@ export interface ChartSeries {
   up: boolean;
 }
 
+/** Heatmap'dagi bitta oy — haqiqiy kalendar bloki. */
+export interface HeatmapMonth {
+  /** 0=Yanvar … 11=Dekabr */
+  month: number;
+  year: number;
+  /** Oyning 1-kuni qaysi hafta kuniga tushadi (0=Dushanba … 6=Yakshanba). */
+  startDow: number;
+  /** Kunlar darajasi (0..4); indeks 0 — oyning 1-kuni, uzunligi oy kunlari soniga teng. */
+  days: number[];
+}
+
 export interface HeatmapData {
-  /** 53 hafta × 7 kun (Du..Ya) daraja matritsasi (0..4). */
-  weeks: number[][];
+  /** Oxirgi 12 oy, eskidan yangiga. */
+  months: HeatmapMonth[];
   /** oxirgi yilda faol kunlar soni. */
   activeDays: number;
-  /**
-   * Har ustun uchun oy indeksi (0=Yanvar) — faqat **oy o'zgargan** ustunda,
-   * qolganlarida `null`. GitHub contribution grafigidagi kabi yorliq qo'yish uchun.
-   */
-  monthLabels: (number | null)[];
 }
 
 const minutes = (ms: number) => Math.floor(ms / MIN_MS);
@@ -50,38 +56,54 @@ export function heatLevel(min: number): number {
 }
 
 /**
- * Oxirgi 365 kun heatmap'i. Eng o'ng ustun — joriy hafta (Du boshi).
- * weeks[col][row]: row 0=Dushanba … 6=Yakshanba.
+ * Oxirgi 12 oy heatmap'i — **haqiqiy kalendar** bo'yicha: har oy o'zining 1-kunidan
+ * oxirgi kunigacha, va 1-kun haqiqiy hafta kuniga tushadi.
+ *
+ * (Avval bu 53 ta uzluksiz hafta ustuni edi — GitHub uslubi. Unda oy chegarasi hafta
+ * chegarasiga yopishib qolar, ya'ni "iyun" ustuni 30-may bilan boshlanishi mumkin edi.)
  */
-export function buildHeatmap(sessions: SessionStat[], now: number, weeksCount = 53): HeatmapData {
+export function buildHeatmap(sessions: SessionStat[], now: number, monthsCount = 12): HeatmapData {
   const daily = dailyMinutes(sessions);
   const today = startOfDay(now);
-  // joriy haftaning dushanbasi
-  const dow = (new Date(today).getDay() + 6) % 7; // 0=Du
-  const thisMonday = addDays(today, -dow);
+  const cursor = new Date(now);
 
-  const weeks: number[][] = [];
-  const monthLabels: (number | null)[] = [];
+  const months: HeatmapMonth[] = [];
   let activeDays = 0;
-  let prevMonth = -1;
-  for (let w = weeksCount - 1; w >= 0; w -= 1) {
-    const monday = addDays(thisMonday, -w * 7);
-    const col: number[] = [];
-    for (let d = 0; d < 7; d += 1) {
-      const dayTs = addDays(monday, d);
+
+  for (let back = monthsCount - 1; back >= 0; back -= 1) {
+    // Kun 1 bilan quramiz — oy arifmetikasi kun oshib ketishidan xoli bo'ladi.
+    const first = new Date(cursor.getFullYear(), cursor.getMonth() - back, 1);
+    const year = first.getFullYear();
+    const month = first.getMonth();
+    // Keyingi oyning "0-kuni" = shu oyning oxirgi kuni.
+    const dayCount = new Date(year, month + 1, 0).getDate();
+
+    const days: number[] = [];
+    for (let d = 1; d <= dayCount; d += 1) {
+      const dayTs = startOfDay(new Date(year, month, d).getTime());
       const min = dayTs <= today ? (daily.get(dayTs) ?? 0) : 0;
       if (min > 0) activeDays += 1;
-      col.push(heatLevel(min));
+      days.push(heatLevel(min));
     }
-    weeks.push(col);
 
-    // Yorliq ustunning dushanbasidagi oyga qo'yiladi; oy o'zgargandagina belgilanadi,
-    // shuning uchun bir oy ikki marta yozilmaydi.
-    const month = new Date(monday).getMonth();
-    monthLabels.push(month === prevMonth ? null : month);
-    prevMonth = month;
+    months.push({ month, year, startDow: (first.getDay() + 6) % 7, days });
   }
-  return { weeks, activeDays, monthLabels };
+
+  return { months, activeDays };
+}
+
+/**
+ * Oyni ustunlarga (haftalarga) yoyadi — UI shu ko'rinishda chizadi.
+ * `null` = shu katak oyga tegishli emas (boshidagi va oxiridagi to'ldirish).
+ * Har ustun doim 7 katak: row 0=Dushanba … 6=Yakshanba.
+ */
+export function monthColumns(m: HeatmapMonth): (number | null)[][] {
+  const cells: (number | null)[] = [...(Array(m.startDow).fill(null) as null[]), ...m.days];
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const cols: (number | null)[][] = [];
+  for (let i = 0; i < cells.length; i += 7) cols.push(cells.slice(i, i + 7));
+  return cols;
 }
 
 // ---- Grafiklar (hafta/oy/yil) ----

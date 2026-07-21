@@ -7,7 +7,7 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
 import { CheckIcon, FlameIcon, GradientBox, RadialGlow, Screen, Text } from '@shared/ui';
 import { formatSpent } from '@shared/lib/time/formatSpent';
-import { buildSeries, useStatsSummary, type BadgeId, type ChartPeriod } from '@entities/stats';
+import { buildSeries, monthColumns, useStatsSummary, type BadgeId, type ChartPeriod } from '@entities/stats';
 
 const DAY_LABELS = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'] as const;
 
@@ -65,7 +65,6 @@ export function StatsScreen() {
   const maxMin = Math.max(1, ...series.mins);
   const gradient = [...theme.colors.gradientBrand];
   const HEAT_COLORS = heatColors(theme.colors.trackRgb);
-  const heatmap = summary.heatmap.weeks;
   const heatScrollRef = useRef<ScrollView>(null);
   // Heatmap oxirgi haftalar bilan ochilsin. `onContentSizeChange` ichida to'g'ridan-to'g'ri
   // chaqirsak ScrollView hali o'lchanmagan bo'ladi va scroll ta'sir qilmaydi — keyingi
@@ -213,29 +212,27 @@ export function StatsScreen() {
             onContentSizeChange={scrollHeatToEnd}
             onLayout={scrollHeatToEnd}
           >
-            <View>
-              <View style={styles.monthRow}>
-                {summary.heatmap.monthLabels.map((m, ci) => (
-                  <View key={ci} style={[styles.monthSlot, m !== null && ci > 0 && styles.monthGap]}>
-                    {m !== null ? <Text style={styles.monthTxt}>{PERIOD_LABELS.year[m]}</Text> : null}
-                  </View>
-                ))}
-              </View>
-              <View style={styles.heatRow}>
-                {heatmap.map((col, ci) => (
-                  <View
-                    key={ci}
-                    style={[
-                      styles.heatCol,
-                      summary.heatmap.monthLabels[ci] !== null && ci > 0 && styles.monthGap,
-                    ]}
-                  >
-                    {col.map((lvl, di) => (
-                      <View key={di} style={[styles.heatCell, { backgroundColor: HEAT_COLORS[lvl] }]} />
+            <View style={styles.heatMonths}>
+              {summary.heatmap.months.map((m) => (
+                <View key={`${m.year}-${m.month}`}>
+                  <Text style={styles.monthTxt}>{PERIOD_LABELS.year[m.month]}</Text>
+                  <View style={styles.heatRow}>
+                    {monthColumns(m).map((col, ci) => (
+                      <View key={ci} style={styles.heatCol}>
+                        {col.map((lvl, di) => (
+                          <View
+                            key={di}
+                            style={[
+                              styles.heatCell,
+                              lvl === null ? styles.heatCellBlank : { backgroundColor: HEAT_COLORS[lvl] },
+                            ]}
+                          />
+                        ))}
+                      </View>
                     ))}
                   </View>
-                ))}
-              </View>
+                </View>
+              ))}
             </View>
           </ScrollView>
           <View style={styles.legend}>
@@ -376,13 +373,11 @@ const styles = StyleSheet.create((theme) => ({
   heatRow: { flexDirection: 'row', gap: 3 },
   heatCol: { flexDirection: 'column', gap: 3 },
   heatCell: { width: 11, height: 11, borderRadius: 2 },
-  // Oy yorliqlari — slot katak kengligida (11), yozuv esa undan kengroq, shuning
-  // uchun absolute + o'z kengligi bilan qo'yiladi (busiz ota-ona uni qirqadi).
-  monthRow: { flexDirection: 'row', gap: 3, height: 16 },
-  monthSlot: { width: 11 },
-  monthTxt: { position: 'absolute', left: 0, top: 0, width: 34, fontSize: 10, color: theme.colors.textMuted },
-  /** Yangi oy boshlangan ustun oldidan ajratuvchi bo'shliq (yorliq qatorida ham bir xil). */
-  monthGap: { marginLeft: 9 },
+  /** Oylar yonma-yon, oralarida ajratuvchi bo'shliq — har biri mustaqil kalendar bloki. */
+  heatMonths: { flexDirection: 'row', gap: 11 },
+  monthTxt: { fontSize: 10, color: theme.colors.textMuted, marginBottom: 5 },
+  /** Oyga tegishli bo'lmagan katak (oy boshi/oxiridagi to'ldirish) — ko'rinmaydi. */
+  heatCellBlank: { backgroundColor: 'transparent' },
   legend: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 6, marginTop: 12 },
   legendTxt: { fontSize: 11, color: theme.colors.textDim },
   legendSwatches: { flexDirection: 'row', gap: 3 },
