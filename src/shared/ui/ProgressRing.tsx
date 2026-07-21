@@ -53,11 +53,10 @@ export function ProgressRing({
 
   // Path AYNAN tepadan (-90°) soat strelkasi yo'nalishida quriladi (addArc).
   // Shunday qilib trim (start/end) ham tepadan boshlanadi — rotate kerak emas.
-  const ring = useMemo(() => {
-    const path = Skia.Path.Make();
-    path.addArc(Skia.XYWHRect(cx - r, cy - r, r * 2, r * 2), -90, 360);
-    return path;
-  }, [cx, cy, r]);
+  const ring = useMemo(
+    () => Skia.PathBuilder.Make().addArc(Skia.XYWHRect(cx - r, cy - r, r * 2, r * 2), -90, 360).build(),
+    [cx, cy, r],
+  );
 
   return (
     <Canvas style={{ width: size, height: size }}>

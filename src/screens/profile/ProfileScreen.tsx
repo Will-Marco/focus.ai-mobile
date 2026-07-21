@@ -10,6 +10,7 @@ import { formatJoinDate } from '@shared/lib/time/formatJoinDate';
 import { formatPhoneDisplay } from '@shared/lib/phone/phone';
 import { useProfileStore } from '@entities/profile';
 import { signOutRemote } from '@features/auth';
+import { DevSeedButton } from '@features/dev-seed';
 import { useSyncStore } from '@features/sync';
 import { isSupabaseConfigured } from '@shared/config/env';
 import type { RootStackParamList } from '@shared/config/navigation';
@@ -127,6 +128,8 @@ export function ProfileScreen() {
           title={isGuest ? t('profile.signIn') : t('profile.signOut')}
           onPress={signOut}
         />
+
+        <DevSeedButton />
       </ScrollView>
     </Screen>
   );
