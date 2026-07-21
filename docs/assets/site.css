@@ -42,12 +42,7 @@ header { margin-bottom: 40px; }
   display: grid; place-items: center;
   flex-shrink: 0;
 }
-.logo-mark::after {
-  content: '';
-  width: 15px; height: 15px;
-  border: 2.6px solid #1f140b;
-  border-radius: 50%;
-}
+.logo-icon { width: 22px; height: 22px; color: #1f140b; }
 .logo-name { font-size: 19px; font-weight: 700; letter-spacing: -0.2px; }
 
 h1 {
@@ -133,4 +128,45 @@ footer a { color: var(--text-muted); }
   .wrap { padding: 32px 18px 72px; }
 }
 
-.emoji { display: inline-block; margin-right: 9px; }
+
+/* — Lede (h1 ostidagi kirish matni) — */
+.lede { font-size: 17px; color: var(--text-muted); max-width: 60ch; }
+
+/* — Signature rejim bloklari — */
+.feature {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin: 14px 0;
+}
+.feature h3 { margin: 0 0 6px; color: var(--text); font-size: 16px; }
+.feature p { margin: 0; }
+.feature-icon {
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--gold), var(--coral));
+  display: grid; place-items: center;
+}
+.feature-icon svg { width: 23px; height: 23px; color: #1f140b; }
+
+/* — Imkoniyatlar to'ri — */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+.tile h3 { margin: 12px 0 6px; color: var(--text); font-size: 15px; }
+.tile p { margin: 0; font-size: 14px; }
+.tile-icon { width: 22px; height: 22px; color: var(--brand); }

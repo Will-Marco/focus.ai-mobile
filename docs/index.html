@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Focus AI — telefonni qo‘yganingiz uchun mukofot</title>
-<meta name="description" content="Odat quruvchi fokus-taymer. Telefonni yuztuban qo'ysangiz — ikki barobar XP. Offline ishlaydi.">
+<title>Focus AI — telefonni qo‘ying, fokus boshlanadi</title>
+<meta name="description" content="Fokus taymer, u sizni telefonni qo'yganingiz uchun mukofotlaydi. Ro'yxatdan o'tmasdan, internetsiz ishlaydi.">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
 
 <header>
   <a class="logo" href="index.html">
-    <span class="logo-mark"></span>
+    <span class="logo-mark"><svg class="logo-icon"><use href="assets/icons.svg#i-target"></use></svg></span>
     <span class="logo-name">Focus AI</span>
   </a>
   <div class="lang-switch">
@@ -23,62 +23,138 @@
 
 <!-- ─────────────────────────────  UZ  ───────────────────────────── -->
 <main data-lang="uz" class="active">
-  <span class="pill">Odat quruvchi fokus-taymer</span>
-  <h1>Telefoningizni qo‘yib qo‘yganingiz uchun mukofotlaydi</h1>
-  <p>Ko‘pchilik fokus ilovalari ekranga tikilib turishingizni kutadi. Focus AI teskarisini
-  qiladi — telefonning fizik holati interfeys bo‘ladi.</p>
+  <span class="pill">Fokus taymer</span>
+  <h1>Telefonni qo‘ying.<br>Fokus shundan boshlanadi.</h1>
+  <p class="lede">Boshqa ilovalar sizni ekranda ushlab turishga urinadi. Focus AI aksincha
+  ishlaydi — telefonni qo‘yganingizni sezadi va aynan shuning uchun mukofotlaydi.</p>
 
-  <div class="card">
-    <h3 style="margin-top:0"><span class="emoji">🛌</span>Yuztuban qo‘ying — “Away”</h3>
-    <p>Sensor buni sezadi, ekran qorayadi, taymer davom etadi va siz shu vaqt uchun
-    <strong>ikki barobar XP</strong> olasiz.</p>
-    <h3><span class="emoji">🔄</span>Yon buring — “Focus Clock”</h3>
-    <p>Ekran katta stol soatiga aylanadi, ekran o‘chmaydi va tizim “Bezovta qilmang”
-    rejimi yoqiladi.</p>
+  <h2>Ikki harakat, ikki rejim</h2>
+  <p>Hech qanday tugma yo‘q. Telefonni qanday qo‘yganingiz — buyruqning o‘zi.</p>
+
+  <div class="feature">
+    <span class="feature-icon"><svg><use href="assets/icons.svg#i-facedown"></use></svg></span>
+    <div>
+      <h3>Yuztuban qo‘ying</h3>
+      <p>Ekran o‘chadi, taymer ishlashda davom etadi. Telefonsiz o‘tkazgan har daqiqangiz
+      <strong>ikki barobar</strong> hisoblanadi.</p>
+    </div>
   </div>
 
-  <h2>Yana nimalar bor</h2>
-  <ul>
-    <li>Kunlik, haftalik va oylik odatlar — davr chegarasida hisob avtomatik tiklanadi</li>
-    <li>Streak, heatmap, XP/daraja va yutuq nishonlari</li>
-    <li>Jamoa xonalari — kim hozir fokusda ekanini real vaqtda ko‘rasiz</li>
-    <li>AI murabbiy — anonim statistikangiz asosida shaxsiy tavsiya</li>
-    <li>6 ta ambient fon ovozi</li>
-    <li><strong>To‘liq offline</strong> — ro‘yxatdan o‘tmasdan, internetsiz ishlaydi</li>
-  </ul>
+  <div class="feature">
+    <span class="feature-icon"><svg><use href="assets/icons.svg#i-rotate"></use></svg></span>
+    <div>
+      <h3>Yon buring</h3>
+      <p>Ekran stol soatiga aylanadi va o‘chmaydi. Telefon jimlashadi —
+      “Bezovta qilmang” rejimi o‘zi yoqiladi.</p>
+    </div>
+  </div>
+
+  <h2>Sessiyadan keyin</h2>
+
+  <div class="grid">
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-flame"></use></svg>
+      <h3>Streak va statistika</h3>
+      <p>Ketma-ket kunlar, issiqlik xaritasi, daraja va yutuq nishonlari.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-calendar"></use></svg>
+      <h3>Har qanday ritm</h3>
+      <p>Kunlik, haftalik yoki oylik maqsad. Davr tugashi bilan hisob o‘zi yangilanadi.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-team"></use></svg>
+      <h3>Jamoa xonalari</h3>
+      <p>Kim hozir fokusda ekanini real vaqtda ko‘ring. Yolg‘iz emassiz.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-sparkle"></use></svg>
+      <h3>AI murabbiy</h3>
+      <p>Statistikangizni o‘qiydi va qachon eng samarali ekaningizni aytadi.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-audio"></use></svg>
+      <h3>Fon ovozi</h3>
+      <p>Olti xil ambient trek — yomg‘irdan o‘choq gurillashigacha.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-offline"></use></svg>
+      <h3>Internetsiz</h3>
+      <p>Ro‘yxatdan o‘tish shart emas. Oching va shu zahoti ishlating.</p>
+    </div>
+  </div>
 
   <h2>Talablar</h2>
-  <p>Android 7.0+ · iOS 15.1+</p>
+  <p>Android 7.0 va undan yuqori · iOS 15.1 va undan yuqori.<br>
+  “Away” rejimi harakat sensoriga ega qurilmani talab qiladi.</p>
 </main>
 
 <!-- ─────────────────────────────  EN  ───────────────────────────── -->
 <main data-lang="en">
-  <span class="pill">Habit-building focus timer</span>
-  <h1>It rewards you for putting your phone down</h1>
-  <p>Most focus apps expect you to keep staring at the screen. Focus AI inverts that — the
-  physical position of the phone becomes the interface.</p>
+  <span class="pill">Focus timer</span>
+  <h1>Put the phone down.<br>That’s where focus starts.</h1>
+  <p class="lede">Other apps compete for your screen time. Focus AI does the opposite — it
+  notices when you put the phone down, and rewards you for it.</p>
 
-  <div class="card">
-    <h3 style="margin-top:0"><span class="emoji">🛌</span>Place it face-down — “Away”</h3>
-    <p>The sensor picks it up, the screen goes dark, the timer keeps running and you earn
-    <strong>double XP</strong> for that time.</p>
-    <h3><span class="emoji">🔄</span>Turn it sideways — “Focus Clock”</h3>
-    <p>The screen becomes a large desk clock, stays awake, and system Do Not Disturb
-    switches on.</p>
+  <h2>Two gestures, two modes</h2>
+  <p>No buttons involved. How you set the phone down is the command.</p>
+
+  <div class="feature">
+    <span class="feature-icon"><svg><use href="assets/icons.svg#i-facedown"></use></svg></span>
+    <div>
+      <h3>Lay it face-down</h3>
+      <p>The screen goes dark, the timer keeps running. Every minute spent away from the
+      phone counts <strong>double</strong>.</p>
+    </div>
   </div>
 
-  <h2>Also included</h2>
-  <ul>
-    <li>Daily, weekly and monthly habits — the count resets on each period boundary</li>
-    <li>Streaks, a heatmap, XP levels and achievement badges</li>
-    <li>Focus rooms — see who is in a session right now</li>
-    <li>An AI coach that reads your anonymous stats and gives tailored advice</li>
-    <li>Six ambient background tracks</li>
-    <li><strong>Fully offline</strong> — no account, no internet required</li>
-  </ul>
+  <div class="feature">
+    <span class="feature-icon"><svg><use href="assets/icons.svg#i-rotate"></use></svg></span>
+    <div>
+      <h3>Turn it sideways</h3>
+      <p>The screen becomes a desk clock and stays awake. The phone falls silent —
+      Do Not Disturb switches on by itself.</p>
+    </div>
+  </div>
+
+  <h2>After the session</h2>
+
+  <div class="grid">
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-flame"></use></svg>
+      <h3>Streaks and stats</h3>
+      <p>Consecutive days, a heatmap, levels and achievement badges.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-calendar"></use></svg>
+      <h3>Any rhythm</h3>
+      <p>Daily, weekly or monthly targets. The count resets itself when the period ends.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-team"></use></svg>
+      <h3>Focus rooms</h3>
+      <p>See who is in a session right now. You are not doing this alone.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-sparkle"></use></svg>
+      <h3>AI coach</h3>
+      <p>Reads your statistics and tells you when you are actually at your sharpest.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-audio"></use></svg>
+      <h3>Ambient sound</h3>
+      <p>Six background tracks, from rainfall to a crackling fire.</p>
+    </div>
+    <div class="tile">
+      <svg class="tile-icon"><use href="assets/icons.svg#i-offline"></use></svg>
+      <h3>Works offline</h3>
+      <p>No account needed. Open it and start straight away.</p>
+    </div>
+  </div>
 
   <h2>Requirements</h2>
-  <p>Android 7.0+ · iOS 15.1+</p>
+  <p>Android 7.0 or later · iOS 15.1 or later.<br>
+  “Away” mode needs a device with a motion sensor.</p>
 </main>
 
 <footer>

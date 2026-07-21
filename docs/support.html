@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Yordam — Focus AI</title>
-<meta name="description" content="Focus AI yordam sahifasi — ko'p so'raladigan savollar va aloqa.">
+<meta name="description" content="Focus AI bo'yicha ko'p so'raladigan savollar va aloqa.">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
 
 <header>
   <a class="logo" href="index.html">
-    <span class="logo-mark"></span>
+    <span class="logo-mark"><svg class="logo-icon"><use href="assets/icons.svg#i-target"></use></svg></span>
     <span class="logo-name">Focus AI</span>
   </a>
   <div class="lang-switch">
@@ -24,109 +24,119 @@
 <!-- ─────────────────────────────  UZ  ───────────────────────────── -->
 <main data-lang="uz" class="active">
   <h1>Yordam</h1>
-  <p class="updated">Savolingizga javob topmasangiz, pastdagi manzilga yozing.</p>
+  <p class="lede">Quyida eng ko‘p beriladigan savollar. Javob topmasangiz — yozing,
+  odatda bir-ikki kun ichida javob beramiz.</p>
 
   <div class="card">
-    <p><strong>Aloqa:</strong> <a href="mailto:mr.marco0101@gmail.com">mr.marco0101@gmail.com</a><br>
-    Odatda 1–2 ish kunida javob beramiz.</p>
+    <p style="margin:0"><strong>Aloqa:</strong>
+    <a href="mailto:mr.marco0101@gmail.com">mr.marco0101@gmail.com</a></p>
   </div>
 
-  <h2>Ko‘p so‘raladigan savollar</h2>
+  <h2>Boshlash</h2>
 
-  <h3>Ilovadan foydalanish uchun ro‘yxatdan o‘tish shartmi?</h3>
-  <p>Yo‘q. Ilova mehmon rejimida to‘liq ishlaydi — odat yaratish, sessiya yuritish,
-  statistika, Focus Modes, hammasi internetsiz mavjud. Ro‘yxatdan o‘tish faqat qurilmalar
-  orasida sinxronizatsiya va jamoa funksiyalari uchun kerak.</p>
+  <h3>Ro‘yxatdan o‘tishim shartmi?</h3>
+  <p>Yo‘q. Ilova akkauntsiz to‘liq ishlaydi — odat yaratasiz, sessiya yuritasiz,
+  statistikangizni ko‘rasiz, Focus Modes ham ochiq. Akkaunt faqat ma’lumotni boshqa
+  qurilmaga o‘tkazish va jamoa xonalari uchun kerak.</p>
 
-  <h3>“Away” rejimi ishlamayapti</h3>
-  <p>Bu rejim telefonning harakat sensoriga tayanadi. Tekshiring:</p>
+  <h3>Tasdiqlash kodi kelmadi</h3>
+  <p>Kod Telegram bot orqali yuboriladi. Telegram o‘rnatilganini va raqamni xalqaro
+  formatda — <strong>+998…</strong> ko‘rinishida kiritganingizni tekshiring.</p>
+
+  <h2>Focus Modes</h2>
+
+  <h3>Telefonni qo‘ydim, lekin “Away” yoqilmadi</h3>
+  <p>Bu rejim harakat sensoriga tayanadi. Odatda sabab shulardan biri:</p>
   <ul>
-    <li>Sessiya <strong>faol</strong> bo‘lishi kerak — Away faqat sessiya davomida ishlaydi</li>
-    <li>Telefon <strong>barqaror</strong> yuztuban yotishi kerak; qo‘lda ushlab turilganda
-      yoki qimirlaganda ataylab ishga tushmaydi</li>
-    <li>Bir necha soniya kuting — yolg‘on ishga tushmasligi uchun qisqa kutish oynasi bor</li>
-    <li>Emulyatorda sensor bo‘lmagani uchun ishlamaydi — real qurilma kerak</li>
+    <li>Sessiya boshlanmagan — Away faqat sessiya davomida ishlaydi</li>
+    <li>Telefon qo‘lda yoki qimirlab turibdi — u <strong>barqaror</strong> yotishi kerak</li>
+    <li>Juda tez ko‘tarib oldingiz — tasodifiy ishga tushmasligi uchun bir necha soniya
+      kutish oynasi bor</li>
+    <li>Emulyatorda sinayapsiz — u yerda sensor yo‘q, real telefon kerak</li>
   </ul>
 
   <h3>“Bezovta qilmang” rejimi yoqilmayapti</h3>
-  <p>Android’da bu alohida tizim ruxsatini talab qiladi. Focus Clock rejimiga birinchi marta
-  kirganingizda ruxsat so‘raladi — uni tizim sozlamalaridan bergan bo‘lishingiz kerak.
-  iOS’da Apple bu imkoniyatni ilovalarga bermaydi, shuning uchun u yerda faqat ilova ichidagi
-  jimlik ishlaydi.</p>
+  <p>Android’da bu alohida tizim ruxsatini talab qiladi — Focus Clock’ga birinchi
+  kirganingizda so‘raladi. iOS’da Apple bu imkoniyatni ilovalarga ochmagan, shuning uchun
+  u yerda faqat ilova ichidagi jimlik ishlaydi.</p>
 
-  <h3>Sessiya vaqti noto‘g‘ri hisoblanyaptimi?</h3>
-  <p>Taymer haqiqiy vaqt belgilari asosida ishlaydi, ya’ni ilovani yopsangiz yoki telefon
-  uxlab qolsa ham vaqt to‘g‘ri qoladi. Agar farq sezsangiz, bizga yozing va qurilma modelini
-  ayting.</p>
+  <h2>Ma’lumot va sinxronlash</h2>
 
-  <h3>Ma’lumotim boshqa qurilmaga o‘tmayapti</h3>
-  <p>Sinxronizatsiya faqat ro‘yxatdan o‘tgan bo‘lsangiz ishlaydi. Ikkala qurilmada bir xil
-  hisobga kirganingizni va internet borligini tekshiring. Profil ekranidagi
-  <strong>Sync</strong> tugmasi bilan qo‘lda ham ishga tushirish mumkin.</p>
+  <h3>Sessiya vaqti noto‘g‘ri ko‘rinyapti</h3>
+  <p>Taymer haqiqiy vaqt belgilariga tayanadi, ya’ni ilovani yopsangiz yoki telefon
+  uxlab qolsa ham vaqt to‘g‘ri qoladi. Baribir farq sezsangiz, bizga yozing va telefon
+  modelingizni ayting.</p>
 
-  <h3>Tasdiqlash kodi kelmadi</h3>
-  <p>Kod Telegram bot orqali yuboriladi. Telegram o‘rnatilganini va raqamni
-  <strong>xalqaro formatda</strong> (masalan +998…) kiritganingizni tekshiring.</p>
+  <h3>Ma’lumotim ikkinchi qurilmada ko‘rinmayapti</h3>
+  <p>Sinxronlash faqat akkaunt bilan ishlaydi. Ikkala qurilmada bir xil akkauntga
+  kirganingizni va internet borligini tekshiring. Profil ekranidagi <strong>Sync</strong>
+  bilan qo‘lda ham ishga tushirasiz.</p>
 
-  <h3>Hisobimni va ma’lumotlarimni o‘chirmoqchiman</h3>
-  <p>Yuqoridagi manzilga yozing — so‘rovingiz 30 kun ichida bajariladi. Ilovani qurilmadan
-  o‘chirsangiz, undagi local ma’lumot ham o‘chadi.</p>
+  <h3>Akkauntimni o‘chirmoqchiman</h3>
+  <p>Yuqoridagi manzilga yozing — 30 kun ichida o‘chiramiz. Ilovani telefondan
+  o‘chirsangiz, undagi ma’lumot ham ketadi.</p>
 
   <h2>Talablar</h2>
-  <p>Android 7.0+ · iOS 15.1+. “Away” rejimi harakat sensori bo‘lgan qurilmani talab qiladi.</p>
+  <p>Android 7.0 va undan yuqori · iOS 15.1 va undan yuqori.<br>
+  “Away” rejimi harakat sensoriga ega qurilmani talab qiladi.</p>
 </main>
 
 <!-- ─────────────────────────────  EN  ───────────────────────────── -->
 <main data-lang="en">
   <h1>Support</h1>
-  <p class="updated">If your question is not answered here, write to the address below.</p>
+  <p class="lede">The questions we get most often are below. If yours is not here, write to
+  us — we normally reply within a day or two.</p>
 
   <div class="card">
-    <p><strong>Contact:</strong> <a href="mailto:mr.marco0101@gmail.com">mr.marco0101@gmail.com</a><br>
-    We usually reply within 1–2 business days.</p>
+    <p style="margin:0"><strong>Contact:</strong>
+    <a href="mailto:mr.marco0101@gmail.com">mr.marco0101@gmail.com</a></p>
   </div>
 
-  <h2>Frequently asked questions</h2>
+  <h2>Getting started</h2>
 
-  <h3>Do I need an account to use the app?</h3>
-  <p>No. The app is fully functional in guest mode — creating habits, running sessions,
-  statistics and Focus Modes all work without internet. An account is only needed for
-  cross-device sync and the group features.</p>
+  <h3>Do I have to register?</h3>
+  <p>No. The app works fully without an account — create habits, run sessions, read your
+  statistics, and both Focus Modes are available. An account is only for moving your data
+  to another device and joining focus rooms.</p>
 
-  <h3>“Away” mode is not triggering</h3>
-  <p>This mode relies on the motion sensor. Check that:</p>
+  <h3>The verification code never arrived</h3>
+  <p>The code comes through a Telegram bot. Check that Telegram is installed and that you
+  entered the number in international format — <strong>+998…</strong></p>
+
+  <h2>Focus Modes</h2>
+
+  <h3>I put the phone down but “Away” did not start</h3>
+  <p>This mode relies on the motion sensor. Usually it is one of these:</p>
   <ul>
-    <li>A session is <strong>running</strong> — Away only works during a session</li>
-    <li>The phone lies <strong>steadily</strong> face-down; it deliberately will not trigger
-      while held in hand or moving</li>
-    <li>You wait a few seconds — there is a short hold window to prevent false triggers</li>
-    <li>You are on a real device — emulators have no motion sensor</li>
+    <li>No session is running — Away only works during a session</li>
+    <li>The phone is in your hand or moving — it needs to lie <strong>still</strong></li>
+    <li>You picked it up too quickly — there is a short wait before it triggers, so it does
+      not fire by accident</li>
+    <li>You are testing on an emulator — there is no sensor there, use a real phone</li>
   </ul>
 
-  <h3>Do Not Disturb is not turning on</h3>
-  <p>On Android this requires a separate system permission, requested the first time you enter
-  Focus Clock. On iOS, Apple does not expose this capability to apps, so only in-app silence
-  is available there.</p>
+  <h3>Do Not Disturb is not switching on</h3>
+  <p>On Android this needs a separate system permission, requested the first time you open
+  Focus Clock. Apple does not expose this to apps on iOS, so only in-app silence works there.</p>
 
-  <h3>Session time looks wrong</h3>
-  <p>The timer is based on real timestamps, so time stays correct even if the app is closed or
-  the phone sleeps. If you still see a discrepancy, write to us and mention your device model.</p>
+  <h2>Data and syncing</h2>
 
-  <h3>My data is not appearing on another device</h3>
-  <p>Sync only works when signed in. Check that both devices use the same account and have
-  internet. You can also trigger it manually with the <strong>Sync</strong> action on the
+  <h3>The session time looks wrong</h3>
+  <p>The timer runs on real timestamps, so it stays correct even if you close the app or the
+  phone sleeps. If you still see a discrepancy, write to us and mention your phone model.</p>
+
+  <h3>My data is missing on my second device</h3>
+  <p>Syncing only works with an account. Check that both devices are signed in to the same
+  one and have internet. You can also run it by hand with <strong>Sync</strong> on the
   Profile screen.</p>
 
-  <h3>I did not receive the verification code</h3>
-  <p>The code is delivered through a Telegram bot. Check that Telegram is installed and that
-  you entered the number in <strong>international format</strong> (e.g. +998…).</p>
-
-  <h3>I want to delete my account and data</h3>
-  <p>Write to the address above — requests are handled within 30 days. Uninstalling the app
-  removes the local data on your device.</p>
+  <h3>I want my account deleted</h3>
+  <p>Write to the address above — we remove it within 30 days. Uninstalling the app clears
+  the data held on your phone.</p>
 
   <h2>Requirements</h2>
-  <p>Android 7.0+ · iOS 15.1+. “Away” mode requires a device with a motion sensor.</p>
+  <p>Android 7.0 or later · iOS 15.1 or later.<br>
+  “Away” mode needs a device with a motion sensor.</p>
 </main>
 
 <footer>
