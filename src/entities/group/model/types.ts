@@ -26,7 +26,8 @@ export interface Invite {
   id: string;
   groupId: string;
   inviterId: string;
-  inviteeEmail: string;
+  /** Taklif qilingan raqam — faqat raqamlar (masalan `998901234567`). */
+  inviteePhone: string;
   status: InviteStatus;
   createdAt: number;
   /** join orqali to'ldiriladi (UI'da guruh nomi). */

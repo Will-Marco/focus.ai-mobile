@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '@shared/api/supabase';
+import { onlyDigits } from '@shared/lib/phone/phone';
 import { displayNow } from '@shared/lib/notifications';
 import { useGroupStore } from '@entities/group';
 
@@ -21,14 +22,15 @@ export function useInviteWatcher() {
     let cancelled = false;
 
     sb.auth.getUser().then(({ data }) => {
-      const email = data.user?.email?.toLowerCase();
-      if (!email || cancelled) return;
+      // M12'дан beri auth telefon bo'yicha — JWT'да email claim YO'Q.
+      const phone = onlyDigits(data.user?.phone ?? '');
+      if (!phone || cancelled) return;
       loadInvites().catch(() => {}); // dastlabki holat
       channel = sb
         .channel('invites-watch')
         .on(
           'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'invites', filter: `invitee_email=eq.${email}` },
+          { event: 'INSERT', schema: 'public', table: 'invites', filter: `invitee_phone=eq.${phone}` },
           () => {
             loadInvites().catch(() => {});
             displayNow(t('team.inviteNotifTitle'), t('team.inviteNotifBody'));

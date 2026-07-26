@@ -22,6 +22,15 @@ export function normalizePhone(input: string): string | null {
   return `+${withCountryCode}`;
 }
 
+/**
+ * Faqat raqamlarni qoldiradi: "+998 90 123-45-67" → "998901234567".
+ * Supabase `auth.users.phone` ni "+" siz saqlaydi, mijoz esa "+998…" bilan
+ * normallashtiradi — solishtirish shu shaklда qilinadi (format farqi yo'qoladi).
+ */
+export function onlyDigits(input: string): string {
+  return input.replace(/\D/g, '');
+}
+
 export function isValidUzPhone(input: string): boolean {
   return normalizePhone(input) !== null;
 }

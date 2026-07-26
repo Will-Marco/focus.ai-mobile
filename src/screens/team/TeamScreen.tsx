@@ -13,6 +13,7 @@ import { haptics } from '@shared/lib/haptics';
 import { supabase } from '@shared/api/supabase';
 import { isSupabaseConfigured } from '@shared/config/env';
 import { useProfileStore } from '@entities/profile';
+import { formatPhoneDisplay, isValidUzPhone, normalizePhone } from '@shared/lib/phone/phone';
 import { GROUP_COLORS, groupRepo, useGroupStore, type GroupSummary, type Invite } from '@entities/group';
 import { useGroupRoom, useRoomPresence } from '@features/focus-room';
 
@@ -47,6 +48,8 @@ export function TeamScreen() {
   const { t } = useTranslation();
   const { theme } = useUnistyles();
   const isRegistered = useProfileStore((s) => s.profile?.authMode === 'registered');
+  // A'zo nomi profil ismidan — M12'дан keyin auth telefon, email umuman yo'q.
+  const myName = useProfileStore((s) => s.profile?.name) ?? 'Men';
   const online = isSupabaseConfigured && isRegistered;
 
   const groups = useGroupStore((s) => s.groups);
@@ -63,8 +66,8 @@ export function TeamScreen() {
   // Yangi guruh / taklif formasi holati.
   const [groupName, setGroupName] = useState('');
   const [groupColor, setGroupColor] = useState<string>(GROUP_COLORS[0]);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteSent, setInviteSent] = useState(false);
+  const [invitePhone, setInvitePhone] = useState('');
+  const [sentTo, setSentTo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -127,7 +130,7 @@ export function TeamScreen() {
   if (view === 'invitation' && invite) {
     const respond = async (accept: boolean) => {
       setBusy(true);
-      await groupRepo.respondInvite(invite, accept);
+      await groupRepo.respondInvite(invite, accept, myName);
       await refresh();
       setBusy(false);
       setInvite(null);
@@ -144,17 +147,24 @@ export function TeamScreen() {
     );
   }
 
-  // ── INVITE (email bo'yicha taklif yuborish) ──
+  // ── INVITE (telefon raqami bo'yicha taklif yuborish) ──
   if (view === 'invite' && group) {
     const send = async () => {
-      if (!inviteEmail.includes('@')) return;
+      const e164 = normalizePhone(invitePhone);
+      if (!e164) {
+        setFormError('team.invitePhoneInvalid');
+        return;
+      }
+      setFormError(null);
       setBusy(true);
       haptics.light();
-      const ok = await groupRepo.createInvite(group.id, inviteEmail);
+      const ok = await groupRepo.createInvite(group.id, e164);
       setBusy(false);
       if (ok) {
-        setInviteSent(true);
-        setInviteEmail('');
+        setSentTo(formatPhoneDisplay(e164));
+        setInvitePhone('');
+      } else {
+        setFormError('team.inviteFailed');
       }
     };
     return (
@@ -162,30 +172,34 @@ export function TeamScreen() {
         <Header onBack={() => setView('detail')} title={t('team.inviteMember')} />
         <View style={styles.invBody}>
           <View style={styles.search}>
-            <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#8a7263" strokeWidth={2}>
-              <Path d="M4 6h16v12H4zM4 7l8 6 8-6" />
+            <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#8a7263" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <Path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.6 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.8.6a2 2 0 011.7 2z" />
             </Svg>
             <TextInput
-              placeholder={t('team.inviteEmailPlaceholder')}
+              placeholder={t('team.invitePhonePlaceholder')}
               placeholderTextColor={theme.colors.textDim}
               cursorColor={theme.colors.brand}
               selectionColor={theme.colors.brand}
               style={styles.searchInput}
-              value={inviteEmail}
+              value={invitePhone}
               onChangeText={(v) => {
-                setInviteEmail(v);
-                setInviteSent(false);
+                setInvitePhone(v);
+                setSentTo(null);
+                setFormError(null);
               }}
               autoCapitalize="none"
-              keyboardType="email-address"
+              keyboardType="phone-pad"
+              maxLength={20}
             />
           </View>
-          <Pressable accessibilityRole="button" onPress={send} disabled={busy} style={styles.sendWrap}>
+          {formError ? <Text style={styles.errNote}>{t(formError)}</Text> : null}
+          <Pressable accessibilityRole="button" onPress={send} disabled={busy || !isValidUzPhone(invitePhone)} style={styles.sendWrap}>
             <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.sendBtn}>
               <Text style={styles.sendTxt}>{busy ? t('team.sending') : t('team.sendInvite')}</Text>
             </LinearGradient>
           </Pressable>
-          {inviteSent ? <Text style={styles.sentNote}>{t('team.inviteSent')}</Text> : null}
+          {sentTo ? <Text style={styles.sentNote}>{t('team.inviteSentTo', { phone: sentTo })}</Text> : null}
+          <Text style={styles.inviteHint}>{t('team.inviteHint')}</Text>
         </View>
       </Screen2>
     );
@@ -201,7 +215,7 @@ export function TeamScreen() {
       setFormError(null);
       setBusy(true);
       haptics.light();
-      const g = await groupRepo.createGroup(groupName.trim(), groupColor);
+      const g = await groupRepo.createGroup(groupName.trim(), groupColor, myName);
       await refresh();
       setBusy(false);
       if (g) {
@@ -282,7 +296,7 @@ export function TeamScreen() {
               </Text>
             </View>
           </View>
-          <Pressable accessibilityRole="button" onPress={() => { setInviteSent(false); setView('invite'); }} style={styles.inviteIconBtn}>
+          <Pressable accessibilityRole="button" onPress={() => { setSentTo(null); setFormError(null); setView('invite'); }} style={styles.inviteIconBtn}>
             <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={theme.colors.gold} strokeWidth={2}>
               <Circle cx="9" cy="8" r="3.2" />
               <Path d="M4 20c0-3 2.5-5 5-5s5 2 5 5M18 8v6M21 11h-6" />
@@ -701,6 +715,7 @@ const styles = StyleSheet.create((theme) => ({
   sendWrap: { borderRadius: 16, overflow: 'hidden' },
   sendBtn: { height: 54, alignItems: 'center', justifyContent: 'center' },
   sendTxt: { fontSize: 16, fontFamily: theme.fontFamily.bold, color: theme.colors.onBrand },
+  inviteHint: { fontSize: 12, color: theme.colors.textDim, textAlign: 'center', marginTop: 14, lineHeight: 17 },
   sentNote: { fontSize: 13, color: theme.colors.gold, textAlign: 'center' },
   errNote: { fontSize: 13, color: theme.colors.brandCoral, textAlign: 'center' },
 

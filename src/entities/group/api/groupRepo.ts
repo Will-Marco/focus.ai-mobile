@@ -1,12 +1,16 @@
 import { supabase } from '@shared/api/supabase';
+import { onlyDigits } from '@shared/lib/phone/phone';
 import type { Group, GroupActivity, GroupMember, GroupSummary, Invite } from '../model/types';
 
 // Online manba — Supabase. Hammasi guard: client/sessiya yo'q bo'lsa bo'sh/null.
-async function currentUser(): Promise<{ id: string; email: string } | null> {
+// `phone` — takliflar shu bo'yicha topiladi (M12'дан beri auth telefon, email YO'Q).
+async function currentUser(): Promise<{ id: string; phone: string } | null> {
   if (!supabase) return null;
   const { data } = await supabase.auth.getUser();
   const u = data.user;
-  return u ? { id: u.id, email: u.email ?? '' } : null;
+  // Supabase telefonni "+" siz saqlaydi, mijoz "+998…" bilan normallashtiradi —
+  // shuning uchun hamma joyda faqat raqamlar solishtiriladi.
+  return u ? { id: u.id, phone: onlyDigits(u.phone ?? '') } : null;
 }
 
 // ── Mapperlar (snake_case → domen) ──
@@ -65,7 +69,7 @@ export const groupRepo = {
     return summaries;
   },
 
-  async createGroup(name: string, color: string): Promise<Group | null> {
+  async createGroup(name: string, color: string, displayName: string): Promise<Group | null> {
     if (!supabase) {
       if (__DEV__) console.warn('[Group] createGroup: Supabase sozlanmagan');
       return null;
@@ -90,7 +94,7 @@ export const groupRepo = {
     const { error: memErr } = await supabase.from('group_members').insert({
       group_id: group.id,
       user_id: me.id,
-      display_name: me.email.split('@')[0] || 'Men',
+      display_name: displayName.trim() || 'Men',
       color,
       role: 'owner',
       joined_at: now,
@@ -113,27 +117,31 @@ export const groupRepo = {
   },
 
   // ── Takliflar ──
-  async createInvite(groupId: string, email: string): Promise<boolean> {
+  /** `phone` — istalgan formatда (normalizePhone'dan o'tgan bo'lishi kutiladi). */
+  async createInvite(groupId: string, phone: string): Promise<boolean> {
     const me = await currentUser();
     if (!supabase || !me) return false;
+    const digits = onlyDigits(phone);
+    if (!digits) return false;
     const { error } = await supabase.from('invites').insert({
       group_id: groupId,
       inviter_id: me.id,
-      invitee_email: email.trim().toLowerCase(),
+      invitee_phone: digits,
       status: 'pending',
       created_at: Date.now(),
     });
+    if (error && __DEV__) console.warn('[Group] createInvite xato:', error.message, error.code);
     return !error;
   },
 
   async listMyInvites(): Promise<Invite[]> {
     if (!supabase) return [];
     const me = await currentUser();
-    if (!me || !me.email) return [];
+    if (!me || !me.phone) return [];
     const { data, error } = await supabase
       .from('invites')
       .select('*, groups(name)')
-      .eq('invitee_email', me.email.toLowerCase())
+      .eq('invitee_phone', me.phone)
       .eq('status', 'pending');
     if (error || !data) return [];
     return data.map((r) => {
@@ -142,7 +150,7 @@ export const groupRepo = {
         id: row.id as string,
         groupId: row.group_id as string,
         inviterId: row.inviter_id as string,
-        inviteeEmail: row.invitee_email as string,
+        inviteePhone: (row.invitee_phone as string) ?? '',
         status: row.status as Invite['status'],
         createdAt: Number(row.created_at),
         groupName: row.groups?.name,
@@ -150,21 +158,32 @@ export const groupRepo = {
     });
   },
 
-  async respondInvite(invite: Invite, accept: boolean): Promise<boolean> {
+  async respondInvite(invite: Invite, accept: boolean, displayName: string): Promise<boolean> {
     const me = await currentUser();
     if (!supabase || !me) return false;
     const status = accept ? 'accepted' : 'rejected';
     const { error } = await supabase.from('invites').update({ status }).eq('id', invite.id);
-    if (error) return false;
+    if (error) {
+      if (__DEV__) console.warn('[Group] respondInvite update xato:', error.message, error.code);
+      return false;
+    }
     if (accept) {
-      await supabase.from('group_members').insert({
-        group_id: invite.groupId,
-        user_id: me.id,
-        display_name: me.email.split('@')[0] || 'Men',
-        color: '#F2603E',
-        role: 'member',
-        joined_at: Date.now(),
-      });
+      // upsert — allaqachon a'zo bo'lsa (takroriy taklif) primary key konflikti bo'lmasin.
+      const { error: memErr } = await supabase.from('group_members').upsert(
+        {
+          group_id: invite.groupId,
+          user_id: me.id,
+          display_name: displayName.trim() || 'Men',
+          color: '#F2603E',
+          role: 'member',
+          joined_at: Date.now(),
+        },
+        { onConflict: 'group_id,user_id' },
+      );
+      if (memErr) {
+        if (__DEV__) console.warn('[Group] respondInvite member xato:', memErr.message, memErr.code);
+        return false;
+      }
     }
     return true;
   },

@@ -1,4 +1,4 @@
-import { formatPhoneDisplay, isValidUzPhone, normalizePhone, phonesMatch } from './phone';
+import { formatPhoneDisplay, isValidUzPhone, normalizePhone, onlyDigits, phonesMatch } from './phone';
 
 describe('normalizePhone', () => {
   it('9 xonali mahalliy raqamga +998 qo\'shadi', () => {
@@ -68,5 +68,22 @@ describe('formatPhoneDisplay', () => {
 
   it("noto'g'ri formatni o'zgarishsiz qaytaradi", () => {
     expect(formatPhoneDisplay('invalid')).toBe('invalid');
+  });
+});
+
+describe('onlyDigits', () => {
+  it('formatlangan raqamdan faqat raqamlarni qoldiradi', () => {
+    expect(onlyDigits('+998 90 123-45-67')).toBe('998901234567');
+    expect(onlyDigits('+998901234567')).toBe('998901234567');
+    expect(onlyDigits('998901234567')).toBe('998901234567');
+  });
+
+  it("bo'sh yoki raqamsiz kirishda bo'sh satr", () => {
+    expect(onlyDigits('')).toBe('');
+    expect(onlyDigits('abc')).toBe('');
+  });
+
+  it('Supabase saqlagan shakl bilan mijoz normalizatsiyasi bir xil natija beradi', () => {
+    expect(onlyDigits('998901234567')).toBe(onlyDigits(normalizePhone('901234567') ?? ''));
   });
 });
