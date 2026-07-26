@@ -1,18 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { Screen, ScreenHeader, Text } from '@shared/ui';
+import { Screen, ScreenHeader, Switch, Text } from '@shared/ui';
 import type { RootScreenProps } from '@shared/config/navigation';
 import { useNotificationStore, type NotifToggleKey } from '@entities/notification';
 import { haptics } from '@shared/lib/haptics';
-
-// Animated.View'ga Unistyles style BERMA — plain const.
-const TOGGLE_FILL = { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 100 } as const;
-const KNOB = { width: 22, height: 22, borderRadius: 11, backgroundColor: '#fff' } as const;
 
 // Sozlamalar real (MMKV persist) + jadval Notifee orqali sinxronlanadi (useNotificationSync).
 interface RowDef {
@@ -87,7 +81,7 @@ export function NotificationSettingsScreen({ navigation }: RootScreenProps<'Noti
                   <Text style={styles.rowTitle}>{r.title}</Text>
                   <Text style={styles.rowSub}>{r.sub}</Text>
                 </View>
-                <Toggle value={toggles[r.key]} onChange={() => flip(r.key)} />
+                <Switch value={toggles[r.key]} onChange={() => flip(r.key)} />
               </Pressable>
             ))}
           </View>
@@ -106,7 +100,7 @@ export function NotificationSettingsScreen({ navigation }: RootScreenProps<'Noti
                 <Text style={styles.rowTitle}>{t('notif.quietTitle')}</Text>
                 <Text style={styles.rowSub}>{t('notif.quietSub')}</Text>
               </View>
-              <Toggle value={quietOn} onChange={flipQuiet} />
+              <Switch value={quietOn} onChange={flipQuiet} />
             </Pressable>
 
             {quietOn ? (
@@ -133,24 +127,6 @@ export function NotificationSettingsScreen({ navigation }: RootScreenProps<'Noti
   );
 }
 
-function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
-  const { theme } = useUnistyles();
-  const v = useSharedValue(value ? 1 : 0);
-  useEffect(() => {
-    v.value = withTiming(value ? 1 : 0, { duration: 220 });
-  }, [value, v]);
-  const knobStyle = useAnimatedStyle(() => ({ transform: [{ translateX: v.value * 20 }] }));
-  const fillStyle = useAnimatedStyle(() => ({ opacity: v.value }));
-  return (
-    <Pressable accessibilityRole="switch" accessibilityState={{ checked: value }} onPress={() => onChange(!value)} style={styles.track}>
-      <Animated.View style={[TOGGLE_FILL, fillStyle]} pointerEvents="none">
-        <LinearGradient colors={[...theme.colors.gradientBrand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fillInner} />
-      </Animated.View>
-      <Animated.View style={[KNOB, knobStyle]} />
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create((theme) => ({
   flex1: { flex: 1, minWidth: 0 },
   content: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 28, gap: 22 },
@@ -172,6 +148,4 @@ const styles = StyleSheet.create((theme) => ({
   timeValue: { fontFamily: theme.fontFamily.monoSemibold, fontSize: 20, color: theme.colors.textStrong, marginTop: 3 },
   timeArrow: { color: theme.colors.textMuted, fontSize: 18 },
 
-  track: { width: 48, height: 28, borderRadius: 14, paddingHorizontal: 3, justifyContent: 'center', backgroundColor: `rgba(${theme.colors.trackRgb},0.12)` },
-  fillInner: { flex: 1, borderRadius: 14 },
 }));

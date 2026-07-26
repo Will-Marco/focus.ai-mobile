@@ -14,7 +14,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
-import { GradientBox, PauseIcon, PlayIcon, Text } from '@shared/ui';
+import { GradientBox, PauseIcon, PlayIcon, Switch, Text } from '@shared/ui';
 import { usePulse } from '@shared/lib/animation/usePulse';
 import { haptics } from '@shared/lib/haptics';
 import { TRACKS } from '../config/tracks';
@@ -48,6 +48,8 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
   const togglePlay = useAudioStore((s) => s.togglePlay);
   const setVolume = useAudioStore((s) => s.setVolume);
   const preloadAll = useAudioStore((s) => s.preloadAll);
+  const bellEnabled = useAudioStore((s) => s.bellEnabled);
+  const toggleBell = useAudioStore((s) => s.toggleBell);
 
   // Sheet ochilganда treklarni fonда oldindan decode qilib keshlaymiz.
   useEffect(() => {
@@ -143,6 +145,27 @@ export function AudioSheet({ onClose }: AudioSheetProps) {
             <Text variant="mono" style={styles.volTxt}>
               {vol}%
             </Text>
+          </View>
+
+          {/* yakunlash jarangi */}
+          <View style={styles.bellRow}>
+            <View style={styles.bellIcon}>
+              <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={theme.colors.goldSoft} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <Path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" />
+              </Svg>
+            </View>
+            <View style={styles.flex1}>
+              <Text style={styles.bellTitle}>{t('session.bellTitle')}</Text>
+              <Text style={styles.bellSub}>{t('session.bellSub')}</Text>
+            </View>
+            <Switch
+              value={bellEnabled}
+              accessibilityLabel={t('session.bellTitle')}
+              onChange={() => {
+                haptics.selection();
+                toggleBell();
+              }}
+            />
           </View>
 
           <Text style={styles.section}>{t('session.audioTracks')}</Text>
@@ -259,6 +282,21 @@ const styles = StyleSheet.create((theme) => ({
   sliderFill: { position: 'absolute', height: 5, borderRadius: 3, backgroundColor: theme.colors.brand },
   sliderThumb: { position: 'absolute', width: 16, height: 16, borderRadius: 8, backgroundColor: theme.colors.goldSoft },
   volTxt: { fontFamily: theme.fontFamily.mono, fontSize: 13, color: theme.colors.goldSoft, width: 38, textAlign: 'right' },
+
+  bellRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 12,
+    borderRadius: 16,
+    backgroundColor: theme.colors.surfaceAlt,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    marginBottom: 18,
+  },
+  bellIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(242,200,121,0.14)' },
+  bellTitle: { fontSize: 14, fontFamily: theme.fontFamily.semibold, color: theme.colors.textStrong },
+  bellSub: { fontSize: 12, color: theme.colors.textDim, marginTop: 1 },
 
   section: { fontSize: 12, letterSpacing: 0.7, color: theme.colors.textMuted, fontFamily: theme.fontFamily.bold, marginBottom: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },

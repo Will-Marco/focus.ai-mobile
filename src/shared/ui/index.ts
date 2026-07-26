@@ -30,6 +30,8 @@ export { AiOrb } from './AiOrb';
 export type { AiOrbProps } from './AiOrb';
 export { Skeleton, GroupCardSkeleton, MemberRowSkeleton } from './Skeleton';
 export type { SkeletonProps } from './Skeleton';
+export { Switch } from './Switch';
+export type { SwitchProps } from './Switch';
 export { StatChip } from './StatChip';
 export type { StatChipProps } from './StatChip';
 export * from './icons';

@@ -144,11 +144,20 @@ export function SessionView({ habitId, sessionId: initialId, onClose }: SessionV
     }
   }, [away]);
 
-  // 100% maqsadga yetganда — yutuq haptic + (yoqilgan bo'lsa) tizim bildirishnomasi (bir marta).
+  // Bell buferi ~200ms sintez talab qiladi — sessiya boshida, boshlash animatsiyasi
+  // tugagach fonда tayyorlaymiz (jarang paytida lag bo'lmasin).
+  useEffect(() => {
+    if (!sessionActive) return;
+    const id = setTimeout(() => useAudioStore.getState().primeBell(), 1200);
+    return () => clearTimeout(id);
+  }, [sessionActive]);
+
+  // 100% maqsadga yetganда — jarang + yutuq haptic + (yoqilgan bo'lsa) tizim bildirishnomasi (bir marta).
   const achieveOn = useNotificationStore((s) => s.settings.toggles.achieve);
   useEffect(() => {
     if (!timer.complete) return;
     haptics.success();
+    useAudioStore.getState().playCompletionBell();
     if (achieveOn) displayNow(t('notif.push.achieveTitle'), t('notif.push.achieveBody'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timer.complete]);

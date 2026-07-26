@@ -87,6 +87,8 @@
     "audioTracks": "OVOZLAR",
     "audioPlaying": "Ijro etilmoqda · halqali",
     "audioPaused": "To'xtatildi",
+    "bellTitle": "Yakunlash jarangi",
+    "bellSub": "Maqsadga yetganda yumshoq ovoz",
     "ofTarget": "{{target}} {{unit}} · {{pct}}%"
   },
   "onboarding": {
@@ -293,7 +295,7 @@
     "inviteNotifTitle": "Yangi jamoa taklifi",
     "inviteNotifBody": "Sizni jamoaga taklif qilishdi — ko'rib chiqing.",
     "nameShort": "Guruh nomi kamida 2 belgidan iborat bo'lsin.",
-    "createFailed": "Guruh yaratilmadi — hisobingiz onlayn sessiyaga ega emasligi mumkin (Google bilan kiring yoki emailни tasdiqlang)."
+    "createFailed": "Guruh yaratilmadi — hisobingiz onlayn sessiyaga ega emasligi mumkin (Google bilan kiring yoki emailni tasdiqlang)."
   },
   "common": {
     "loading": "Yuklanmoqda...",

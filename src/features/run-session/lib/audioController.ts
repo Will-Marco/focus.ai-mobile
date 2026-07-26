@@ -11,6 +11,7 @@ type GainNode = any;
 type AudioBuffer = any;
 
 import { trackGain } from '../config/tracks';
+import { BELL_DURATION_S, renderBellPCM } from './bell';
 
 let api: any;
 let triedRequire = false;
@@ -39,9 +40,25 @@ const buffers = new Map<string, AudioBuffer>();
 
 const FADE_MS = 450; // silliq kirib/chiqish
 
+/** Bell jaranglaganда ambient shuncha marta pasayadi (ducking). */
+const DUCK_FACTOR = 0.35;
+const DUCK_IN_MS = 220;
+const DUCK_OUT_MS = 700;
+
+/** Bell node'lari ambient'dan mustaqil — `stop()` uni kesib tashlamaydi. */
+let bellBuffer: AudioBuffer | null = null;
+let ducked = false;
+/** Bell tugashini kutayotgan tozalash taymeri — ketma-ket jaranglarда qayta o'rnatiladi. */
+let bellTimer: ReturnType<typeof setTimeout> | null = null;
+
 /** Karnayga ketadigan haqiqiy gain — foydalanuvchi ovozi × trek kalibrovkasi. */
 function targetGain(): number {
   return currentVolume * currentTrackGain;
+}
+
+/** Ducking hisobga olingan joriy ambient gain. */
+function activeGain(): number {
+  return ducked ? targetGain() * DUCK_FACTOR : targetGain();
 }
 
 function clearFade(): void {
@@ -154,6 +171,35 @@ function stopCurrent(): void {
   }
 }
 
+/** Bell PCM'ini kontekst sample rate'iда bufferga solish (bir marta). */
+function makeBellBuffer(c: Ctx): AudioBuffer | null {
+  try {
+    const sr = typeof c.sampleRate === 'number' && c.sampleRate > 0 ? c.sampleRate : 44100;
+    const pcm = renderBellPCM(sr);
+    const buf = c.createBuffer(1, pcm.length, sr);
+    if (typeof buf.copyToChannel === 'function') buf.copyToChannel(pcm, 0);
+    else buf.getChannelData(0).set(pcm);
+    return buf;
+  } catch {
+    return null;
+  }
+}
+
+/** Bell eshitilishi uchun ambient'ni silliq pasaytiradi. */
+function duckAmbient(): void {
+  if (!currentGain || isPaused || ducked) return;
+  ducked = true;
+  fadeTo(activeGain(), DUCK_IN_MS);
+}
+
+/** Bell tugagach ambient'ni asta qaytaradi. */
+function unduckAmbient(): void {
+  if (!ducked) return;
+  ducked = false;
+  if (!currentGain || isPaused) return;
+  fadeTo(targetGain(), DUCK_OUT_MS);
+}
+
 export const audioController = {
   /** Trekni oldindan decode qilib keshlaydi (ijro etmaydi) — birinchi play kechikmasin. */
   async preload(trackId: string, source: number | undefined): Promise<void> {
@@ -191,6 +237,7 @@ export const audioController = {
       stopCurrent();
       currentVolume = volume;
       currentTrackGain = trackGain(trackId);
+      ducked = false; // yangi trek to'liq gain bilan boshlanadi
 
       let buffer = buffers.get(trackId);
       if (!buffer) {
@@ -235,7 +282,73 @@ export const audioController = {
   async setVolume(volume: number): Promise<void> {
     currentVolume = volume;
     clearFade();
-    if (!isPaused) setGain(targetGain()); // pauzaда ovozni ochib yubormaymiz
+    if (!isPaused) setGain(activeGain()); // pauzaда ovozni ochib yubormaymiz
+  },
+
+  /** Bell buferini oldindan hisoblaydi — jarang paytida lag bo'lmasin (~200ms sintez). */
+  async preloadBell(): Promise<void> {
+    const c = ensureCtx();
+    if (!c || bellBuffer) return;
+    bellBuffer = makeBellBuffer(c);
+  },
+
+  /**
+   * Yakunlash jarangi — ambient'ni vaqtincha pasaytirib (ducking) bir marta chaladi.
+   * Ambient o'ynayotgan bo'lishi shart emas; `stop()` bell'ni kesmaydi.
+   */
+  async playBell(volume: number): Promise<boolean> {
+    const m = mod();
+    if (!m) return false;
+    const c = ensureCtx();
+    if (!c) return false;
+    await configureSession(m);
+    try {
+      // Ambient bilan bir xil ehtiyot: iOS'да resume() fon thread'ida grafik
+      // qurayotganда start() chaqirilsa SIGSEGV bo'ladi (M13 crash tarixi).
+      if (c.state === 'suspended') {
+        try {
+          c.resume();
+        } catch {
+          // ignore
+        }
+        await waitUntilRunning(c);
+      }
+      if (!bellBuffer) bellBuffer = makeBellBuffer(c);
+      if (!bellBuffer) return false;
+
+      duckAmbient();
+
+      const gain = c.createGain();
+      gain.gain.value = volume;
+      const src = c.createBufferSource();
+      src.buffer = bellBuffer;
+      src.connect(gain);
+      gain.connect(c.destination);
+      src.start();
+
+      // Oldingi bell hali tugamagan bo'lsa uning tozalashi bu jarangni duck'dan
+      // erta chiqarib yubormasin.
+      if (bellTimer) clearTimeout(bellTimer);
+      bellTimer = setTimeout(() => {
+        bellTimer = null;
+        try {
+          src.disconnect();
+        } catch {
+          // ignore
+        }
+        try {
+          gain.disconnect();
+        } catch {
+          // ignore
+        }
+        unduckAmbient();
+      }, BELL_DURATION_S * 1000 + 150);
+
+      return true;
+    } catch {
+      unduckAmbient();
+      return false;
+    }
   },
 
   async stop(): Promise<void> {
