@@ -318,7 +318,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.focusai;
+				PRODUCT_BUNDLE_IDENTIFIER = uz.focusai.app;
 				PRODUCT_NAME = FocusAI;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -347,7 +347,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.focusai;
+				PRODUCT_BUNDLE_IDENTIFIER = uz.focusai.app;
 				PRODUCT_NAME = FocusAI;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
