@@ -100,3 +100,6 @@ supabase/.temp/
 
 # Demo akkaunt seed (user_id bor — lokal qoladi)
 supabase/demo-seed.local.sql
+
+# Release imzo maxfiy ma'lumotlari
+android/keystore.properties
