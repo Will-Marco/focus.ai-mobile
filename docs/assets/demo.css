@@ -120,6 +120,9 @@ strong { color: var(--text); }
   color: #1f140b; border-color: transparent; font-weight: 750;
 }
 .btn svg { width: 17px; height: 17px; }
+/* Havolasiz holat belgisi (TestFlight ichki testда — public link mavjud emas) */
+.btn-static { cursor: default; opacity: 0.9; }
+.btn-static:hover { transform: none; border-color: var(--border); }
 .btn small { display: block; font-size: 11px; opacity: 0.72; font-weight: 500; line-height: 1.2; }
 
 /* ── Ikki ustunli blok (matn + telefon) ── */
