@@ -148,8 +148,20 @@ strong { color: var(--text); }
 .phone.wide { width: min(680px, 92vw); border-radius: 30px; }
 .phone.wide img { border-radius: 22px; }
 
-.phone-pair { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
-.phone-pair .phone { width: min(250px, 66vw); }
+/* Ikki kadr — HAR DOIM yonma-yon (flex-wrap tor joyда ustunga tushib ketardi).
+   Grid ustunlari qisqarishi mumkin, shuning uchun minmax(0, 1fr). */
+.phone-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 540px;
+  margin: 0 auto;
+}
+.phone-pair .phone { width: 100%; max-width: 250px; }
+/* Faqat juda tor ekranда ustma-ust */
+@media (max-width: 480px) {
+  .phone-pair { grid-template-columns: 1fr; max-width: 300px; }
+}
 
 /* ── Xususiyat ro'yxati ── */
 .points { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 16px; }
