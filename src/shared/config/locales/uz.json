@@ -394,7 +394,11 @@
     "inviteNotifTitle": "Yangi jamoa taklifi",
     "inviteNotifBody": "Sizni jamoaga taklif qilishdi — ko'rib chiqing.",
     "nameShort": "Guruh nomi kamida 2 belgidan iborat bo'lsin.",
-    "createFailed": "Guruh yaratilmadi — internetni va hisobingizga kirganingizni tekshiring."
+    "createFailed": "Guruh yaratilmadi — internetni va hisobingizga kirganingizni tekshiring.",
+    "now": "hozirgina",
+    "minAgo": "daqiqa oldin",
+    "hourAgo": "soat oldin",
+    "dayAgo": "kun oldin"
   },
   "common": {
     "loading": "Yuklanmoqda...",
