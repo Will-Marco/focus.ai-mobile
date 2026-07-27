@@ -76,7 +76,9 @@ docs/*
 !docs/index.html
 !docs/privacy.html
 !docs/support.html
+!docs/demo.html
 !docs/assets/
+!docs/screens/
 !docs/.nojekyll
 design/
 .claude/

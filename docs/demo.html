@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Focus AI — taqdimot</title>
+<meta name="description" content="Telefonni qo'ying — fokus boshlanadi. Focus AI: vaqtni o'lchaydigan odat ilovasi. Android va iOS uchun test uchun chiqarilgan.">
+<link rel="stylesheet" href="assets/demo.css">
+</head>
+<body>
+
+<!--
+  ⚠️ HAVOLALARNI TO'LDIRING (do'konlarga yuklagandan keyin):
+     data-link="testflight"  → TestFlight public/internal havolasi
+     data-link="play"        → Play internal testing havolasi
+     data-link="apk"         → to'g'ridan-to'g'ri APK (masalan GitHub Releases)
+  Havola qo'yilmasa, tugma "tayyorlanmoqda" holatida qoladi.
+-->
+
+<!-- ───────────────────────  HERO  ─────────────────────── -->
+<section class="hero">
+  <div class="reveal in">
+    <span class="logo-mark"><svg><use href="assets/icons.svg#i-target"></use></svg></span>
+    <p class="eyebrow">Fokus taymer · Android &amp; iOS</p>
+    <h1>Telefonni qo‘ying.<br>Fokus shundan boshlanadi.</h1>
+    <p class="lede">Boshqa ilovalar “bajardim” degan belgini so‘raydi. Focus AI siz haqiqatda
+    sarflagan vaqtni o‘lchaydi — va telefonni qo‘yganingiz uchun mukofotlaydi.</p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="#sinash">
+        <svg><use href="assets/icons.svg#i-target"></use></svg>
+        Ilovani sinab ko‘rish
+      </a>
+      <a class="btn" href="https://github.com/Will-Marco/focus.ai-mobile" target="_blank" rel="noopener">
+        Manba kodi (GitHub)
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────  G'OYA  ─────────────────────── -->
+<section>
+  <div class="split">
+    <div class="split-text reveal">
+      <p class="eyebrow">Asosiy g‘oya</p>
+      <h2>Fokuslanish uchun ekranga qarash shart emas</h2>
+      <p>Fokus ilovalarida qiziq qarama-qarshilik bor: ular diqqatni jamlashga undaydi,
+      lekin buning uchun ekranga qarab turishni talab qiladi. Aynan o‘sha telefon esa —
+      diqqatni bo‘ladigan narsa.</p>
+      <p>Biz shu qarama-qarshilikni mahsulotning yadrosiga aylantirdik: <strong>telefonning
+      fizik holati interfeysga aylandi</strong>. Tugma bosish shart emas — qurilmani
+      qo‘yib qo‘yishning o‘zi buyruq.</p>
+    </div>
+    <div class="reveal d1">
+      <div class="phone"><img src="screens/session.png" alt="Faol sessiya — to‘lib borayotgan halqa va taymer" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────  AWAY  ─────────────────────── -->
+<section>
+  <div class="split reverse">
+    <div class="split-text reveal">
+      <p class="eyebrow">Focus Mode · 01</p>
+      <h2>Yuztuban qo‘ying — <em>Away</em></h2>
+      <p>Akselerometr telefon yuztuban qo‘yilganini sezadi. Ekran qorayadi, taymer
+      ishlashda davom etadi va shu vaqt uchun <strong>ikki barobar XP</strong> beriladi.</p>
+      <p>Ya‘ni ilova sizni o‘zidan uzoqlashganingiz uchun mukofotlaydi. Muvaffaqiyat
+      mezoni — ilovada o‘tkazgan vaqt emas, ilovadan uzoqda o‘tkazgan vaqt.</p>
+      <ul class="points">
+        <li><span class="dot"></span> Hysteresis va “hold” oynasi — qo‘lda ushlaganda yolg‘on ishga tushmaydi</li>
+        <li><span class="dot"></span> Aniqlash mantiqi sof funksiya sifatida yozilgan va test bilan qoplangan</li>
+      </ul>
+    </div>
+    <div class="reveal d1">
+      <div class="phone"><img src="screens/away.png" alt="Away rejimi — telefonsiz, 2× XP bonus" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────  FOCUS CLOCK  ─────────────────────── -->
+<section>
+  <div class="reveal" style="text-align:center;max-width:42ch;margin:0 auto 40px">
+    <p class="eyebrow">Focus Mode · 02</p>
+    <h2>Yon burang — Focus Clock</h2>
+    <p>Ekran uzoqdan o‘qiladigan stol soatiga aylanadi, o‘chmaydi va tizimning
+    “Bezovta qilmang” rejimi o‘zi yoqiladi. Telefon stolda vaqt o‘lchagichga aylanadi.</p>
+  </div>
+  <div class="reveal d1">
+    <div class="phone wide"><img src="screens/clock.png" alt="Focus Clock — gorizontal rejimda katta soat" loading="lazy"></div>
+  </div>
+</section>
+
+<!-- ───────────────────────  STATISTIKA  ─────────────────────── -->
+<section>
+  <div class="split">
+    <div class="split-text reveal">
+      <p class="eyebrow">Rivoj</p>
+      <h2>Belgi emas — o‘lchangan vaqt</h2>
+      <p>Streak, daraja, XP va nishonlar — hammasi sessiyalardan hisoblanadi, alohida
+      jadval yo‘q. Bir yillik faollik kalendari, haftalik va oylik grafik, eng samarali soat.</p>
+      <p>Taymer vaqt belgilariga asoslangan: ilovani yopsangiz ham, telefon uxlasa ham,
+      qayta ochganda hisob aniq davom etadi.</p>
+    </div>
+    <div class="reveal d1">
+      <div class="phone-pair">
+        <div class="phone"><img src="screens/stats.png" alt="Statistika — streak, daraja, faollik kalendari" loading="lazy"></div>
+        <div class="phone"><img src="screens/badges.png" alt="Nishonlar to‘plami" loading="lazy"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────  FOCUS ROOMS  ─────────────────────── -->
+<section>
+  <div class="split reverse">
+    <div class="split-text reveal">
+      <p class="eyebrow">Birga fokus</p>
+      <h2>Focus Rooms — kim hozir fokusda</h2>
+      <p>Guruh tuzing, do‘stlarni telefon raqami orqali taklif qiling va kim hozir
+      fokusda ekanini <strong>jonli</strong> ko‘ring — odat nomi va o‘sib borayotgan taymer bilan.</p>
+      <p>Holat serverда saqlanadi, shuning uchun a‘zo ilovani yopgan bo‘lsa ham uning
+      sessiyasi guruhda ko‘rinib turadi. Sessiya yakunlanganда guruh lentasida voqea paydo bo‘ladi.</p>
+    </div>
+    <div class="reveal d1">
+      <div class="phone"><img src="screens/team.png" alt="Focus Rooms — guruh a‘zolarining jonli holati" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────  AI + AUDIO  ─────────────────────── -->
+<section>
+  <div class="reveal" style="text-align:center;max-width:44ch;margin:0 auto 40px">
+    <p class="eyebrow">Yordamchi qatlam</p>
+    <h2>AI murabbiy va ambient fon</h2>
+    <p>Statistika asosida kunlik tavsiya va haftalik tahlil — shaxsiy ma‘lumot emas,
+    faqat raqamlar yuboriladi. Sessiya davomida olti ambient trek, maqsadga yetganда yumshoq jarang.</p>
+  </div>
+  <div class="reveal d1">
+    <div class="phone-pair">
+      <div class="phone"><img src="screens/ai.png" alt="AI murabbiy — kunlik tavsiya va haftalik tahlil" loading="lazy"></div>
+      <div class="phone"><img src="screens/audio.png" alt="Ambient fon ovozlari va yakunlash jarangi" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────  TEXNIK  ─────────────────────── -->
+<section>
+  <div class="reveal" style="max-width:44ch">
+    <p class="eyebrow">Qanday qurilgan</p>
+    <h2>Texnik qarorlar</h2>
+    <p>Ilova offline-first: local SQLite yagona haqiqat manbai, bulut esa faqat
+    sinxronizatsiya qatlami. Ro‘yxatdan o‘tmasdan, internetsiz to‘liq ishlaydi.</p>
+  </div>
+  <div class="grid">
+    <div class="card reveal">
+      <h3>React Native 0.86 · New Architecture</h3>
+      <p>TypeScript strict, Hermes, Fabric. Bitta kodbaza — Android va iOS.</p>
+    </div>
+    <div class="card reveal d1">
+      <h3>60 fps grafika</h3>
+      <p>Halqa Skia + Reanimated bilan UI thread’да chiziladi — React qayta render qilmaydi.</p>
+    </div>
+    <div class="card reveal d2">
+      <h3>Feature-Sliced Design</h3>
+      <p>app · screens · widgets · features · entities · shared. Import yo‘nalishi ESLint bilan majburlanadi.</p>
+    </div>
+    <div class="card reveal">
+      <span class="num">186</span>
+      <p>avtomatik test — taymer, streak, XP, sinxronizatsiya va jonli holat mantiqi sof funksiyalar sifatida qoplangan.</p>
+    </div>
+    <div class="card reveal d1">
+      <h3>Xavfsizlik</h3>
+      <p>AI kalitlari faqat Edge Function’da, mijozda emas. Postgres RLS har jadvalda yoqilgan.</p>
+    </div>
+    <div class="card reveal d2">
+      <h3>Ikki til</h3>
+      <p>O‘zbek va rus tillari, yorug‘ va qorong‘i mavzu — ilova ichidan almashtiriladi.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────  SINASH  ─────────────────────── -->
+<section class="try" id="sinash">
+  <div class="try-inner">
+    <div class="reveal" style="max-width:44ch">
+      <p class="eyebrow">Sinab ko‘rish</p>
+      <h2>Ilova test uchun chiqarilgan</h2>
+      <p>Android tomonда Google Play’ning ichki test kanali, iOS tomonда esa TestFlight
+      orqali tarqatilmoqda. Xohlasangiz APK’ni to‘g‘ridan-to‘g‘ri o‘rnatsangiz ham bo‘ladi.</p>
+    </div>
+
+    <div class="actions reveal d1" style="justify-content:flex-start">
+      <a class="btn btn-primary" data-link="play" href="#" aria-disabled="true">
+        Google Play — ichki test
+        <small>Android</small>
+      </a>
+      <a class="btn" data-link="testflight" href="#" aria-disabled="true">
+        TestFlight
+        <small>iOS</small>
+      </a>
+      <a class="btn" data-link="apk" href="#" aria-disabled="true">
+        APK yuklab olish
+        <small>to‘g‘ridan-to‘g‘ri</small>
+      </a>
+    </div>
+
+    <div class="creds reveal d2">
+      <strong>Demo hisob</strong> — Jamoa, sinxronizatsiya va AI murabbiyni sinash uchun:<br>
+      telefon <code>+998 90 123 45 67</code> · parol <code>FocusAI2026</code><br>
+      <span style="color:var(--text-dim)">Qolgan hamma narsa — odatlar, taymer, Focus Modes, statistika — hisobsiz,
+      “Mehmon sifatida davom etish” tugmasi orqali ishlaydi.</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p style="margin-bottom:10px">
+    <a href="https://github.com/Will-Marco/focus.ai-mobile" target="_blank" rel="noopener">github.com/Will-Marco/focus.ai-mobile</a>
+  </p>
+  <p style="margin:0">
+    <a href="index.html">Bosh sahifa</a> ·
+    <a href="privacy.html">Maxfiylik siyosati</a> ·
+    <a href="support.html">Yordam</a>
+  </p>
+</footer>
+
+<script>
+  // Bo'limlar ko'rinishga kirganда ochiladi (video yozganда tabiiy ritm beradi).
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('in')),
+    { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+  );
+  document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el));
+
+  // Havola qo'yilmagan do'kon tugmalari bosilmasin.
+  document.querySelectorAll('[data-link]').forEach((a) => {
+    if (a.getAttribute('href') === '#') {
+      a.style.opacity = '0.5';
+      a.style.pointerEvents = 'none';
+      const s = a.querySelector('small');
+      if (s) s.textContent = 'tayyorlanmoqda';
+    }
+  });
+</script>
+
+</body>
+</html>
