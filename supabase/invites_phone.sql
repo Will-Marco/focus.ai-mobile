@@ -29,9 +29,6 @@ $$;
 revoke all on function public.my_phone_digits() from public;
 grant execute on function public.my_phone_digits() to authenticated;
 
--- Eski (JWT'ga tayangan) variant endi ishlatilmaydi.
-drop function if exists public.jwt_phone_digits();
-
 -- 3) RLS: taklifni yuborgan VA (telefoni mos kelgan) qabul qiluvchi ko'radi.
 --    `invitee_phone <> ''` sharti muhim: telefonsiz foydalanuvchida my_phone_digits()
 --    bo'sh satr qaytadi va u bo'sh yozuvlarga mos kelib qolmasligi kerak.
@@ -67,7 +64,12 @@ create policy "groups_select" on public.groups for select using (
   )
 );
 
--- 5) Realtime: invites allaqachon publication'да (groups.sql). Agar xato bersa — normal.
+-- 5) Eski (JWT'ga tayangan) variantni endi olib tashlash mumkin — yuqoridagi policy'lar
+--    qayta yaratilgach unga bog'liqlik qolmadi. (Shu sababli aynan SHU YERDA: avval
+--    dropga urinilsa "cannot drop function ... other objects depend on it" chiqadi.)
+drop function if exists public.jwt_phone_digits();
+
+-- 6) Realtime: invites allaqachon publication'да (groups.sql). Agar xato bersa — normal.
 --    alter publication supabase_realtime add table public.invites;
 
 -- ── Tekshiruv (ixtiyoriy) ──
