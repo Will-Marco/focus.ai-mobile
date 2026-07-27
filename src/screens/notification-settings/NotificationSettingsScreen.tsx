@@ -10,19 +10,18 @@ import { haptics } from '@shared/lib/haptics';
 
 // Sozlamalar real (MMKV persist) + jadval Notifee orqali sinxronlanadi (useNotificationSync).
 interface RowDef {
+  /** Toggle kaliti — i18n kalitlari ham shu nom bilan: `notif.rows.<key>Title` / `…Sub`. */
   key: NotifToggleKey;
-  title: string;
-  sub: string;
   d: string;
   iconBg: string;
   iconCol: string;
 }
 const ROWS: RowDef[] = [
-  { key: 'reminder', title: 'Odat eslatmalari', sub: 'Har kuni 21:00', d: 'M12 6v6l4 2M12 3a9 9 0 100 18 9 9 0 000-18z', iconBg: 'rgba(242,162,76,0.16)', iconCol: '#F2A24C' },
-  { key: 'achieve', title: '100% yutuq nishonlash', sub: 'Maqsadga yetganda', d: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM5 4v3a3 3 0 003 3M19 4v3a3 3 0 01-3 3', iconBg: 'rgba(242,200,121,0.16)', iconCol: '#F2C879' },
-  { key: 'streak', title: 'Streak xavfi', sub: "Kunlik · sessiya bo'lmasa", d: 'M12 2c1 3-1 4.5-2 6.5s.5 4 2.5 4 3-2.5 1.5-5.5c2.5 1.5 4 4.5 4 7.5a6 6 0 11-12 0', iconBg: 'rgba(242,96,62,0.14)', iconCol: '#F2603E' },
-  { key: 'team', title: 'Jamoa faoliyati', sub: "A'zolar sessiya yakunlaganda", d: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 19c0-3 3-5 6-5s6 2 6 5', iconBg: 'rgba(95,208,197,0.14)', iconCol: '#5FD0C5' },
-  { key: 'weekly', title: 'Haftalik AI tahlil', sub: 'Yakshanba 20:00', d: 'M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9z', iconBg: 'rgba(154,140,240,0.14)', iconCol: '#9A8CF0' },
+  { key: 'reminder', d: 'M12 6v6l4 2M12 3a9 9 0 100 18 9 9 0 000-18z', iconBg: 'rgba(242,162,76,0.16)', iconCol: '#F2A24C' },
+  { key: 'achieve', d: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM5 4v3a3 3 0 003 3M19 4v3a3 3 0 01-3 3', iconBg: 'rgba(242,200,121,0.16)', iconCol: '#F2C879' },
+  { key: 'streak', d: 'M12 2c1 3-1 4.5-2 6.5s.5 4 2.5 4 3-2.5 1.5-5.5c2.5 1.5 4 4.5 4 7.5a6 6 0 11-12 0', iconBg: 'rgba(242,96,62,0.14)', iconCol: '#F2603E' },
+  { key: 'team', d: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 19c0-3 3-5 6-5s6 2 6 5', iconBg: 'rgba(95,208,197,0.14)', iconCol: '#5FD0C5' },
+  { key: 'weekly', d: 'M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9z', iconBg: 'rgba(154,140,240,0.14)', iconCol: '#9A8CF0' },
 ];
 const STARTS = ['21:00', '22:00', '23:00'];
 const ENDS = ['06:00', '07:00', '08:00'];
@@ -78,8 +77,8 @@ export function NotificationSettingsScreen({ navigation }: RootScreenProps<'Noti
                   </Svg>
                 </View>
                 <View style={styles.flex1}>
-                  <Text style={styles.rowTitle}>{r.title}</Text>
-                  <Text style={styles.rowSub}>{r.sub}</Text>
+                  <Text style={styles.rowTitle}>{t(`notif.rows.${r.key}Title`)}</Text>
+                  <Text style={styles.rowSub}>{t(`notif.rows.${r.key}Sub`)}</Text>
                 </View>
                 <Switch value={toggles[r.key]} onChange={() => flip(r.key)} />
               </Pressable>

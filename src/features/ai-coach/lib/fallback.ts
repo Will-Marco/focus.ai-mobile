@@ -1,19 +1,37 @@
+import i18n from '@shared/config/i18n';
 import type { CoachInsight, CoachMetrics } from '../model/types';
 
 // Lokal statik zaxira — Supabase sozlanmagan / mehmon / offline va kesh yo'q holatlar uchun.
 // Ilova offline-first: AI bo'lmasa ham foydali kontent ko'rsatiladi (core buzilmaydi).
+// Matnlar i18n'да (`aiCoach.fb.*`) — til almashganda bular ham tarjima bo'ladi.
 export function localFallback(m: CoachMetrics): CoachInsight {
+  const t = i18n.t.bind(i18n);
   const fresh = m.last30Sessions === 0;
   return {
     mode: 'fallback',
     daily: fresh
-      ? { message: "Keling, bugun birinchi qadamni qo'yamiz — 25 daqiqalik bitta fokus sessiyasi kifoya. Boshlagan sari osonlashadi.", cta: '25 daq sessiya' }
-      : { message: `${m.streakCurrent} kunlik streak — zo'r sur'at! Bugun ham bitta sessiya bilan seriyangizni tirik saqlang.`, cta: 'Sessiya boshlash' },
+      ? { message: t('aiCoach.fb.firstMsg'), cta: t('aiCoach.fb.firstCta') }
+      : { message: t('aiCoach.fb.streakMsg', { days: m.streakCurrent }), cta: t('aiCoach.fb.streakCta') },
     weekly: [
-      { kind: 'time', tag: 'Vaqt', title: m.bestHour === null ? 'Ritmingizni toping' : `Eng samarali: ${m.bestHour}:00`, body: 'Muhim ishlarni eng tetik paytingizga rejalashtiring.' },
-      { kind: 'growth', tag: "O'sish", title: `${m.last30Minutes} daqiqa fokus`, body: `Oxirgi 30 kunda ${m.last30ActiveDays} kun faol bo'ldingiz.` },
-      { kind: 'attention', tag: "E'tibor", title: 'Muntazamlik kuch beradi', body: "Har kuni oz-ozdan — streak shunday o'sadi." },
-      { kind: 'tip', tag: 'Maslahat', title: "Kichik maqsad qo'ying", body: 'Qisqaroq sessiyalar yakunlash ehtimolini oshiradi.' },
+      {
+        kind: 'time',
+        tag: t('aiCoach.fb.tagTime'),
+        title: m.bestHour === null ? t('aiCoach.fb.findRhythm') : t('aiCoach.fb.bestHour', { hour: m.bestHour }),
+        body: t('aiCoach.fb.timeBody'),
+      },
+      {
+        kind: 'growth',
+        tag: t('aiCoach.fb.tagGrowth'),
+        title: t('aiCoach.fb.growthTitle', { min: m.last30Minutes }),
+        body: t('aiCoach.fb.growthBody', { days: m.last30ActiveDays }),
+      },
+      {
+        kind: 'attention',
+        tag: t('aiCoach.fb.tagAttention'),
+        title: t('aiCoach.fb.consistTitle'),
+        body: t('aiCoach.fb.consistBody'),
+      },
+      { kind: 'tip', tag: t('aiCoach.fb.tagTip'), title: t('aiCoach.fb.smallTitle'), body: t('aiCoach.fb.smallBody') },
     ],
   };
 }

@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { AiOrb, Screen, ScreenHeader, Text } from '@shared/ui';
 import type { RootScreenProps } from '@shared/config/navigation';
 
@@ -13,20 +14,23 @@ interface Msg {
   ai?: boolean;
   d?: string;
   color?: string;
-  title: string;
-  body: string;
+  /** `notif.sample.<tKey>Title` / `…Body` kalitlari. */
+  tKey: string;
+  /** Vaqt yorlig'i: literal ("20:30") yoki `notif.sample` kaliti. */
   time: string;
   unread?: boolean;
 }
+// Namuna ro'yxat (M7 — real bildirishnoma tarixi hali yig'ilmaydi). Matnlar i18n'da:
+// `notif.sample.*` — til almashganda bular ham tarjima bo'ladi.
 const TODAY: Msg[] = [
-  { id: '1', ai: true, title: 'Maqsadga yetding!', body: '"Chuqur ish" · 45 daqiqa to\'ldi. Ajoyib fokus!', time: 'hozir', unread: true },
-  { id: '2', d: 'M12 2c1 3-1 4.5-2 6.5s.5 4 2.5 4 3-2.5 1.5-5.5c2.5 1.5 4 4.5 4 7.5a6 6 0 11-12 0', color: '#F2603E', title: 'Streak xavfda · 12 kun', body: 'Bugun hali sessiya yo\'q. 20 daqiqa seriyani saqlaydi.', time: '20:30', unread: true },
+  { id: '1', ai: true, tKey: 'goal', time: 'goalTime', unread: true },
+  { id: '2', d: 'M12 2c1 3-1 4.5-2 6.5s.5 4 2.5 4 3-2.5 1.5-5.5c2.5 1.5 4 4.5 4 7.5a6 6 0 11-12 0', color: '#F2603E', tKey: 'streak', time: '20:30', unread: true },
 ];
 const EARLIER: Msg[] = [
-  { id: '3', d: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM5 4v3a3 3 0 003 3M19 4v3a3 3 0 01-3 3', color: '#F2C879', title: 'Yangi nishon: 7 kun streak', body: 'Ketma-ket 7 kun fokuslanding!', time: 'Kecha' },
-  { id: '4', d: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 19c0-3 3-5 6-5s6 2 6 5', color: '#5FD0C5', title: 'Dilnoza sessiyani yakunladi', body: 'Imtihonga tayyorgarlik guruhida', time: 'Kecha' },
-  { id: '5', d: 'M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9z', color: '#9A8CF0', title: 'Haftalik tahlil tayyor', body: 'Bu hafta +20% fokus. Batafsil ko\'ring.', time: '2 kun oldin' },
-  { id: '6', d: 'M12 6v6l4 2M12 3a9 9 0 100 18 9 9 0 000-18z', color: '#F2A24C', title: 'Mutolaa eslatmasi', body: 'Bugun 20 daqiqa o\'qishga vaqt?', time: '3 kun oldin' },
+  { id: '3', d: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM5 4v3a3 3 0 003 3M19 4v3a3 3 0 01-3 3', color: '#F2C879', tKey: 'badge', time: 'yesterday' },
+  { id: '4', d: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 19c0-3 3-5 6-5s6 2 6 5', color: '#5FD0C5', tKey: 'team', time: 'yesterday' },
+  { id: '5', d: 'M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9z', color: '#9A8CF0', tKey: 'weekly', time: 'days2' },
+  { id: '6', d: 'M12 6v6l4 2M12 3a9 9 0 100 18 9 9 0 000-18z', color: '#F2A24C', tKey: 'habit', time: 'days3' },
 ];
 
 export function NotificationsScreen({ navigation }: RootScreenProps<'Notifications'>) {
@@ -54,8 +58,17 @@ export function NotificationsScreen({ navigation }: RootScreenProps<'Notificatio
   );
 }
 
+/** Vaqt yorlig'i: `days<N>` → "N kun oldin", boshqa kalitlar `notif.sample` dan, literal ("20:30") o'zicha. */
+function timeLabel(value: string, t: TFunction): string {
+  const days = /^days(\d+)$/.exec(value);
+  if (days) return t('notif.sample.daysAgo', { n: Number(days[1]) });
+  if (value === 'yesterday' || value === 'goalTime') return t(`notif.sample.${value}`);
+  return value;
+}
+
 function MsgCard({ msg }: { msg: Msg }) {
   const { theme } = useUnistyles();
+  const { t } = useTranslation();
   return (
     <View style={[styles.card, msg.unread && styles.cardUnread]}>
       {msg.ai ? (
@@ -73,10 +86,10 @@ function MsgCard({ msg }: { msg: Msg }) {
             {msg.unread ? <View style={styles.unreadDot} /> : null}
             <Text style={styles.app}>Focus AI</Text>
           </View>
-          <Text style={styles.time}>{msg.time}</Text>
+          <Text style={styles.time}>{timeLabel(msg.time, t)}</Text>
         </View>
-        <Text style={styles.title}>{msg.title}</Text>
-        <Text style={styles.body}>{msg.body}</Text>
+        <Text style={styles.title}>{t(`notif.sample.${msg.tKey}Title`)}</Text>
+        <Text style={styles.body}>{t(`notif.sample.${msg.tKey}Body`)}</Text>
       </View>
     </View>
   );

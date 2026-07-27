@@ -1,5 +1,7 @@
 {
-  "app": { "name": "Focus AI" },
+  "app": {
+    "name": "Focus AI"
+  },
   "tabs": {
     "dashboard": "Bosh",
     "stats": "Statistika",
@@ -159,7 +161,8 @@
     "themeDark": "Qorong'i",
     "themeSystem": "Tizim",
     "language": "Til",
-    "languageValue": "O'zbek (lotin)",
+    "languageUz": "O'zbek",
+    "languageRu": "Ruscha",
     "notifications": "Bildirishnomalar",
     "notificationsValue": "Yoqilgan",
     "quietHours": "Tinch soatlar",
@@ -196,7 +199,26 @@
     "empty": "Hali statistika yo'q — birinchi sessiyangizdan so'ng bu yer jonlanadi.",
     "regenerate": "Yangi tavsiya olish",
     "regenerateCount": "Yangi tavsiya · {{n}}/{{max}}",
-    "limitDone": "Bugungi limit tugadi"
+    "limitDone": "Bugungi limit tugadi",
+    "fb": {
+      "firstMsg": "Keling, bugun birinchi qadamni qo'yamiz — 25 daqiqalik bitta fokus sessiyasi kifoya. Boshlagan sari osonlashadi.",
+      "firstCta": "25 daq sessiya",
+      "streakMsg": "{{days}} kunlik streak — zo'r sur'at! Bugun ham bitta sessiya bilan seriyangizni tirik saqlang.",
+      "streakCta": "Sessiya boshlash",
+      "tagTime": "Vaqt",
+      "tagGrowth": "O'sish",
+      "tagAttention": "E'tibor",
+      "tagTip": "Maslahat",
+      "findRhythm": "Ritmingizni toping",
+      "bestHour": "Eng samarali: {{hour}}:00",
+      "timeBody": "Muhim ishlarni eng tetik paytingizga rejalashtiring.",
+      "growthTitle": "{{min}} daqiqa fokus",
+      "growthBody": "Oxirgi 30 kunda {{days}} kun faol bo'ldingiz.",
+      "consistTitle": "Muntazamlik kuch beradi",
+      "consistBody": "Har kuni oz-ozdan — streak shunday o'sadi.",
+      "smallTitle": "Kichik maqsad qo'ying",
+      "smallBody": "Qisqaroq sessiyalar yakunlash ehtimolini oshiradi."
+    }
   },
   "notif": {
     "title": "Bildirishnomalar",
@@ -219,6 +241,35 @@
       "weeklyBody": "O'tgan haftadagi fokus natijalaringni ko'rib chiqing.",
       "achieveTitle": "Maqsadga yetding! 🎯",
       "achieveBody": "Sessiya 100% bajarildi — zo'r ish!"
+    },
+    "rows": {
+      "reminderTitle": "Odat eslatmalari",
+      "reminderSub": "Har kuni 21:00",
+      "achieveTitle": "100% yutuq nishonlash",
+      "achieveSub": "Maqsadga yetganda",
+      "streakTitle": "Streak xavfi",
+      "streakSub": "Kunlik · sessiya bo'lmasa",
+      "teamTitle": "Jamoa faoliyati",
+      "teamSub": "A'zolar sessiya yakunlaganda",
+      "weeklyTitle": "Haftalik AI tahlil",
+      "weeklySub": "Yakshanba 20:00"
+    },
+    "sample": {
+      "goalTitle": "Maqsadga yetdingiz!",
+      "goalBody": "«Chuqur ish» · 45 daqiqa to'ldi. Ajoyib fokus!",
+      "goalTime": "hozir",
+      "streakTitle": "Streak xavfda · 12 kun",
+      "streakBody": "Bugun hali sessiya yo'q. 20 daqiqa seriyani saqlaydi.",
+      "badgeTitle": "Yangi nishon: 7 kun streak",
+      "badgeBody": "Ketma-ket 7 kun fokuslandingiz!",
+      "teamTitle": "Dilnoza sessiyani yakunladi",
+      "teamBody": "Imtihonga tayyorgarlik guruhida",
+      "weeklyTitle": "Haftalik tahlil tayyor",
+      "weeklyBody": "Bu hafta +20% fokus. Batafsil ko'ring.",
+      "habitTitle": "Mutolaa eslatmasi",
+      "habitBody": "Bugun 20 daqiqa o'qishga vaqt?",
+      "yesterday": "Kecha",
+      "daysAgo": "{{n}} kun oldin"
     }
   },
   "stats": {
@@ -255,7 +306,6 @@
     "nowFocusing": "hozir fokusda",
     "fromMinutes": "daqiqadan",
     "inviteMember": "A'zo taklif qilish",
-    "searchPlaceholder": "Username yoki email",
     "canInvite": "TAKLIF QILISH MUMKIN",
     "inviteBtn": "Taklif",
     "invitedBtn": "Yuborildi",
@@ -299,7 +349,7 @@
     "inviteNotifTitle": "Yangi jamoa taklifi",
     "inviteNotifBody": "Sizni jamoaga taklif qilishdi — ko'rib chiqing.",
     "nameShort": "Guruh nomi kamida 2 belgidan iborat bo'lsin.",
-    "createFailed": "Guruh yaratilmadi — hisobingiz onlayn sessiyaga ega emasligi mumkin (Google bilan kiring yoki emailni tasdiqlang)."
+    "createFailed": "Guruh yaratilmadi — internetni va hisobingizga kirganingizni tekshiring."
   },
   "common": {
     "loading": "Yuklanmoqda...",

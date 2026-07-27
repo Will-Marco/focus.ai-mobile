@@ -1,9 +1,12 @@
 import { storage } from '@shared/lib/storage/mmkv';
+import { getLanguage } from '@shared/config/i18n';
 import type { UsageRecord } from '../lib/limit';
 import type { CoachInsight } from './types';
 
 // MMKV kalitlari — AI insight keshi + kunlik limit yozuvi (offline fallback manbai).
-const INSIGHT_KEY = 'ai-coach:insight';
+// Insight keshi TIL bo'yicha ajratilgan: til almashtirilganда o'zbekcha javob
+// ruscha interfeysда (yoki aksincha) chiqib qolmasin.
+const insightKey = (): string => `ai-coach:insight:${getLanguage()}`;
 // v2 — eski (nosoz: server-zaxira ham limitni yeydigan) hisobni bekor qiladi.
 const USAGE_KEY = 'ai-coach:usage2';
 
@@ -15,7 +18,7 @@ export interface CachedInsight {
 
 export const coachCache = {
   getInsight(): CachedInsight | null {
-    const raw = storage.getString(INSIGHT_KEY);
+    const raw = storage.getString(insightKey());
     if (!raw) return null;
     try {
       return JSON.parse(raw) as CachedInsight;
@@ -24,7 +27,7 @@ export const coachCache = {
     }
   },
   setInsight(insight: CoachInsight, at: number): void {
-    storage.set(INSIGHT_KEY, JSON.stringify({ insight, at }));
+    storage.set(insightKey(), JSON.stringify({ insight, at }));
   },
 
   getUsage(): UsageRecord | null {

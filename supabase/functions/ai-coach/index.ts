@@ -22,6 +22,8 @@ const CORS = {
 };
 
 // Anonim metrikalar shakli (mijoz `features/ai-coach` bilan bir xil).
+type Lang = 'uz' | 'ru';
+
 interface CoachMetrics {
   streakCurrent: number;
   streakLongest: number;
@@ -38,13 +40,19 @@ interface CoachMetrics {
   awayMinutes: number;
 }
 
-function buildPrompt(m: CoachMetrics): string {
+function buildPrompt(m: CoachMetrics, lang: Lang): string {
   const pattern = m.last7Active.map((a) => (a ? '●' : '○')).join('');
   const hour = m.bestHour === null ? "ma'lumot yetarli emas" : `${m.bestHour}:00 atrofida`;
+  // Til ko'rsatmasi — qolgan prompt (statistika ro'yxati) o'zbekcha qoladi, model
+  // javobni so'ralgan tilda qaytaradi. Ikkala holatda ham HURMATLI murojaat.
+  const langLine =
+    lang === 'ru'
+      ? 'ОТВЕЧАЙТЕ ТОЛЬКО НА РУССКОМ ЯЗЫКЕ, всегда на «вы» (например: «сегодня вы…», «рекомендуем вам…»). Никогда не обращайтесь на «ты».'
+      : "Faqat o'zbek tilida (lotin), doimo HURMATLI \"siz\" shaklida murojaat qiling (masalan: \"bugun siz...\", \"sizga tavsiya\"). Hech qachon \"sen\" ishlatmang.";
   return [
     'Siz "Focus AI" ilovasining shaxsiy fokus-murabbiysisiz. Foydalanuvchining ANONIM statistikasi asosida',
-    "iliq, hurmatli va AMALIY maslahat bering. Faqat o'zbek tilida (lotin), doimo HURMATLI \"siz\" shaklida murojaat qiling",
-    '(masalan: "bugun siz...", "sizga tavsiya", "...saqlang", "...boshlang"). Hech qachon "sen" ishlatmang.',
+    'iliq, hurmatli va AMALIY maslahat bering.',
+    langLine,
     "Har bir matn qisqa, samimiy va tabiiy bo'lsin. Ism yoki odat nomlari yo'q — faqat raqamlarga tayaning.",
     '',
     'STATISTIKA (oxirgi 30 kun):',
@@ -104,7 +112,9 @@ serve(async (req: Request) => {
     new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
 
   try {
-    const metrics = (await req.json()) as CoachMetrics;
+    const metrics = (await req.json()) as CoachMetrics & { lang?: string };
+    // Eski mijoz `lang` yubormaydi → o'zbekcha (avvalgi xatti-harakat saqlanadi).
+    const lang: Lang = metrics.lang === 'ru' ? 'ru' : 'uz';
     const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
       console.error('[ai-coach] GEMINI_API_KEY topilmadi');
@@ -115,7 +125,7 @@ serve(async (req: Request) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: buildPrompt(metrics) }] }],
+        contents: [{ role: 'user', parts: [{ text: buildPrompt(metrics, lang) }] }],
         // responseSchema ISHLATILMAYDI — Gemini uni ba'zan rad etadi (400).
         // JSON shakli promptда tasvirlangan; responseMimeType JSON qaytishni kafolatlaydi.
         generationConfig: { responseMimeType: 'application/json', temperature: 0.9 },

@@ -1,4 +1,5 @@
 import { supabase } from '@shared/api/supabase';
+import { getLanguage } from '@shared/config/i18n';
 import type { CoachInsight, CoachMetrics } from '../model/types';
 
 export type CoachFetch =
@@ -15,7 +16,11 @@ export async function fetchCoachInsight(metrics: CoachMetrics): Promise<CoachFet
   if (!sessionData.session) return { ok: false, reason: 'notAuthed' };
 
   try {
-    const { data, error } = await supabase.functions.invoke<CoachInsight>('ai-coach', { body: metrics });
+    // `lang` — javob tili. Eski (deploy qilinmagan) funksiya buni e'tiborsiz qoldiradi
+    // va o'zbekcha javob beradi — ya'ni bu qo'shimcha xavfsiz.
+    const { data, error } = await supabase.functions.invoke<CoachInsight>('ai-coach', {
+      body: { ...metrics, lang: getLanguage() },
+    });
     if (error || !data?.daily || !Array.isArray(data?.weekly) || data.weekly.length === 0) {
       return { ok: false, reason: 'error' };
     }

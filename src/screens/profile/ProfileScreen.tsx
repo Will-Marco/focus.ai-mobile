@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Avatar, Button, CheckIcon, PhoneIcon, Screen, Segmented, Text } from '@shared/ui';
 import { setThemePref, getStoredThemePref, type ThemePref } from '@shared/theme';
+import { setLanguage } from '@shared/config/i18n';
+import { isSupportedLanguage, type AppLanguage } from '@shared/config/language';
 import { formatJoinDate } from '@shared/lib/time/formatJoinDate';
 import { formatPhoneDisplay } from '@shared/lib/phone/phone';
 import { useProfileStore } from '@entities/profile';
@@ -15,7 +17,7 @@ import { isSupabaseConfigured } from '@shared/config/env';
 import type { RootStackParamList } from '@shared/config/navigation';
 
 export function ProfileScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme } = useUnistyles();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const profile = useProfileStore((s) => s.profile);
@@ -34,6 +36,12 @@ export function ProfileScreen() {
   const choose = (next: ThemePref) => {
     setThemePref(next);
     setPref(next);
+  };
+
+  // Til — `useTranslation` i18n o'zgarishiga obuna, shuning uchun alohida state kerak emas.
+  const lang: AppLanguage = isSupportedLanguage(i18n.language) ? i18n.language : 'uz';
+  const chooseLang = (next: AppLanguage) => {
+    if (next !== lang) setLanguage(next);
   };
 
   const isGuest = profile?.authMode !== 'registered';
@@ -104,8 +112,19 @@ export function ProfileScreen() {
           />
         </View>
 
+        <View style={styles.block}>
+          <Text style={styles.section}>{t('profile.language')}</Text>
+          <Segmented
+            value={lang}
+            onChange={chooseLang}
+            options={[
+              { value: 'uz', label: t('profile.languageUz') },
+              { value: 'ru', label: t('profile.languageRu') },
+            ]}
+          />
+        </View>
+
         <View style={styles.card}>
-          <Row label={t('profile.language')} value={t('profile.languageValue')} />
           <Row
             label={t('profile.notifications')}
             value={t('profile.notificationsValue')}
