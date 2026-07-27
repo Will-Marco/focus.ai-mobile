@@ -89,9 +89,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
+    // namespace = Kotlin/R klasslari paketi (kodда shu nom ishlatiladi, tegilmaydi).
     namespace "com.focusai"
     defaultConfig {
-        applicationId "com.focusai"
+        // applicationId = do'kondagi identifikator. Play Console'да ilova
+        // `uz.focusai.app` nomi bilan ro'yxatdan o'tgan, shuning uchun u
+        // namespace'дан farq qiladi — Android buni to'liq qo'llab-quvvatlaydi.
+        applicationId "uz.focusai.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
