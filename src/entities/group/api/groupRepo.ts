@@ -123,6 +123,7 @@ export const groupRepo = {
     if (!supabase || !me) return false;
     const digits = onlyDigits(phone);
     if (!digits) return false;
+    if (__DEV__) console.warn(`[Group] createInvite: guruh=${groupId} raqam=${digits}`);
     const { error } = await supabase.from('invites').insert({
       group_id: groupId,
       inviter_id: me.id,
@@ -137,12 +138,23 @@ export const groupRepo = {
   async listMyInvites(): Promise<Invite[]> {
     if (!supabase) return [];
     const me = await currentUser();
-    if (!me || !me.phone) return [];
+    if (!me || !me.phone) {
+      if (__DEV__) console.warn('[Group] listMyInvites: sessiyada TELEFON yo\'q →', me ? `user ${me.id}` : 'sessiya yo\'q');
+      return [];
+    }
     const { data, error } = await supabase
       .from('invites')
       .select('*, groups(name)')
       .eq('invitee_phone', me.phone)
       .eq('status', 'pending');
+    if (__DEV__) {
+      // Serverning bizni qanday ko'rishi — RLS aynan shu qiymat bo'yicha filtrlaydi.
+      const { data: srv } = await supabase.rpc('my_phone_digits');
+      console.warn(
+        `[Group] listMyInvites: mijoz=${me.phone} server=${String(srv ?? 'RPC yo\'q')} topildi=${data?.length ?? 0}` +
+          (error ? ` XATO=${error.message} (${error.code})` : ''),
+      );
+    }
     if (error || !data) return [];
     return data.map((r) => {
       const row = r as Record<string, unknown> & { groups?: { name?: string } };

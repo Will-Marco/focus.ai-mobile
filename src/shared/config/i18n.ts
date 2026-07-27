@@ -13,6 +13,8 @@ i18n.use(initReactI18next).init({
   fallbackLng: 'uz',
   interpolation: { escapeValue: false },
   returnNull: false,
+  // Statistika yorliqlari (hafta kunlari, oylar) massiv sifatida saqlanadi.
+  returnObjects: true,
 });
 
 /** Tilni almashtiradi: diskka yozadi + darhol qo'llaydi (UI `useTranslation` orqali yangilanadi). */

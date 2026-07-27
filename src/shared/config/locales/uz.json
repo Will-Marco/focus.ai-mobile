@@ -290,7 +290,52 @@
     "less": "Kam",
     "more": "Ko'p",
     "badges": "Nishonlar",
-    "empty": "Ma'lumot hali yo'q"
+    "empty": "Ma'lumot hali yo'q",
+    "weekdays": [
+      "Du",
+      "Se",
+      "Ch",
+      "Pa",
+      "Ju",
+      "Sh",
+      "Ya"
+    ],
+    "weeksOfMonth": [
+      "1-h",
+      "2-h",
+      "3-h",
+      "4-h"
+    ],
+    "months": [
+      "Yan",
+      "Fev",
+      "Mar",
+      "Apr",
+      "May",
+      "Iyn",
+      "Iyl",
+      "Avg",
+      "Sen",
+      "Okt",
+      "Noy",
+      "Dek"
+    ],
+    "hourAbbr": "s",
+    "minAbbr": "d",
+    "badgeNames": {
+      "first-step": "Ilk qadam",
+      "streak-7": "7 kun streak",
+      "focus-master": "Fokus ustasi",
+      "night-owl": "Tungi boyo'g'li",
+      "phone-free": "Telefonsiz",
+      "team": "Jamoaviy",
+      "marathon": "Marafonchi",
+      "golden-ring": "Oltin halqa",
+      "consistent": "Doimiy",
+      "early-bird": "Erta qush",
+      "deep-work": "Chuqur ish",
+      "dawn": "Sahar"
+    }
   },
   "team": {
     "title": "Jamoalar",

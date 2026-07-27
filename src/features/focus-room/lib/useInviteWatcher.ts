@@ -24,7 +24,11 @@ export function useInviteWatcher() {
     sb.auth.getUser().then(({ data }) => {
       // M12'дан beri auth telefon bo'yicha — JWT'да email claim YO'Q.
       const phone = onlyDigits(data.user?.phone ?? '');
-      if (!phone || cancelled) return;
+      if (!phone || cancelled) {
+        if (__DEV__ && !phone) console.warn('[Group] inviteWatcher: sessiyada telefon YO\'Q — realtime obuna bo\'lmaydi');
+        return;
+      }
+      if (__DEV__) console.warn(`[Group] inviteWatcher: obuna ${phone}`);
       loadInvites().catch(() => {}); // dastlabki holat
       channel = sb
         .channel('invites-watch')
@@ -36,7 +40,9 @@ export function useInviteWatcher() {
             displayNow(t('team.inviteNotifTitle'), t('team.inviteNotifBody'));
           },
         )
-        .subscribe();
+        .subscribe((status) => {
+          if (__DEV__) console.warn(`[Group] inviteWatcher kanal: ${status}`);
+        });
     });
 
     return () => {
