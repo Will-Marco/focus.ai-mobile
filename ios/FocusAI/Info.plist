@@ -28,6 +28,10 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSMotionUsageDescription</key>
+	<string>Focus AI uses the accelerometer to detect when you place your phone face down, so it can switch the session to Away mode.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Focus AI does not record audio. This permission is required by the audio playback library used for focus session sounds.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
