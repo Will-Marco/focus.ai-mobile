@@ -49,7 +49,25 @@ create policy "inv_update" on public.invites for update using (
 
 -- inv_insert o'zgarmaydi: taklifni faqat guruh a'zosi o'z nomidan yaratadi.
 
--- 4) Realtime: invites allaqachon publication'да (groups.sql). Agar xato bersa — normal.
+-- 4) Taklif qilingan odam guruh NOMINI ko'rsin (FR-9.3 — qabul qilishdan oldin preview).
+--    Busiz `invites → groups(name)` embed'i RLS tufayli NULL qaytadi va ekranда
+--    guruh nomi o'rniga "guruh" chiqadi: hali a'zo bo'lmagani uchun `is_group_member`
+--    false, `owner_id` ham u emas.
+drop policy if exists "groups_select" on public.groups;
+create policy "groups_select" on public.groups for select using (
+  public.is_group_member(id)
+  or owner_id = auth.uid()
+  or exists (
+    select 1
+    from public.invites i
+    where i.group_id = groups.id
+      and i.status = 'pending'
+      and coalesce(i.invitee_phone, '') <> ''
+      and i.invitee_phone = public.my_phone_digits()
+  )
+);
+
+-- 5) Realtime: invites allaqachon publication'да (groups.sql). Agar xato bersa — normal.
 --    alter publication supabase_realtime add table public.invites;
 
 -- ── Tekshiruv (ixtiyoriy) ──

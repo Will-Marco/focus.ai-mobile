@@ -173,29 +173,33 @@ export const groupRepo = {
   async respondInvite(invite: Invite, accept: boolean, displayName: string): Promise<boolean> {
     const me = await currentUser();
     if (!supabase || !me) return false;
+
+    // TARTIB MUHIM: avval a'zolik, keyin taklif statusi. Aks holda a'zolik xato
+    // bersa taklif allaqachon "accepted" bo'lib qoladi — foydalanuvchi na guruhда,
+    // na taklifда, qayta urinish ham imkonsiz.
+    if (accept) {
+      const { error: memErr } = await supabase.from('group_members').insert({
+        group_id: invite.groupId,
+        user_id: me.id,
+        display_name: displayName.trim() || 'Men',
+        color: '#F2603E',
+        role: 'member',
+        joined_at: Date.now(),
+      });
+      // 23505 = allaqachon a'zo (takroriy taklif) — buni muvaffaqiyat deb hisoblaymiz.
+      // (`upsert` ishlatib bo'lmaydi: u UPDATE policy'sini ham talab qiladi, `group_members`да
+      //  esa ataylab faqat select/insert/delete policy'lari bor.)
+      if (memErr && memErr.code !== '23505') {
+        if (__DEV__) console.warn('[Group] respondInvite member xato:', memErr.message, memErr.code);
+        return false;
+      }
+    }
+
     const status = accept ? 'accepted' : 'rejected';
     const { error } = await supabase.from('invites').update({ status }).eq('id', invite.id);
     if (error) {
       if (__DEV__) console.warn('[Group] respondInvite update xato:', error.message, error.code);
       return false;
-    }
-    if (accept) {
-      // upsert — allaqachon a'zo bo'lsa (takroriy taklif) primary key konflikti bo'lmasin.
-      const { error: memErr } = await supabase.from('group_members').upsert(
-        {
-          group_id: invite.groupId,
-          user_id: me.id,
-          display_name: displayName.trim() || 'Men',
-          color: '#F2603E',
-          role: 'member',
-          joined_at: Date.now(),
-        },
-        { onConflict: 'group_id,user_id' },
-      );
-      if (memErr) {
-        if (__DEV__) console.warn('[Group] respondInvite member xato:', memErr.message, memErr.code);
-        return false;
-      }
     }
     return true;
   },
