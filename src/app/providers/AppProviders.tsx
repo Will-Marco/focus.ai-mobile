@@ -7,7 +7,7 @@ import { useUnistyles } from 'react-native-unistyles';
 import { useBootstrap } from '@app/lib/useBootstrap';
 import { useNotificationSync } from '@app/lib/useNotificationSync';
 import { useAutoSync } from '@app/lib/useAutoSync';
-import { useInviteWatcher } from '@features/focus-room';
+import { useInviteWatcher, usePublishFocusState } from '@features/focus-room';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const { ready } = useBootstrap();
@@ -15,6 +15,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   useNotificationSync(); // bildirishnoma jadvalini sozlamalarга sinxronlash
   useAutoSync(); // offline-first LWW sync (Supabase) — mehmon/sozlanmagan jim
   useInviteWatcher(); // jamoa takliflarини jonli kuzatish (realtime + notif)
+  usePublishFocusState(); // o'z fokus holatimni serverga — qaysi ekranда bo'lsam ham
 
   // Navigatsiya konteyner mavzusi — transition paytida oq fon chaqnashining oldini oladi.
   const navTheme = useMemo<Theme>(() => {

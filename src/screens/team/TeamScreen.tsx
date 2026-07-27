@@ -15,7 +15,7 @@ import { isSupabaseConfigured } from '@shared/config/env';
 import { useProfileStore } from '@entities/profile';
 import { formatPhoneDisplay, isValidUzPhone, normalizePhone } from '@shared/lib/phone/phone';
 import { GROUP_COLORS, groupRepo, useGroupStore, type GroupSummary, type Invite } from '@entities/group';
-import { useGroupRoom, useRoomPresence } from '@features/focus-room';
+import { splitRoomMembers, useGroupRoom, useRoomFocusStates, useRoomPresence } from '@features/focus-room';
 
 type View5 = 'list' | 'detail' | 'invite' | 'invitation' | 'create';
 
@@ -76,6 +76,8 @@ export function TeamScreen() {
   const activeGroupId = view === 'detail' && group ? group.id : null;
   const presences = useRoomPresence(activeGroupId, userId);
   const { members, feed, loading: roomLoading, reload } = useGroupRoom(activeGroupId);
+  // Fokus holati serverдан — a'zo qaysi ekranда (hatto ilovani yopgan) bo'lsa ham ko'rinadi.
+  const focusStates = useRoomFocusStates(members);
 
   const onRefreshList = useCallback(async () => {
     setRefreshing(true);
@@ -273,10 +275,7 @@ export function TeamScreen() {
 
   // ── DETAIL (guruh xonasi — jonli) ──
   if (view === 'detail' && group) {
-    const presById = new Map(presences.map((p) => [p.userId, p]));
-    const focusing = presences.filter((p) => p.focusing);
-    const onlineMembers = presences.filter((p) => !p.focusing);
-    const offlineMembers = members.filter((m) => !presById.has(m.userId));
+    const { focusing, online: onlineMembers, offline: offlineMembers } = splitRoomMembers(members, presences, focusStates, now);
     const meTag = (id: string) => (id === userId ? ` ${t('team.youSuffix')}` : '');
 
     return (

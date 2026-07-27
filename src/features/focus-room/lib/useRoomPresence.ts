@@ -72,6 +72,10 @@ export function useRoomPresence(groupId: string | null, userId: string | null): 
     channelRef.current = channel;
     channel.on('presence', { event: 'sync' }, () => {
       const state = channel.presenceState<RoomPresence>();
+      if (__DEV__) {
+        const who = Object.entries(state).map(([k, v]) => `${k.slice(0, 6)}:${(v[v.length - 1] as RoomPresence | undefined)?.focusing ? 'fokus' : 'online'}`);
+        console.warn(`[Room] sync room:${groupId} → ${who.length ? who.join(', ') : '(bo\'sh)'}`);
+      }
       // Har kalit uchun oxirgi track qilingan holat.
       const list = Object.values(state)
         .map((entries) => entries[entries.length - 1])
@@ -79,7 +83,13 @@ export function useRoomPresence(groupId: string | null, userId: string | null): 
       setPresences(list);
     });
     channel.subscribe((status) => {
-      if (status === 'SUBSCRIBED' && myRef.current) channel.track(myRef.current).catch(() => {});
+      if (__DEV__) console.warn(`[Room] kanal room:${groupId}: ${status}`);
+      if (status === 'SUBSCRIBED' && myRef.current) {
+        if (__DEV__) console.warn(`[Room] track: fokus=${myRef.current.focusing} odat=${myRef.current.habit ?? '-'}`);
+        channel.track(myRef.current).catch((e: unknown) => {
+          if (__DEV__) console.warn('[Room] track XATO:', String(e));
+        });
+      }
     });
     return () => {
       sb.removeChannel(channel).catch(() => {});
