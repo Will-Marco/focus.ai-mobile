@@ -298,6 +298,44 @@
       </div>
     </section>
 
+    <!-- ───────────────────────  ISBOT  ─────────────────────── -->
+    <section>
+      <div class="reveal" style="max-width: 46ch">
+        <p class="eyebrow">Holat</p>
+        <h2>Ikkala do‘konga ham chiqarildi</h2>
+        <p>
+          Ilova Google Play’ning ichki test kanalida tarqatilmoqda va iOS build’i
+          TestFlight’ga yuklangan. Quyida — konsollardagi haqiqiy holat.
+        </p>
+      </div>
+
+      <div class="shots">
+        <figure class="shot reveal" style="margin: 0">
+          <img
+            src="screens/proof-play.png"
+            alt="Google Play Console — ichki test relizi"
+            loading="lazy"
+          />
+          <figcaption>
+            <strong>Google Play Console</strong>
+            Internal testing · <code>uz.focusai.app</code> · 1.0 (1)
+          </figcaption>
+        </figure>
+
+        <figure class="shot reveal d1" style="margin: 0">
+          <img
+            src="screens/proof-testflight.png"
+            alt="App Store Connect — TestFlight build"
+            loading="lazy"
+          />
+          <figcaption>
+            <strong>App Store Connect · TestFlight</strong>
+            iOS build qabul qilindi · <code>uz.focusai.app</code> · 1.0 (1)
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
     <!-- ───────────────────────  SINASH  ─────────────────────── -->
     <section class="try" id="sinash">
       <div class="try-inner">
@@ -376,7 +414,16 @@
         .querySelectorAll('.reveal:not(.in)')
         .forEach(el => io.observe(el));
 
-      // Havola qo'yilmagan do'kon tugmalari bosilmasin.
+      // Konsol skrinshoti hali qo'yilmagan bo'lsa — bo'limni ko'rsatmaymiz
+  // (singan rasm ikonkasi taqdimotni buzmasin).
+  document.querySelectorAll('.shot img').forEach((img) => {
+    img.addEventListener('error', () => {
+      const fig = img.closest('figure');
+      if (fig) fig.style.display = 'none';
+    });
+  });
+
+  // Havola qo'yilmagan do'kon tugmalari bosilmasin.
       document.querySelectorAll('[data-link]').forEach(a => {
         if (a.getAttribute('href') === '#') {
           a.style.opacity = '0.5';

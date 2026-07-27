@@ -191,6 +191,25 @@ strong { color: var(--text); }
   display: block; margin-bottom: 4px;
 }
 
+/* ── Konsol skrinshotlari (do'konga chiqarilgani isboti) ── */
+.shots { display: grid; gap: 22px; grid-template-columns: 1fr; margin-top: 34px; }
+@media (min-width: 880px) { .shots { grid-template-columns: 1fr 1fr; } }
+.shot {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+}
+.shot img { width: 100%; }
+.shot figcaption {
+  padding: 13px 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+.shot figcaption strong { display: block; color: var(--text); font-size: 15px; margin-bottom: 2px; }
+
 /* ── Sinash bo'limi ── */
 .try { background: var(--bg-elev); border-block: 1px solid var(--border); max-width: none; }
 .try-inner { max-width: 1140px; margin: 0 auto; }
