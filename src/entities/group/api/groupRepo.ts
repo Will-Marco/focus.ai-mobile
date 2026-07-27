@@ -147,14 +147,7 @@ export const groupRepo = {
       .select('*, groups(name)')
       .eq('invitee_phone', me.phone)
       .eq('status', 'pending');
-    if (__DEV__) {
-      // Serverning bizni qanday ko'rishi — RLS aynan shu qiymat bo'yicha filtrlaydi.
-      const { data: srv } = await supabase.rpc('my_phone_digits');
-      console.warn(
-        `[Group] listMyInvites: mijoz=${me.phone} server=${String(srv ?? 'RPC yo\'q')} topildi=${data?.length ?? 0}` +
-          (error ? ` XATO=${error.message} (${error.code})` : ''),
-      );
-    }
+    if (__DEV__ && error) console.warn(`[Group] listMyInvites xato: ${error.message} (${error.code})`);
     if (error || !data) return [];
     return data.map((r) => {
       const row = r as Record<string, unknown> & { groups?: { name?: string } };
