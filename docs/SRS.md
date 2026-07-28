@@ -17,8 +17,16 @@ Hakamlar **100 ball** bo'yicha baholaydi:
 
 **Hal qiluvchi tamoyil:** "Web versiyaning aynan nusxasi g'olib bo'lmaydi. Yangi narsa keling."
 → Maqsad: majburiy minimal + **o'ziga xos kreativ konsept** + sayqallangan dizayn/animatsiya.
-Manba hujjatlar: `docs/focus-ai-mobile-konkurs-tz.pdf` (asosiy, baholash shu bo'yicha),
-`docs/focus-ai-mobile-tz.docx` (maksimal vizyon — g'oyalar manbai, lekin ko'r-ko'rona ko'chirilmaydi).
+
+**Buyurtmachi bergan shart (yagona rasmiy manba):**
+1. `docs/focus-ai-mobile-konkurs-tz.pdf` — konkurs TZ, 6 sahifa. Majburiy 6 ekran,
+   timestamp taymer, baholash mezonlari, **7 ta ixtiyoriy kreativ taklif**, topshirish paketi.
+2. **Berilgan web versiya** — <https://focus-82lnf9rc9-shakhalimov7-engs-projects.vercel.app/>
+   (bitta sahifa: odat + maqsad soat + taymer + filtr, localStorage). Mobil ilova shuning
+   ustiga quriladi. To'liq funksiya taqqoslash: `docs/FEATURES.md`.
+
+`docs/focus-ai-mobile-tz.docx` — konkurs TZ'si emas, balki **bizning kengaytirilgan vizyon
+hujjatimiz**: g'oyalar manbai sifatida ishlatiladi, talab sifatida emas.
 
 ## 1. Maqsad (Goal)
 Focus AI — **vaqtga asoslangan** odat kuzatuvchi mobil ilova. Foydalanuvchi odat qo'shadi,
