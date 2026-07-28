@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Focus AI — nima berilgan edi, nima qo‘shildi</title>
+    <meta
+      name="description"
+      content="Konkurs shartida nima talab qilingan va Focus AI mobil ilovasiga biz nimalarni qo‘shdik — ochiq taqqoslash."
+    />
+    <meta name="theme-color" content="#0d0806" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Inter:wght@400..700&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #0d0806;
+        --surface: #1b120c;
+        --surface-2: #241811;
+        --line: rgba(247, 201, 141, 0.13);
+        --text: #f8ece2;
+        --muted: #c2ad98;
+        --dim: #9c8877;
+        --brand: #f2a24c;
+        --coral: #f2603e;
+        --gold: #f7d98a;
+        --teal: #5fd0c5;
+        --ember: linear-gradient(
+          135deg,
+          var(--gold),
+          var(--brand) 42%,
+          var(--coral)
+        );
+        --font-display: 'Bricolage Grotesque', 'Segoe UI', -apple-system,
+          sans-serif;
+        --font-body: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 16.5px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--brand);
+      }
+      :focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+
+      .wrap {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 0 clamp(20px, 5vw, 40px);
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: var(--font-display);
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin: 0 0 14px;
+      }
+      h1 {
+        font-size: clamp(32px, 5.2vw, 52px);
+        font-weight: 800;
+      }
+      h2 {
+        font-size: clamp(24px, 3.4vw, 34px);
+        font-weight: 800;
+        margin-top: 0;
+      }
+      h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      p {
+        color: var(--muted);
+        margin: 0 0 14px;
+        max-width: 68ch;
+      }
+      strong {
+        color: var(--text);
+        font-weight: 650;
+      }
+
+      .eyebrow {
+        font-size: 11.5px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--brand);
+        font-weight: 700;
+        margin: 0 0 12px;
+      }
+
+      /* ── Sarlavha bloki ── */
+      header {
+        padding: clamp(56px, 9vh, 96px) 0 clamp(32px, 5vh, 52px);
+        border-bottom: 1px solid var(--line);
+        background: radial-gradient(
+          120% 80% at 50% -20%,
+          #251708,
+          transparent 70%
+        );
+      }
+      .back {
+        display: inline-block;
+        font-size: 14px;
+        text-decoration: none;
+        margin-bottom: 26px;
+      }
+      .back:hover {
+        text-decoration: underline;
+      }
+
+      .tally {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr;
+        margin-top: 30px;
+      }
+      @media (min-width: 640px) {
+        .tally {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .tally div {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px 18px;
+        background: var(--surface);
+      }
+      .tally b {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        background: var(--ember);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .tally span {
+        font-size: 13.5px;
+        color: var(--muted);
+      }
+
+      section {
+        padding: clamp(48px, 7vh, 76px) 0;
+        border-bottom: 1px solid var(--line);
+      }
+      section:last-of-type {
+        border-bottom: 0;
+      }
+
+      /* ── Taqqoslash jadvali ── */
+      .cmp {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 26px;
+        font-size: 15px;
+      }
+      .cmp th,
+      .cmp td {
+        text-align: left;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .cmp th {
+        font-family: var(--font-display);
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        color: var(--dim);
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom-color: rgba(247, 201, 141, 0.3);
+      }
+      .cmp th:first-child {
+        width: 34%;
+      }
+      .cmp td:nth-child(2) {
+        color: var(--dim);
+      }
+      .cmp td:nth-child(3) {
+        color: var(--text);
+      }
+      .cmp tr:hover td {
+        background: rgba(247, 201, 141, 0.035);
+      }
+      .scroller {
+        overflow-x: auto;
+      }
+
+      /* ── Ro'yxatlar ── */
+      ul.checks {
+        list-style: none;
+        padding: 0;
+        margin: 22px 0 0;
+        display: grid;
+        gap: 12px;
+      }
+      ul.checks li {
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: 12px;
+        align-items: start;
+        font-size: 15.5px;
+        color: var(--muted);
+      }
+      ul.checks li b {
+        color: var(--text);
+        font-weight: 650;
+      }
+      .ok,
+      .no {
+        font-family: var(--font-display);
+        font-weight: 800;
+        line-height: 1.5;
+        font-size: 15px;
+      }
+      .ok {
+        color: var(--teal);
+      }
+      .no {
+        color: var(--dim);
+      }
+
+      /* ── Kartalar ── */
+      .cards {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr;
+        margin-top: 26px;
+      }
+      @media (min-width: 720px) {
+        .cards {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px 22px;
+        background: linear-gradient(160deg, var(--surface), #150d09);
+      }
+      .card.star {
+        border-color: rgba(242, 130, 62, 0.42);
+      }
+      .card.wide {
+        grid-column: 1 / -1;
+      }
+      .card p {
+        font-size: 14.5px;
+        margin: 0;
+      }
+      .card .mark {
+        display: inline-block;
+        font-size: 10.5px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--brand);
+        margin-bottom: 8px;
+      }
+
+      /* ── Iqtibos ── */
+      blockquote {
+        margin: 22px 0 0;
+        padding: 18px 22px;
+        border-left: 3px solid var(--brand);
+        background: rgba(242, 162, 76, 0.06);
+        border-radius: 0 14px 14px 0;
+      }
+      blockquote p {
+        margin: 0;
+        color: var(--text);
+        font-size: 15.5px;
+      }
+      blockquote cite {
+        display: block;
+        margin-top: 8px;
+        font-style: normal;
+        font-size: 13px;
+        color: var(--dim);
+      }
+
+      .note {
+        font-size: 14.5px;
+        color: var(--dim);
+      }
+
+      footer {
+        padding: 44px 0 68px;
+        text-align: center;
+        font-size: 14px;
+        color: var(--dim);
+        border-top: 1px solid var(--line);
+      }
+      footer a {
+        text-decoration: none;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="back" href="demo.html">← Taqdimot sahifasiga qaytish</a>
+        <p class="eyebrow">Ochiq taqqoslash</p>
+        <h1>Nima berilgan edi,<br />nima qo‘shildi</h1>
+        <p>
+          Konkurs sharti ikki narsadan iborat edi: olti sahifalik texnik vazifa
+          va tayyor web versiya. Quyida — o‘sha shartda nima talab qilingani va
+          biz ustiga nimalarni qo‘shganimiz, hech narsani yashirmasdan.
+        </p>
+
+        <div class="tally">
+          <div>
+            <b>6 / 6</b>
+            <span>majburiy ekran bajarildi</span>
+          </div>
+          <div>
+            <b>6 / 7</b>
+            <span>ixtiyoriy kreativ taklif bajarildi</span>
+          </div>
+          <div>
+            <b>15</b>
+            <span>shartda umuman yo‘q, o‘zimiz qo‘shgan narsa</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─────────────── 1. TAQQOSLASH ─────────────── -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow">Boshlang‘ich nuqta</p>
+        <h2>Berilgan web versiya va bizning mobil ilova</h2>
+        <p>
+          Berilgan web versiya — bitta sahifali odat kuzatuvchi. Ma‘lumot
+          brauzer xotirasida saqlanadi, boshqa ekran yo‘q.
+        </p>
+
+        <div class="scroller">
+          <table class="cmp">
+            <thead>
+              <tr>
+                <th>Nima</th>
+                <th>Berilgan web versiya</th>
+                <th>Bizning mobil ilova</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ekranlar</td>
+                <td>Bitta sahifa</td>
+                <td>
+                  Onboarding, kirish, bosh ekran, odat qo‘shish, sessiya,
+                  statistika, guruh, AI, profil
+                </td>
+              </tr>
+              <tr>
+                <td>Odat maqsadi</td>
+                <td>Maqsad soat (masalan 100 soat)</td>
+                <td>
+                  Davr (kunlik / haftalik / oylik) + necha marta. Har “marta”
+                  faqat sessiya 100% ga yetganda hisoblanadi
+                </td>
+              </tr>
+              <tr>
+                <td>Taymer</td>
+                <td>Boshlash, pauza, davom, yakunlash</td>
+                <td>
+                  Shulardan tashqari: ilova yopilsa ham aniq davom etadi, bir
+                  nechta sessiya parallel ishlaydi, to‘xtatilgani yo‘qolmaydi
+                </td>
+              </tr>
+              <tr>
+                <td>Telefon holati</td>
+                <td>—</td>
+                <td>Yuztuban qo‘ysangiz Away, yon bursangiz Focus Clock</td>
+              </tr>
+              <tr>
+                <td>Rivoj</td>
+                <td>Jami odatlar, hozir faol, bajarilgan</td>
+                <td>
+                  Streak, daraja, ball, 12 nishon, bir yillik kalendar, haftalik
+                  va oylik grafik
+                </td>
+              </tr>
+              <tr>
+                <td>Ijtimoiy</td>
+                <td>—</td>
+                <td>Focus Rooms — kim hozir fokusda ekanini jonli ko‘rish</td>
+              </tr>
+              <tr>
+                <td>AI</td>
+                <td>—</td>
+                <td>Kunlik tavsiya va haftalik tahlil</td>
+              </tr>
+              <tr>
+                <td>Ovoz va sezgi</td>
+                <td>—</td>
+                <td>6 ta fon ovozi, haptic, yakunlash jarangi</td>
+              </tr>
+              <tr>
+                <td>Bildirishnoma</td>
+                <td>—</td>
+                <td>6 tur + belgilangan soatlarda jimlik</td>
+              </tr>
+              <tr>
+                <td>Hisob va saqlash</td>
+                <td>Brauzer xotirasi</td>
+                <td>
+                  Telefonda saqlanadi; hisob ochilsa bulutga ko‘chadi va boshqa
+                  qurilmada ochiladi
+                </td>
+              </tr>
+              <tr>
+                <td>Til va mavzu</td>
+                <td>O‘zbek</td>
+                <td>O‘zbek va rus; yorug‘, qorong‘i va tizimga moslashish</td>
+              </tr>
+              <tr>
+                <td>Platforma</td>
+                <td>Brauzer</td>
+                <td>Android va iOS — bitta kodbazadan</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── 2. MAJBURIY ─────────────── -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow">Shartning 3 va 4-bo‘limi</p>
+        <h2>Majburiy talablar — hammasi bajarildi</h2>
+
+        <ul class="checks">
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Onboarding</b> — uch slayd, o‘tkazib yuborish tugmasi har doim
+              ko‘rinadi</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Kirish</b> — shart “kamida bitta usul, mehmon rejimi ham
+              bo‘ladi” degan. Bizda mehmon rejimi standart holat, ustiga telefon
+              raqami bilan hisob</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Bosh ekran</b> — odatlar ro‘yxati, jarayon paneli, foiz,
+              qo‘shish tugmasi, bo‘sh holat</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span><b>Odat qo‘shish</b> — nom, belgi, rang, maqsad</span>
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Faol sessiya</b> — katta halqa, o‘tgan va qolgan vaqt,
+              boshqaruv tugmalari, 100% da yutuq</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span><b>Profil</b> — ism, avatar, til, mavzu, chiqish</span>
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Taymer soniyalarni sanamaydi</b> — boshlanish vaqtini eslab
+              qoladi. Shuning uchun ilovani yopsangiz ham, telefon uxlab qolsa
+              ham hisob aniq qoladi</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span><b>Bir nechta sessiya</b> bir vaqtda mustaqil ishlaydi</span>
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Offline</b> — hamma narsa telefonda saqlanadi, qayta
+              ochilganda tiklanadi</span
+            >
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ─────────────── 3. IXTIYORIY ─────────────── -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow">Shartning 6-bo‘limi</p>
+        <h2>Ixtiyoriy kreativ takliflar — 7 tadan 6 tasi</h2>
+        <p>
+          Shart bu funksiyalarni majburiy qilmagan, lekin “bahoni keskin
+          oshiradi” deb belgilagan.
+        </p>
+
+        <ul class="checks">
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Telefonsiz vaqt rejimi.</b> Shartda bitta jumla bor edi:
+              telefon yuztuban yotsa — qo‘shimcha bonus. Biz undan uch holatli
+              tizim yasadik (pastdagi birinchi kartaga qarang)</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Streak tizimi.</b> Bir yillik kalendar, avtomatik saqlash, eng
+              uzun rekord</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Bildirishnomalar.</b> Olti tur, ustiga belgilangan soatlarda
+              to‘liq jimlik</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Statistika va tahlil.</b> Haftalik va oylik grafik, o‘tgan
+              davrga nisbatan foiz, eng samarali soat</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>Audio fon va haptic.</b> Olti ambient trek, butun ilova
+              bo‘ylab tebranish javobi</span
+            >
+          </li>
+          <li>
+            <span class="ok">✓</span>
+            <span
+              ><b>AI murabbiy.</b> Kunlik tavsiya va haftalik tahlil; kalitlar
+              serverda qoladi</span
+            >
+          </li>
+          <li>
+            <span class="no">—</span>
+            <span><b>Widget yoki Live Activity.</b> Qilinmadi</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ─────────────── 4. BIZNIKI ─────────────── -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow">Shartda umuman yo‘q</p>
+        <h2>Bizning o‘z g‘oyalarimiz</h2>
+
+        <blockquote>
+          <p>
+            “…va o‘zingizning g‘oyalaringiz. Eng yaxshi takliflar — TZ da yo‘q
+            narsalar.”
+          </p>
+          <cite>Konkurs texnik vazifasi, 6-bo‘lim</cite>
+        </blockquote>
+
+        <div class="cards">
+          <div class="card star wide">
+            <span class="mark">Asosiy g‘oya</span>
+            <h3>Focus Modes — telefon holati interfeysga aylandi</h3>
+            <p>
+              Shart bitta jumla yozgan: telefon yuztuban yotsa — bonus. Biz
+              undan uch holatli tizim yasadik. <strong>Yuztuban</strong> — ekran
+              qorayadi, taymer to‘xtamaydi, daqiqalar ikki barobar.
+              <strong>Yon burilgan</strong> — ekran uzoqdan ko‘rinadigan stol
+              soatiga aylanadi, o‘chmay turadi va tizimning “Bezovta qilmang”
+              rejimi o‘zi yoqiladi. Aniqlash mantiqi oddiy “ekran pastga
+              qaradimi?” tekshiruvi emas: telefon qo‘lda turganda yolg‘ondan
+              yoqilmasligi uchun alohida yozilgan va testlar bilan qoplangan.
+            </p>
+          </div>
+
+          <div class="card star">
+            <span class="mark">Asosiy g‘oya</span>
+            <h3>Focus Rooms — jonli birga-fokus</h3>
+            <p>
+              Shartda ijtimoiy funksiya haqida bir og‘iz ham yo‘q. Guruh tuzasiz
+              va kim hozir ishlayotganini jonli ko‘rasiz: qaysi odat ustida,
+              qancha vaqtdan beri. A‘zo ilovani yopsa ham sessiyasi ko‘rinib
+              turadi. Sessiya tugaganda guruh lentasida voqea paydo bo‘ladi.
+            </p>
+          </div>
+
+          <div class="card star">
+            <span class="mark">Asosiy g‘oya</span>
+            <h3>Mehmon rejimi va bulut — ikkalasi birga</h3>
+            <p>
+              Ilova ro‘yxatdan o‘tmasdan, internetsiz to‘liq ishlaydi — sudya
+              darhol sinab ko‘radi. Keyin hisob ochsangiz, mavjud ma‘lumot
+              bulutga ko‘chadi va boshqa qurilmada ochiladi. Telefondagi baza
+              asosiy, bulut esa faqat sinxronizatsiya.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>To‘xtatsangiz ham yo‘qolmaydi</h3>
+            <p>
+              Sessiyani maqsadga yetmasdan to‘xtatsangiz, u o‘chmaydi — pauzada
+              turadi va istagan vaqtingizda davom ettirasiz.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>100% — tugash emas, nishonlash</h3>
+            <p>
+              Maqsadga yetganda nishonlanadi, lekin taymer davom etishi mumkin
+              va ortiqcha vaqt statistikaga yoziladi.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Odat modeli qayta o‘ylandi</h3>
+            <p>
+              Web versiyada odat = maqsad soat. Bizda davr va necha marta —
+              chunki ko‘p odat soat bilan emas, chastota bilan o‘lchanadi. Lekin
+              “marta” faqat sessiya o‘z maqsadiga real yetganda hisoblanadi,
+              ya‘ni belgi qo‘yish bilan bo‘lmaydi.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>To‘liq gamifikatsiya</h3>
+            <p>
+              Shart faqat streakni taklif qilgan. Bizda ustiga ball, darajalar
+              va 12 nishon — hammasi real sessiyalardan hisoblanadi, soxta
+              to‘ldiruvchi yo‘q.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Ikki til, uchta mavzu</h3>
+            <p>
+              O‘zbek va rus tili, yorug‘ va qorong‘i mavzu hamda tizimga
+              moslashish — hammasi ilova ichidan almashtiriladi.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Android va iOS</h3>
+            <p>
+              Shart APK ni yetarli deb bilgan. Biz iOS versiyasini ham qurdik va
+              TestFlight ga yukladik — bitta kodbazadan.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Yakunlash jarangi kodda yozilgan</h3>
+            <p>
+              Tayyor mp3 emas — so‘nuvchi tovush kodda hosil qilinadi. Ilova
+              hajmiga qo‘shimcha yuk yo‘q, litsenziya masalasi ham yo‘q.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Fon ovozlari tenglashtirildi</h3>
+            <p>
+              Olti trek orasida sezilarli balandlik farqi bor edi — eng
+              balandlari xirillardi. Har biriga koeffitsient hisoblab, bir xil
+              balandlikka keltirdik, fayllarni qayta kodlamasdan.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Tasdiqlash kodi Telegram orqali</h3>
+            <p>
+              SMS xizmatlari pullik. Biz kodni Telegram bot orqali yuboramiz —
+              sudya hech narsa to‘lamasdan sinab ko‘radi.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Sudya uchun demo ma‘lumot</h3>
+            <p>
+              Bo‘sh ilovada statistikani ko‘rib bo‘lmaydi. Bir tugma bilan 75
+              kunlik tarix yaratiladi: 5 odat, 16 kunlik streak, to‘lgan
+              kalendar, ball va nishonlar.
+            </p>
+          </div>
+
+          <div class="card wide">
+            <span class="mark">Kod sifati</span>
+            <h3>Muhandislik qarorlari</h3>
+            <p>
+              Kod qatlamlarga bo‘lingan va import yo‘nalishini linter tekshirib
+              turadi.
+              <strong>186 avtomatik test</strong> taymer, streak, ball,
+              sinxronizatsiya, telefon holatini aniqlash va jimlik soatlari
+              mantig‘ini qoplaydi — bu qismlar interfeysdan ajratilgani uchun
+              har biri alohida tekshiriladi. Ilova React Native ning yangi
+              arxitekturasida, Expo siz qurilgan: sensor, tebranish va grafika
+              ustidan to‘liq nazorat. Halqa animatsiyasi alohida oqimda
+              chizilgani uchun ilova band bo‘lganda ham sekinlashmaydi.
+            </p>
+          </div>
+        </div>
+
+        <p class="note" style="margin-top: 26px">
+          Bu sahifada faqat tekshirib bo‘ladigan narsalar yozilgan. Konkurs
+          shartining matni — <code>focus-ai-mobile-konkurs-tz.pdf</code>,
+          berilgan web versiya esa hamon ochiq.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <p style="margin-bottom: 8px">
+          <a href="demo.html">Taqdimot</a> ·
+          <a href="index.html">Bosh sahifa</a> ·
+          <a
+            href="https://github.com/Will-Marco/focus.ai-mobile"
+            target="_blank"
+            rel="noopener"
+            >Manba kodi</a
+          >
+        </p>
+        <p style="margin: 0">
+          Focus AI — vaqtga asoslangan odatlar kuzatuvchisi
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
